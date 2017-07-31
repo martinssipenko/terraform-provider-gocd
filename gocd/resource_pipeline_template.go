@@ -1,7 +1,7 @@
 package gocdprovider
 
 import (
-	"github.com/drewsonne/gocdsdk"
+	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 

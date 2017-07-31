@@ -1,6 +1,6 @@
 package gocdprovider
 
-import "github.com/drewsonne/gocdsdk"
+import "github.com/drewsonne/go-gocd/gocd"
 
 type ClientConfig struct {
 	BaseURL string
