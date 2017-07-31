@@ -19,33 +19,25 @@ func SchemaProvider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: descriptions["gocd_baseurl"],
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOCD_URL",
-				}, nil),
+				DefaultFunc: envDefault("GOCD_URL"),
 			},
 			"username": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: descriptions["username"],
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOCD_USERNAME",
-				}, nil),
+				DefaultFunc: envDefault("GOCD_USERNAME"),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: descriptions["password"],
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOCD_PASSWORD",
-				}, nil),
+				DefaultFunc: envDefault("GOCD_PASSWORD"),
 			},
 			"skip_ssl_check": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: descriptions["skip_ssl_check"],
-				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
-					"GOCD_SKIP_SSL_CHECK",
-				}, nil),
+				DefaultFunc: envDefault("GOCD_SKIP_SSL_CHECK"),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -70,23 +62,28 @@ func init() {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	baseUrl := d.Get("baseurl").(string)
-	username := d.Get("username").(string)
-	password := d.Get("password").(string)
-	skip_ssl_check := d.Get("skip_ssl_check").(bool)
 
-	if baseUrl == "" {
-		baseUrl = os.Getenv("GOCD_URL")
-	}
-	if username == "" {
-		username = os.Getenv("GOCD_USERNAME")
-	}
-	if password == "" {
-		password = os.Getenv("GOCD_PASSWORD")
-	}
+	var url, u, p string
 
-	return gocd.NewClient(baseUrl, &gocd.Auth{
-		Username: username,
-		Password: password,
-	}, nil, skip_ssl_check), nil
+	if url = d.Get("baseurl").(string); url == "" {
+		url = os.Getenv("GOCD_URL")
+	}
+	if u = d.Get("username").(string); u == "" {
+		u = os.Getenv("GOCD_USERNAME")
+	}
+	if p = d.Get("password").(string); p == "" {
+		p = os.Getenv("GOCD_PASSWORD")
+	}
+	nossl := d.Get("skip_ssl_check").(bool)
+
+	return gocd.NewClient(url, &gocd.Auth{
+		Username: u,
+		Password: p,
+	}, nil, nossl), nil
+}
+
+func envDefault(e string) schema.SchemaDefaultFunc {
+	return schema.MultiEnvDefaultFunc([]string{
+		e,
+	}, nil)
 }
