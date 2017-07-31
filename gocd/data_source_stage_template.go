@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"strconv"
-	"github.com/drewsonne/gocdsdk"
+	"github.com/drewsonne/go-gocd/gocd"
 )
 
 var dataSourceAwsIamPolicyDocumentVarReplacer = strings.NewReplacer("&{", "${")
