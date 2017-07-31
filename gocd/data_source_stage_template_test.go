@@ -1,4 +1,4 @@
-package gocdprovider
+package gocd
 
 import (
 	"testing"
@@ -6,13 +6,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"fmt"
 )
-
-func TestDataSourceStageTemplateInternalValidate(t *testing.T) {
-	provider := SchemaProvider()
-	if err := provider.InternalValidate(); err != nil {
-		t.Fatalf("err: %s", err)
-	}
-}
 
 func TestDataSourceStageTemplate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
@@ -58,10 +51,8 @@ data "gocd_stage_template_definition" "test" {
   jobs = {
     name = "job1"
   }
-  approval = {
-    type = "manual"
-    authorization = "auth1"
-  }
+  manual_approval = true
+  authorization_roles = ["one","two"]
 }
 `
 

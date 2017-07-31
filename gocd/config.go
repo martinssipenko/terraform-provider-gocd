@@ -1,4 +1,4 @@
-package gocdprovider
+package gocd
 
 import "github.com/drewsonne/go-gocd/gocd"
 

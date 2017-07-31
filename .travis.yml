@@ -1,0 +1,49 @@
+language: go
+go:
+  - 1.7.x
+  - 1.8.x
+  - release
+  - tip
+
+addons:
+  apt:
+    packages:
+    - rpm
+
+env:
+  global:
+    - secure: ax6R000Lq+b4jbOKXxXBFyWKAQdPQkdwxSqy7qukPKk9fOh5mXI/gEX7ep6JHRvcBqbq5LavXgNCQpyGdTevhdi8eQBhvOE79one/bLbDYj4mCbDu2rHtk3Dln3+xWTIhe2HFembCxcVHLHK8zAv8vSadJN/bDEGGTdfkZS+h3GW5LKhtcD3j3prJ6baJUkmGiiOt7kDcYEYkXMDaS13fM9E/G8GD0hI7YrwUJ5HY1EMBcUjHiFUDwSLM6OqF4bKbDxVcsVNwh5SLSTG4PDMmdKDP3suTgQZauGuzCL51KjsYIdC9wGkFnUK2BLM++7CkYjsrVAAGEWoQhPhjIi5psuQbaGYrvtbSbjb6Zx2jjtbzTJJ1KtIRcjzkiFKF6EhG8+HAlfSubBSMov+geoj5VXbMgCT7Pwnzf7I4kKd+xUYvKZ8Zda3OrXk2iY9qJ+WGCgtb38rHsgE1bLIVcdZyX0cNcTQZmCvTny81teZNuIS5zWbOyZxwnRVaDv51uvs+YL1+zwgBmSR2dzef5NN4eUxzip93/FhBDmqYxpu7XWtMMrI5roWsmpWNL0DACf8qIDRYtGR2Wr+oC+uadG8aqEiCp5vPmgsPmOwvatOqAScuR5J2bYylDqtseFKUuWoYPNT6BfTk+ZMLv9r08230+W5SmF2/KIzJm0OjRc/OLw=
+
+matrix:
+  allow_failures:
+    - go: release
+    - go: tip
+  fast_finish: true
+
+before_install:
+  - go get -t -v ./...
+
+script:
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
+    $code)
+  - cd gocd
+  - go tool vet .
+  - bash ./go.test.sh
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  - go get github.com/goreleaser/goreleaser
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: gem install --no-ri --no-rdoc fpm && cd $TRAVIS_BUILD_DIR && go get && goreleaser
+    on:
+      tags: true
+      condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
+  - provider: script
+    skip_cleanup: true
+    script: gem install --no-ri --no-rdoc fpm && cd $TRAVIS_BUILD_DIR && go get && goreleaser --snapshot
+    on:
+      branch: develop

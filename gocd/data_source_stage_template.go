@@ -1,17 +1,20 @@
-package gocdprovider
+package gocd
 
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"strings"
 	"encoding/json"
-	"github.com/hashicorp/terraform/helper/hashcode"
-	"strconv"
 	"github.com/drewsonne/go-gocd/gocd"
+	"strconv"
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"fmt"
+	"regexp"
 )
 
 var dataSourceAwsIamPolicyDocumentVarReplacer = strings.NewReplacer("&{", "${")
 
 func dataSourceGocdStageTemplate() *schema.Resource {
+
 	return &schema.Resource{
 		Read: dataSourceGocdStageTemplateRead,
 		Schema: map[string]*schema.Schema{
@@ -34,47 +37,45 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
-			"jobs": {
+			"job": {
 				Type:     schema.TypeList,
+				MinItems: 1,
 				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-					},
-				},
-			},
-			"environment_variables": {
-				Type:     schema.TypeList,
-				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
-			"approval": {
-				Type:     schema.TypeMap,
+			"manual_approval": {
+				Type:          schema.TypeBool,
+				Optional:      true,
+				ConflictsWith: []string{"success_approval"},
+			},
+			"success_approval": {
+				Type:          schema.TypeBool,
+				Optional:      true,
+				ConflictsWith: []string{"manual_approval"},
+			},
+			"authorization_users": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				ConflictsWith: []string{"success_approval", "authorization_roles"},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"authorization_roles": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				ConflictsWith: []string{"success_approval", "authorization_users"},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"environment_variables": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: map[string]*schema.Schema{
-					"type": {
-						Type:     schema.TypeString,
-						Required: true,
-					},
-					"authorization": {
-						Type:     schema.TypeMap,
-						Required: true,
-						Elem: map[string]*schema.Schema{
-							"users": {
-								Type:     schema.TypeList,
-								Optional: true,
-							},
-							"roles": {
-								Type:     schema.TypeList,
-								Optional: true,
-							},
-						},
-					},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
 			},
 			"json": {
@@ -85,39 +86,47 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 	}
 }
 
+func validateStageAuthorization(v interface{}, k string) (ws []string, errors []error) {
+	val := v.(string)
+	if !regexp.MustCompile("^[\\w _]+$").MatchString(val) {
+		errors = append(errors, fmt.Errorf("%q must contain only alphanumeric caracters and spaces", k))
+	}
+
+	return
+}
+
 func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) error {
-	doc := gocd.Stage{}
-	doc.Name = d.Get("name").(string)
-	approval := d.Get("approval").(map[string]interface{})
-	if approval != nil {
-
-		doc.Approval = &gocd.Approval{
-			Type:          approval["type"].(string),
-			Authorization: gocd.Authorization{},
-		}
-
-		auth := approval["authorization"].(*string)
-		if users, ok := auth["users"]; ok {
-			doc.Approval.Authorization.Users = users
-		} else {
-			doc.Approval.Authorization.Roles = auth["roles"]
-		}
-
+	doc := gocd.Stage{
+		Name:     d.Get("name").(string),
+		Approval: &gocd.Approval{},
 	}
 
-	var cfgJobs = d.Get("jobs").([]interface{})
-	jobs := make([]gocd.Job, len(cfgJobs))
-	doc.Jobs = jobs
-
-	for i, jobI := range cfgJobs {
-		cfgJob := jobI.(map[string]interface{})
-
-		job := gocd.Job{
-			Name: cfgJob["name"].(string),
+	if manualApproval, hasManualApproval := d.Get("manual_approval").(bool); hasManualApproval && manualApproval {
+		doc.Approval.Type = "manual"
+		doc.Approval.Authorization = &gocd.Authorization{}
+		if users := d.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
+			doc.Approval.Authorization.Users = decodeConfigStringList(users)
+		} else if roles := d.Get("authorization_roles").(*schema.Set).List(); len(roles) > 0 {
+			doc.Approval.Authorization.Roles = decodeConfigStringList(roles)
 		}
-		jobs[i] = job
+	} else if d.Get("success_approval").(bool) {
+		doc.Approval.Type = "success"
+		doc.Approval.Authorization = nil
 	}
 
+	//var cfgJobs = d.Get("jobs").([]interface{})
+	//jobs := make([]gocd.Job, len(cfgJobs))
+	//doc.Jobs = jobs
+	//
+	//for i, jobI := range cfgJobs {
+	//	cfgJob := jobI.(map[string]interface{})
+	//
+	//	job := gocd.Job{
+	//		Name: cfgJob["name"].(string),
+	//	}
+	//	jobs[i] = job
+	//}
+	//
 	jsonDoc, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
 		// should never happen if the above code is correct
@@ -125,7 +134,7 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 	}
 	jsonString := string(jsonDoc)
 	d.Set("json", jsonString)
-	d.SetId(strconv.Itoa(hashcode.String(d.Get("name").(string))))
+	d.SetId(strconv.Itoa(hashcode.String(jsonString)))
 
 	return nil
 }

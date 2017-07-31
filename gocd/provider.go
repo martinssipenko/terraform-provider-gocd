@@ -1,4 +1,4 @@
-package gocdprovider
+package gocd
 
 import (
 	"github.com/drewsonne/go-gocd/gocd"
@@ -39,12 +39,21 @@ func SchemaProvider() *schema.Provider {
 					"GOCD_PASSWORD",
 				}, nil),
 			},
+			"skip_ssl_check": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: descriptions["skip_ssl_check"],
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOCD_SKIP_SSL_CHECK",
+				}, nil),
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_pipeline_template": resourcePipelineTemplate(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"gocd_stage_template_definition": dataSourceGocdStageTemplate(),
+			"gocd_stage_definition": dataSourceGocdStageTemplate(),
+			"gocd_job_definition":   dataSourceGocdJobTemplate(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -64,6 +73,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	baseUrl := d.Get("baseurl").(string)
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
+	skip_ssl_check := d.Get("skip_ssl_check").(bool)
 
 	if baseUrl == "" {
 		baseUrl = os.Getenv("GOCD_URL")
@@ -78,5 +88,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	return gocd.NewClient(baseUrl, &gocd.Auth{
 		Username: username,
 		Password: password,
-	}, nil), nil
+	}, nil, skip_ssl_check), nil
 }

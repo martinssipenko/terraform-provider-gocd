@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/drewsonne/terraform-provider-gocd/gocd"
+	gocdprovider "github.com/drewsonne/terraform-provider-gocd/gocd"
 	"github.com/hashicorp/terraform/plugin"
 )
 
