@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="93">
+  <server artifactsdir="artifacts" agentAutoRegisterKey="fca06912-b3e8-454d-b397-5708f1807a24" webhookSecret="1e33b0ed-022c-40db-adae-2909cc23e1d4" commandRepositoryLocation="default" serverId="260a016f-fd97-4bdd-a6c5-f9dba6137361" />
+  <pipelines group="test-group">
+    <pipeline name="new_pipeline" isLocked="true" template="new-template">
+      <materials>
+        <git url="git@github.com:sample_repo/example.git" shallowClone="true" dest="dest" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="new-template">
+      <stage name="hallo-world-hold-one" fetchMaterials="false">
+        <jobs>
+          <job name="test-name" />
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <agents>
+    <agent hostname="test-hostname" ipaddress="172.18.0.4" uuid="4a798eca-aa09-4fbd-8d7a-08bf5d524a5b" />
+    <agent hostname="" ipaddress="172.18.0.3" uuid="815c122f-5995-43ff-8d30-297d1322ccb6" />
+    <agent hostname="49daee82342c" ipaddress="172.18.0.4" uuid="d6889ade-127a-4618-aea2-f5869017428c" />
+    <agent hostname="bac1c09c0660" ipaddress="172.18.0.3" uuid="192932fa-7670-40ff-96ca-89a99071fad3" />
+    <agent hostname="5eadce92d206" ipaddress="172.18.0.3" uuid="04b91609-fcdd-4d26-a941-b69a3ae635a2" />
+    <agent hostname="e5dff078f2cf" ipaddress="172.18.0.4" uuid="dbd7770d-925a-4dba-ad10-50e5af5d70a0" />
+    <agent hostname="8ecdbc96eb9d" ipaddress="172.18.0.3" uuid="e4eae49d-d1e6-417d-8226-1be98cd6dd48" />
+    <agent hostname="e875d86efec5" ipaddress="172.18.0.4" uuid="4a3a7977-aea6-49e1-9940-60ded9ab6f0f" />
+  </agents>
+</cruise>

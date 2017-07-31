@@ -4,6 +4,7 @@ import (
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"os"
 )
 
 // I don't know how to get the test case for InternalValidation and the new plugin version.
@@ -18,16 +19,25 @@ func SchemaProvider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: descriptions["gocd_baseurl"],
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOCD_URL",
+				}, nil),
 			},
 			"username": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: descriptions["username"],
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOCD_USERNAME",
+				}, nil),
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: descriptions["password"],
+				DefaultFunc: schema.MultiEnvDefaultFunc([]string{
+					"GOCD_PASSWORD",
+				}, nil),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -44,17 +54,29 @@ var descriptions map[string]string
 
 func init() {
 	descriptions = map[string]string{
-		"gocd_baseurl": "URL for the GoCD Server",
-		"username":     "User to interact with the GoCD API with.",
-		"password":     "Password for User for GoCD API interaction.",
+		"baseurl":  "URL for the GoCD Server",
+		"username": "User to interact with the GoCD API with.",
+		"password": "Password for User for GoCD API interaction.",
 	}
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	baseUrl := d.Get("baseurl").(string)
-	auth := gocd.Auth{
-		Username: d.Get("username").(string),
-		Password: d.Get("password").(string),
+	username := d.Get("username").(string)
+	password := d.Get("password").(string)
+
+	if baseUrl == "" {
+		baseUrl = os.Getenv("GOCD_URL")
 	}
-	return gocd.NewClient(baseUrl, &auth, nil), nil
+	if username == "" {
+		username = os.Getenv("GOCD_USERNAME")
+	}
+	if password == "" {
+		password = os.Getenv("GOCD_PASSWORD")
+	}
+
+	return gocd.NewClient(baseUrl, &gocd.Auth{
+		Username: username,
+		Password: password,
+	}, nil), nil
 }
