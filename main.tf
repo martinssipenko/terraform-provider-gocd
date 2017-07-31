@@ -2,26 +2,42 @@ provider "gocd" {
   baseurl = "https://***REMOVED***:8153/go/"
   username = "***REMOVED***"
   password = "***REMOVED***"
+  skip_ssl_check = true
 }
 
-
-data "gocd_stage_template_definition" "test-stage" {
+data "gocd_stage_template_definition" "manual-approval" {
   name = "test-stage"
   jobs = {
     name = "hallo"
   }
-  approval = {
-    type = "manual"
-    authorization = "one"
+  manual_approval = true
+  authorization_roles = [
+    "one",
+    "two"]
+}
+
+data "gocd_stage_template_definition" "success-approval" {
+  name = "test-stage"
+  jobs = {
+    name = "hallo"
   }
+  success_approval = true
 }
 
 //resource "gocd_pipeline_template" "my-server" {
 //  name = "my-test-template"
 //  stages = [
-//    ""]
+//    "${data.gocd_stage_template_definition.test-stage.json}"]
 //}
+//
 
-output "stage" {
-  value = "${data.gocd_stage_template_definition.test-stage.json}"
+
+
+
+output "manual-approval" {
+  value = "${data.gocd_stage_template_definition.manual-approval.json}"
+}
+
+output "success-approval" {
+  value = "${data.gocd_stage_template_definition.success-approval.json}"
 }

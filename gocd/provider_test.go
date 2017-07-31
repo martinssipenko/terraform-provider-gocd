@@ -1,10 +1,12 @@
-package gocdprovider
+package gocd
 
 import (
 	"testing"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/hashicorp/terraform/helper/schema"
 	"os"
+	"io/ioutil"
+	"fmt"
 )
 
 var testGocdProviders map[string]terraform.ResourceProvider
@@ -53,4 +55,12 @@ func testAccPreCheck(t *testing.T) {
 	}
 }
 
-//func testAccCheck
+// Loads a test file resource from the 'test' directory.
+func testFile(name string) string {
+	f, err := ioutil.ReadFile(fmt.Sprintf("test/%s", name))
+	if err != nil {
+		panic(err)
+	}
+
+	return string(f)
+}

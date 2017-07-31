@@ -1,2 +1,7 @@
 /.idea
 /godata/server
+.DS_Store
+/crash.log
+/terraform-provider-gocd
+/terraform.tfstate
+/terraform.tfstate.backup
