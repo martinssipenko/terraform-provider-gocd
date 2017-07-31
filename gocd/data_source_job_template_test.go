@@ -1,10 +1,10 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/helper/resource"
-	"testing"
-	"github.com/hashicorp/terraform/terraform"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
+	"testing"
 )
 
 func TestDataSourceJobTemplate(t *testing.T) {

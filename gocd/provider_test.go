@@ -1,12 +1,12 @@
 package gocd
 
 import (
-	"testing"
-	"github.com/hashicorp/terraform/terraform"
-	"github.com/hashicorp/terraform/helper/schema"
-	"os"
-	"io/ioutil"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
+	"io/ioutil"
+	"os"
+	"testing"
 )
 
 var testGocdProviders map[string]terraform.ResourceProvider
