@@ -96,9 +96,9 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 			Authorization: gocd.Authorization{},
 		}
 
-		auth := approval["authorization"].(map[string]string)
+		auth := approval["authorization"].(*string)
 		if users, ok := auth["users"]; ok {
-			doc.Approval.Authorization.Users = users.([]string)
+			doc.Approval.Authorization.Users = users
 		} else {
 			doc.Approval.Authorization.Roles = auth["roles"]
 		}
