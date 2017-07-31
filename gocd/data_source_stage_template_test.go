@@ -38,7 +38,7 @@ func testGoCDStageTemplateStateValue(id, name, value string) resource.TestCheckF
 
 		v := rs.Primary.Attributes[name]
 		if v != value {
-			return fmt.Errorf("Value for %s is $s, not %s", name, v, value)
+			return fmt.Errorf("Value for '%s' is:\n%s\nnot:\n%s", name, v, value)
 		}
 
 		return nil
