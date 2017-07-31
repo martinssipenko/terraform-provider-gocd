@@ -1,14 +1,14 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"strings"
 	"encoding/json"
-	"github.com/drewsonne/go-gocd/gocd"
-	"strconv"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"fmt"
+	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/hashicorp/terraform/helper/schema"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 var dataSourceAwsIamPolicyDocumentVarReplacer = strings.NewReplacer("&{", "${")
