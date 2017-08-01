@@ -49,6 +49,16 @@ func testAccPreCheck(t *testing.T) {
 	//
 	//cfg, _ := config.New
 	//err := testGocdProvider.Configure(terraform.NewResourceConfig(cfg))
+
+	//rcfg := map[string]interface{}{
+	//
+	//}
+	//cfg, err:= config.NewRawConfig(rcfg.(map[string]interface{}))
+	//if err != nil {
+	//	return
+	//}
+	//err := testGocdProvider.Configure(terraform.NewResourceConfig(cfg))
+
 	err := testGocdProvider.Configure(terraform.NewResourceConfig(nil))
 	if err != nil {
 		t.Fatal(err)
