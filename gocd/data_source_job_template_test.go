@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func TestDataSourceJobTemplate(t *testing.T) {
+func TestDataSourceJobDefinition(t *testing.T) {
+	test_steps := []resource.TestStep{}
 	for _, test := range []TestStepJsonComparison{
 		{
 			Id:           "data.gocd_job_definition.test",
@@ -13,20 +14,15 @@ func TestDataSourceJobTemplate(t *testing.T) {
 			ExpectedJSON: testFile("data_source_job_template.0.rsp.json"),
 		},
 	} {
-		resource.Test(t, resource.TestCase{
-			Providers: testGocdProviders,
-			Steps: []resource.TestStep{
-				{
-					Config: test.Config,
-					Check: resource.ComposeTestCheckFunc(
-						testTaskDataSourceStateValue(
-							test.Id,
-							"json",
-							test.ExpectedJSON,
-						),
-					),
-				},
-			},
-		})
+		test_steps = append(
+			test_steps,
+			testStepComparisonCheck(test),
+		)
 	}
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testGocdProviders,
+		Steps:     test_steps,
+	})
 }

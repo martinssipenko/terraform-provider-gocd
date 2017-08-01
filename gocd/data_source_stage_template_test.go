@@ -6,38 +6,23 @@ import (
 )
 
 func TestDataSourceStageTemplate(t *testing.T) {
+	test_steps := []resource.TestStep{}
+	for _, test := range []TestStepJsonComparison{
+		{
+			Id:           "data.gocd_stage_definition.test",
+			Config:       testFile("data_source_stage_template.0.rsc.tf"),
+			ExpectedJSON: testFile("data_source_stage_template.0.rsp.json"),
+		},
+	} {
+		test_steps = append(
+			test_steps,
+			testStepComparisonCheck(test),
+		)
+	}
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testGocdProviders,
-		Steps: []resource.TestStep{
-			{
-				Config: testGoCDStageTemplateConfig,
-				Check: resource.ComposeTestCheckFunc(
-					testTaskDataSourceStateValue(
-						"data.gocd_stage_template_definition.test",
-						"json",
-						testGoCDStageTemplateExpectedJSON,
-					),
-				),
-			},
-		},
+		Steps:     test_steps,
 	})
 }
-
-var testGoCDStageTemplateConfig = `
-data "gocd_stage_template_definition" "test" {
-  name = "stage_name"
-  jobs = {
-    name = "job1"
-  }
-  manual_approval = true
-  authorization_roles = ["one","two"]
-}
-`
-
-var testGoCDStageTemplateExpectedJSON = `{
-	"name": "stage_name",
-	"jobs": [{
-		"name": "job1"
-	}]
-}`

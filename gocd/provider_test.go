@@ -2,12 +2,12 @@ package gocd
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"io/ioutil"
 	"os"
 	"testing"
-	"github.com/hashicorp/terraform/helper/resource"
 )
 
 var testGocdProviders map[string]terraform.ResourceProvider
@@ -37,34 +37,13 @@ func TestProvider_impl(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("GOCD_URL"); v == "" {
+	if u := os.Getenv("GOCD_URL"); u == "" {
 		t.Fatal("GOCD_URL must be set for acceptance tests.")
 	}
-	//if v := os.Getenv("GOCD_USERNAME"); v == "" {
-	//	t.Fatal("GOCD_USERNAME must be set for acceptance tests.")
-	//}
-	//if v := os.Getenv("GOCD_PASSWORD"); v == "" {
-	//	t.Fatal("GOCD_PASSWORD must be set for acceptance tests.")
-	//}
 
-	//var rcfg map[string]interface{}
-	//rcfg = make(map[string]interface{})
-	//rcfg["baseurl"] = os.Getenv("GOCD_URL")
-	//
-	//cfg := terraform.ResourceConfig{}
-	//cfg.
-	//
-	//cfg, _ := config.New
-	//err := testGocdProvider.Configure(terraform.NewResourceConfig(cfg))
-
-	//rcfg := map[string]interface{}{
-	//
-	//}
-	//cfg, err:= config.NewRawConfig(rcfg.(map[string]interface{}))
-	//if err != nil {
-	//	return
-	//}
-	//err := testGocdProvider.Configure(terraform.NewResourceConfig(cfg))
+	if s := os.Getenv("GOCD_SKIP_SSL_CHECK"); s == "" {
+		t.Fatal("GOCD_SKIP_SSL_CHECK must be set for acceptance tests.")
+	}
 
 	err := testGocdProvider.Configure(terraform.NewResourceConfig(nil))
 	if err != nil {
@@ -101,3 +80,15 @@ func testTaskDataSourceStateValue(id string, name string, value string) resource
 	}
 }
 
+func testStepComparisonCheck(test TestStepJsonComparison) resource.TestStep {
+	return resource.TestStep{
+		Config: test.Config,
+		Check: resource.ComposeTestCheckFunc(
+			testTaskDataSourceStateValue(
+				test.Id,
+				"json",
+				test.ExpectedJSON,
+			),
+		),
+	}
+}

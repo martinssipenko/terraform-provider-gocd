@@ -1,6 +1,9 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
+export GOCD_URL=http://goserver:8153/go/
+export GOCD_SKIP_SSL_CHECK=1
+
 default: build
 
 build: fmtcheck
