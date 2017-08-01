@@ -14,21 +14,15 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 			ExpectedJSON: testFile("data_source_task_definition.0.rsp.json"),
 		},
 	} {
-		test_steps = append(test_steps, resource.TestStep{
-			Config: test.Config,
-			Check: resource.ComposeTestCheckFunc(
-				testTaskDataSourceStateValue(
-					test.Id,
-					"json",
-					test.ExpectedJSON,
-				),
-			),
-		})
+		test_steps = append(
+			test_steps,
+			testStepComparisonCheck(test),
+		)
 	}
 
 	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testGocdProviders,
 		Steps:     test_steps,
 	})
 }
-

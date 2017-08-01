@@ -1,11 +1,11 @@
 package gocd
 
 import (
-	"sort"
-	"github.com/hashicorp/terraform/helper/schema"
-	"strconv"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"encoding/json"
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/hashicorp/terraform/helper/schema"
+	"sort"
+	"strconv"
 )
 
 func decodeConfigStringList(lI []interface{}) []string {

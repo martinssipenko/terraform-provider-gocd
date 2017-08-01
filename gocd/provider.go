@@ -7,11 +7,12 @@ import (
 	"os"
 )
 
-// I don't know how to get the test case for InternalValidation and the new plugin version.
+// I don't know how to use the test case for InternalValidation and the new plugin version.
 func Provider() terraform.ResourceProvider {
 	return SchemaProvider()
 }
 
+// This is how to expose the provider for the new plugin versions.
 func SchemaProvider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{

@@ -14,3 +14,13 @@ data "gocd_job_definition" "test" {
   tasks = [
     "${data.gocd_task_definition.test.json}"]
 }
+
+data "gocd_stage_definition" "test" {
+  name = "stage_name"
+  jobs = [
+    "${data.gocd_job_definition.test.json}"]
+  manual_approval = true
+  authorization_roles = [
+    "one",
+    "two"]
+}

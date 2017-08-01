@@ -8,10 +8,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"regexp"
 	"strconv"
-	"strings"
 )
-
-var dataSourceAwsIamPolicyDocumentVarReplacer = strings.NewReplacer("&{", "${")
 
 func dataSourceGocdStageTemplate() *schema.Resource {
 
@@ -37,7 +34,7 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
-			"job": {
+			"jobs": {
 				Type:     schema.TypeList,
 				Required: true,
 				Elem: &schema.Schema{
@@ -113,22 +110,16 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 		doc.Approval.Authorization = nil
 	}
 
-	//var cfgJobs = d.Get("jobs").([]interface{})
-	//jobs := make([]gocd.Job, len(cfgJobs))
-	//doc.Jobs = jobs
-	//
-	//for i, jobI := range cfgJobs {
-	//	cfgJob := jobI.(map[string]interface{})
-	//
-	//	job := gocd.Job{
-	//		Name: cfgJob["name"].(string),
-	//	}
-	//	jobs[i] = job
-	//}
-	//
+	if jobs := decodeConfigStringList(d.Get("jobs").([]interface{})); len(jobs) > 0 {
+		for _, rawjob := range jobs {
+			job := &gocd.Job{}
+			json.Unmarshal([]byte(rawjob), &job)
+			doc.Jobs = append(doc.Jobs, job)
+		}
+	}
+
 	jsonDoc, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
-		// should never happen if the above code is correct
 		return err
 	}
 	jsonString := string(jsonDoc)
