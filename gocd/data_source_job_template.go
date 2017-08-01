@@ -3,9 +3,7 @@ package gocd
 import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	"strconv"
 )
 
 func dataSourceGocdJobTemplate() *schema.Resource {
@@ -134,14 +132,5 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		Name:  d.Get("name").(string),
 		Tasks: tasks,
 	}
-	jsonDoc, err := json.MarshalIndent(doc, "", "  ")
-	if err != nil {
-		// should never happen if the above code is correct
-		return err
-	}
-	jsonString := string(jsonDoc)
-	d.Set("json", jsonString)
-	d.SetId(strconv.Itoa(hashcode.String(d.Get("name").(string))))
-
-	return nil
+	return definitionDocFinish(d, doc)
 }
