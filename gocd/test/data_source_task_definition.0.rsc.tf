@@ -1,4 +1,4 @@
-data "gocd_task_definition" "test-task-exec" {
+data "gocd_task_definition" "test" {
   type = "exec"
   run_if = [
     "passed"]

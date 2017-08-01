@@ -1,18 +1,14 @@
 package gocd
 
 import (
-	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
 	"testing"
 )
 
 func TestDataSourceJobTemplate(t *testing.T) {
-	for _, test := range []struct {
-		Config       string
-		ExpectedJSON string
-	}{
+	for _, test := range []TestStepJsonComparison{
 		{
+			Id:           "data.gocd_job_definition.test",
 			Config:       testFile("data_source_job_template.0.rsc.tf"),
 			ExpectedJSON: testFile("data_source_job_template.0.rsp.json"),
 		},
@@ -23,8 +19,8 @@ func TestDataSourceJobTemplate(t *testing.T) {
 				{
 					Config: test.Config,
 					Check: resource.ComposeTestCheckFunc(
-						testJobTemplateStateValue(
-							"data.gocd_job_definition.test",
+						testTaskDataSourceStateValue(
+							test.Id,
 							"json",
 							test.ExpectedJSON,
 						),
@@ -32,24 +28,5 @@ func TestDataSourceJobTemplate(t *testing.T) {
 				},
 			},
 		})
-	}
-}
-
-func testJobTemplateStateValue(id string, name string, value string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[id]
-		if !ok {
-			return fmt.Errorf("Not found: %s", id)
-		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ID is set")
-		}
-
-		v := rs.Primary.Attributes[name]
-		if v != value {
-			return fmt.Errorf("Value for '%s' is:\n%s\nnot:\n%s", name, v, value)
-		}
-
-		return nil
 	}
 }
