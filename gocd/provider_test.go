@@ -7,10 +7,17 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"github.com/hashicorp/terraform/helper/resource"
 )
 
 var testGocdProviders map[string]terraform.ResourceProvider
 var testGocdProvider *schema.Provider
+
+type TestStepJsonComparison struct {
+	Id           string
+	Config       string
+	ExpectedJSON string
+}
 
 func init() {
 	testGocdProvider = Provider().(*schema.Provider)
@@ -74,3 +81,23 @@ func testFile(name string) string {
 
 	return string(f)
 }
+
+func testTaskDataSourceStateValue(id string, name string, value string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[id]
+		if !ok {
+			return fmt.Errorf("Not found: %s", id)
+		}
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No ID is set")
+		}
+
+		v := rs.Primary.Attributes[name]
+		if v != value {
+			return fmt.Errorf("Value for '%s' is:\n%s\nnot:\n%s", name, v, value)
+		}
+
+		return nil
+	}
+}
+
