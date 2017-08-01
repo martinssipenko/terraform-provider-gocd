@@ -46,6 +46,7 @@ func SchemaProvider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"gocd_stage_definition": dataSourceGocdStageTemplate(),
 			"gocd_job_definition":   dataSourceGocdJobTemplate(),
+			"gocd_task_definition":  dataSourceGocdTaskDefinition(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

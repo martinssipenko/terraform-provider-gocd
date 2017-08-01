@@ -18,7 +18,6 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 			},
 			"tasks": {
 				Type:     schema.TypeList,
-				MinItems: 1,
 				Required: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
