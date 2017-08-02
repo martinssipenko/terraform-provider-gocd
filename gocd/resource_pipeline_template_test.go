@@ -52,4 +52,3 @@ func testCheckPipelineTemplateExists(resource string, res *string) resource.Test
 		return nil
 	}
 }
-
