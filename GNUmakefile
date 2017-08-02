@@ -1,7 +1,9 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
-export GOCD_URL=http://goserver:8153/go/
+# For local testing, run `docker-compose up -d`
+SERVER ?=http://localhost:8153/go/
+export GOCD_URL=$(SERVER)
 export GOCD_SKIP_SSL_CHECK=1
 
 default: build

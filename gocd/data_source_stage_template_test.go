@@ -6,6 +6,7 @@ import (
 )
 
 func TestDataSourceStageTemplate(t *testing.T) {
+
 	test_steps := []resource.TestStep{}
 	for _, test := range []TestStepJsonComparison{
 		{
