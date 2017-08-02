@@ -66,10 +66,12 @@ func init() {
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	var url, u, p string
+	var cfg *gocd.Configuration
 
 	if url = d.Get("baseurl").(string); url == "" {
 		url = os.Getenv("GOCD_URL")
 	}
+
 	if u = d.Get("username").(string); u == "" {
 		u = os.Getenv("GOCD_USERNAME")
 	}
@@ -78,10 +80,15 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 	nossl := d.Get("skip_ssl_check").(bool)
 
-	return gocd.NewClient(url, &gocd.Auth{
+	cfg = &gocd.Configuration{
+		Server:   url,
 		Username: u,
 		Password: p,
-	}, nil, nossl), nil
+		SslCheck: !nossl,
+	}
+
+	return cfg.Client(), nil
+
 }
 
 func envDefault(e string) schema.SchemaDefaultFunc {

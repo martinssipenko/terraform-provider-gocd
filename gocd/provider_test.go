@@ -10,8 +10,10 @@ import (
 	"testing"
 )
 
-var testGocdProviders map[string]terraform.ResourceProvider
-var testGocdProvider *schema.Provider
+var (
+	testGocdProviders map[string]terraform.ResourceProvider
+	testGocdProvider  *schema.Provider
+)
 
 type TestStepJsonComparison struct {
 	Id           string
@@ -20,10 +22,12 @@ type TestStepJsonComparison struct {
 }
 
 func init() {
+
 	testGocdProvider = Provider().(*schema.Provider)
 	testGocdProviders = map[string]terraform.ResourceProvider{
 		"gocd": testGocdProvider,
 	}
+
 }
 
 func TestProvider(t *testing.T) {
@@ -37,6 +41,7 @@ func TestProvider_impl(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
+
 	if u := os.Getenv("GOCD_URL"); u == "" {
 		t.Fatal("GOCD_URL must be set for acceptance tests.")
 	}

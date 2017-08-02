@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// Give an abstract list of strings cast as []interface{}, convert them back to []string{}.
 func decodeConfigStringList(lI []interface{}) []string {
 	if len(lI) == 1 {
 		return []string{lI[0].(string)}
@@ -20,10 +21,10 @@ func decodeConfigStringList(lI []interface{}) []string {
 	return ret
 }
 
+// Take our object we parsed from the TF resource, and encode it in JSON.
 func definitionDocFinish(d *schema.ResourceData, r interface{}) error {
 	jsonDoc, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
-		// should never happen if the above code is correct
 		return err
 	}
 	jsonString := string(jsonDoc)
