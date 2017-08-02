@@ -1,8 +1,8 @@
 package gocd
 
 import (
-	"testing"
 	"github.com/hashicorp/terraform/terraform"
+	"testing"
 )
 
 func TestResourcePipelineTemplate_Import(t *testing.T) {
