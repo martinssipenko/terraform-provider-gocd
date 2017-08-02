@@ -18,7 +18,7 @@ resource "gocd_pipeline_template" "test-pipeline" {
           "type": "exec",
           "attributes": {
             "run_if": [
-              "success"
+              "passed"
             ],
             "command": "terraform"
           }
