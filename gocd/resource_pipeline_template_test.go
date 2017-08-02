@@ -13,7 +13,7 @@ func TestResourcePipelineTemplate_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
-		CheckDestroy: testCheckTemplateDestroy,
+		CheckDestroy: testAccCheckPipelineTemplateDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testFile("resource_pipeline_template.0.rsc.tf"),
@@ -30,8 +30,8 @@ func TestResourcePipelineTemplate_Basic(t *testing.T) {
 func testCheckPipelineTemplateName(resource string, id string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs := s.RootModule().Resources[resource]
-		if rs.Primary.ID != "/api/admin/template/template1" {
-			return fmt.Errorf("Expected id '/api/admin/template/template1', got '%s", rs.Primary.ID)
+		if rs.Primary.ID != "template1-terraform" {
+			return fmt.Errorf("Expected id 'template1-terraform', got '%s", rs.Primary.ID)
 		}
 
 		return nil
@@ -53,15 +53,3 @@ func testCheckPipelineTemplateExists(resource string, res *string) resource.Test
 	}
 }
 
-func testCheckTemplateDestroy(s *terraform.State) error {
-	//pt := testGocdProvider.Meta().(*gocd.Client).PipelineTemplates
-
-	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "aws_iam_policy" {
-			continue
-		}
-
-	}
-
-	return nil
-}
