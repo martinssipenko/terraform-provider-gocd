@@ -2,12 +2,12 @@ package gocd
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
-	"fmt"
-	"errors"
 )
 
 func dataSourceGocdTaskDefinition() *schema.Resource {
