@@ -2,11 +2,9 @@ package gocd
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	"regexp"
 	"strconv"
 )
 
@@ -80,15 +78,6 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 			},
 		},
 	}
-}
-
-func validateStageAuthorization(v interface{}, k string) (ws []string, errors []error) {
-	val := v.(string)
-	if !regexp.MustCompile("^[\\w _]+$").MatchString(val) {
-		errors = append(errors, fmt.Errorf("%q must contain only alphanumeric caracters and spaces", k))
-	}
-
-	return
 }
 
 func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) error {
