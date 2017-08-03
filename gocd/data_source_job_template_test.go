@@ -1,9 +1,9 @@
 package gocd
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
-	"fmt"
 )
 
 func TestDataSourceJobDefinition(t *testing.T) {
