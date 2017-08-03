@@ -1,0 +1,55 @@
+{
+  "name": "job-name",
+  "run_instance_count": 3,
+  "timeout": 6,
+  "environment_variables": [
+    {
+      "name": "USERNAME",
+      "value": "myusername",
+      "secure": false
+    },
+    {
+      "name": "PASSWORD",
+      "value": "$R*YN:LDFIOH",
+      "secure": false
+    },
+    {
+      "name": "HIDDEN",
+      "value": "shown",
+      "secure": true
+    }
+  ],
+  "resources": [
+    "alpha",
+    "beta"
+  ],
+  "tasks": [
+    {
+      "type": "exec",
+      "attributes": {
+        "run_if": [
+          "passed"
+        ],
+        "command": "/usr/local/bin/terraform",
+        "working_directory": "/tmp/",
+        "arguments": [
+          "version",
+          "-debug"
+        ]
+      }
+    }
+  ],
+  "tabs": [
+    "report1.html"
+  ],
+  "artifacts": [
+    "web.war"
+  ],
+  "properties": [
+    {
+      "name": "coverage.class",
+      "source": "target/emma/coverage.xml",
+      "xpath": "substring-before(//report/data/all/coverage[starts-with(@type,'class')]/@value, '%')"
+    }
+  ]
+}
