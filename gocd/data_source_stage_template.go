@@ -97,7 +97,7 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 		Approval: &gocd.Approval{},
 	}
 
-	if manualApproval, hasManualApproval := d.Get("manual_approval").(bool); hasManualApproval && manualApproval {
+	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
 		doc.Approval.Type = "manual"
 		doc.Approval.Authorization = &gocd.Authorization{}
 		if users := d.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
@@ -112,9 +112,9 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 
 	if jobs := decodeConfigStringList(d.Get("jobs").([]interface{})); len(jobs) > 0 {
 		for _, rawjob := range jobs {
-			job := &gocd.Job{}
+			job := gocd.Job{}
 			json.Unmarshal([]byte(rawjob), &job)
-			doc.Jobs = append(doc.Jobs, job)
+			doc.Jobs = append(doc.Jobs, &job)
 		}
 	}
 

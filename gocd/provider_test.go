@@ -68,7 +68,8 @@ func testFile(name string) string {
 
 func testTaskDataSourceStateValue(id string, name string, value string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[id]
+		root := s.RootModule()
+		rs, ok := root.Resources[id]
 		if !ok {
 			return fmt.Errorf("Not found: %s", id)
 		}
