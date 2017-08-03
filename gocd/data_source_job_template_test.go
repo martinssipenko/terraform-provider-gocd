@@ -3,21 +3,19 @@ package gocd
 import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
+	"fmt"
 )
 
 func TestDataSourceJobDefinition(t *testing.T) {
-
 	test_steps := []resource.TestStep{}
-	for _, test := range []TestStepJsonComparison{
-		{
-			Id:           "data.gocd_job_definition.test",
-			Config:       testFile("data_source_job_template.0.rsc.tf"),
-			ExpectedJSON: testFile("data_source_job_template.0.rsp.json"),
-		},
-	} {
+	for i := 0; i <= 1; i++ {
 		test_steps = append(
 			test_steps,
-			testStepComparisonCheck(test),
+			testStepComparisonCheck(TestStepJsonComparison{
+				Id:           "data.gocd_job_definition.test",
+				Config:       testFile(fmt.Sprintf("data_source_job_template.%d.rsc.tf", i)),
+				ExpectedJSON: testFile(fmt.Sprintf("data_source_job_template.%d.rsp.json", i)),
+			}),
 		)
 	}
 
