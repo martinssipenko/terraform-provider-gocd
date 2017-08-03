@@ -1,9 +1,9 @@
 package gocd
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
-	"fmt"
 )
 
 func TestDataSourceTaskDefinition(t *testing.T) {
@@ -16,7 +16,6 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 				Id:           "data.gocd_task_definition.test",
 				Config:       testFile(fmt.Sprintf("data_source_task_definition.%d.rsc.tf", i)),
 				ExpectedJSON: testFile(fmt.Sprintf("data_source_task_definition.%d.rsp.json", i)),
-
 			}),
 		)
 	}
