@@ -46,7 +46,7 @@ func testCheckPipelineTemplateExists(resource string, res *string) resource.Test
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No pipeline template name is set.")
+			return fmt.Errorf("No pipeline template name is set")
 		}
 
 		return nil
