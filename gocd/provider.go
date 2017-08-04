@@ -7,12 +7,16 @@ import (
 	"os"
 )
 
-// I don't know how to use the test case for InternalValidation and the new plugin version.
+// Provider to handle the test case for InternalValidation and the new plugin version.
 func Provider() terraform.ResourceProvider {
 	return SchemaProvider()
 }
 
-// This is how to expose the provider for the new plugin versions.
+// SchemaProvider describing the required configs to interact with GoCD server. Environment variables can also be set:
+//   baseurl        - GOCD_URL
+//   username       - GOCD_USERNAME
+//   password       - GOCD_PASSWORD
+//   skip_ssl_check - GOCD_SKIP_SSL_CHECK
 func SchemaProvider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{

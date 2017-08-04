@@ -2,12 +2,12 @@ package gocd
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
-	"fmt"
-	"errors"
 )
 
 func dataSourceGocdTaskDefinition() *schema.Resource {
@@ -108,8 +108,8 @@ func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) 
 		Attributes: gocd.TaskAttributes{},
 	}
 
-	if run_if := decodeConfigStringList(d.Get("run_if").([]interface{})); len(run_if) > 0 {
-		task.Attributes.RunIf = run_if
+	if runIf := decodeConfigStringList(d.Get("run_if").([]interface{})); len(runIf) > 0 {
+		task.Attributes.RunIf = runIf
 	}
 
 	switch task.Type {
@@ -126,7 +126,7 @@ func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) 
 	case "pluggable":
 		dataSourceGocdPluggabeTemplate(&task, d)
 	default:
-		return fmt.Errorf("Unexpected `gocd.Task.Type`: '%s'.", task.Type)
+		return fmt.Errorf("unexpected `gocd.Task.Type`: '%s'", task.Type)
 	}
 
 	jsonDoc, err := json.MarshalIndent(task, "", "  ")

@@ -30,10 +30,10 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				Optional: true,
 			},
 			"environment_variables": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type: schema.TypeMap,
 				},
 			},
 			"resources": {
@@ -88,7 +88,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 					},
 				},
 			},
-			"property": {
+			"properties": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem: &schema.Resource{
@@ -108,6 +108,20 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 					},
 				},
 			},
+			"tabs": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"artifacts": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"json": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -119,18 +133,39 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) error {
 
 	tasks := []gocd.Task{}
-	for _, task_string := range d.Get("tasks").([]interface{}) {
+	for _, rawTask := range d.Get("tasks").([]interface{}) {
 		task := gocd.Task{}
-		err := json.Unmarshal([]byte(task_string.(string)), &task)
+		err := json.Unmarshal([]byte(rawTask.(string)), &task)
 		if err != nil {
 			return err
 		}
 		tasks = append(tasks, task)
 	}
 
-	doc := gocd.Job{
+	j := gocd.Job{
 		Name:  d.Get("name").(string),
 		Tasks: tasks,
 	}
-	return definitionDocFinish(d, doc)
+
+	if ric, ok := d.GetOk("run_instance_count"); ok {
+		j.RunInstanceCount = int64(ric.(int))
+	}
+
+	if to, ok := d.GetOk("time_out"); ok {
+		j.RunInstanceCount = int64(to.(int))
+	}
+
+	if rscs := decodeConfigStringList(d.Get("resources").([]interface{})); len(rscs) > 0 {
+		j.Resources = rscs
+	}
+
+	if tabs := decodeConfigStringList(d.Get("resources").([]interface{})); len(tabs) > 0 {
+		j.Resources = tabs
+	}
+
+	if a := decodeConfigStringList(d.Get("resources").([]interface{})); len(a) > 0 {
+		j.Resources = a
+	}
+
+	return definitionDocFinish(d, j)
 }
