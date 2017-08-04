@@ -8,10 +8,10 @@ import (
 
 func TestDataSourceTaskDefinition(t *testing.T) {
 
-	test_steps := []resource.TestStep{}
+	testSteps := []resource.TestStep{}
 	for i := 0; i <= 5; i++ {
-		test_steps = append(
-			test_steps,
+		testSteps = append(
+			testSteps,
 			testStepComparisonCheck(TestStepJsonComparison{
 				Id:           "data.gocd_task_definition.test",
 				Config:       testFile(fmt.Sprintf("data_source_task_definition.%d.rsc.tf", i)),
@@ -23,6 +23,6 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testGocdProviders,
-		Steps:     test_steps,
+		Steps:     testSteps,
 	})
 }

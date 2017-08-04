@@ -28,11 +28,14 @@ vet:
 		exit 1; \
 	fi
 
-fmt:
+fmt: lint
 	gofmt -w $(GOFMT_FILES)
 
 fmtcheck:
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
+
+lint:
+	golint . gocd
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"

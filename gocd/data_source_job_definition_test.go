@@ -7,10 +7,10 @@ import (
 )
 
 func TestDataSourceJobDefinition(t *testing.T) {
-	test_steps := []resource.TestStep{}
+	testSteps := []resource.TestStep{}
 	for i := 0; i <= 1; i++ {
-		test_steps = append(
-			test_steps,
+		testSteps = append(
+			testSteps,
 			testStepComparisonCheck(TestStepJsonComparison{
 				Id:           "data.gocd_job_definition.test",
 				Config:       testFile(fmt.Sprintf("data_source_job_template.%d.rsc.tf", i)),
@@ -22,6 +22,6 @@ func TestDataSourceJobDefinition(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testGocdProviders,
-		Steps:     test_steps,
+		Steps:     testSteps,
 	})
 }

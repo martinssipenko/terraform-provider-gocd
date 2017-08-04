@@ -7,7 +7,7 @@ import (
 
 func TestDataSourceStageTemplate(t *testing.T) {
 
-	test_steps := []resource.TestStep{}
+	testSteps := []resource.TestStep{}
 	for _, test := range []TestStepJsonComparison{
 		{
 			Id:           "data.gocd_stage_definition.test",
@@ -15,8 +15,8 @@ func TestDataSourceStageTemplate(t *testing.T) {
 			ExpectedJSON: testFile("data_source_stage_template.0.rsp.json"),
 		},
 	} {
-		test_steps = append(
-			test_steps,
+		testSteps = append(
+			testSteps,
 			testStepComparisonCheck(test),
 		)
 	}
@@ -24,6 +24,6 @@ func TestDataSourceStageTemplate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testGocdProviders,
-		Steps:     test_steps,
+		Steps:     testSteps,
 	})
 }
