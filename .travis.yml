@@ -29,8 +29,8 @@ script:
     $code)
   - cd gocd
   - go tool vet .
-  - golint . gocd
-  - cd ./gocd && bash ./go.test.sh
+  - golint .
+  - bash ./go.test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
