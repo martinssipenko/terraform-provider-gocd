@@ -133,9 +133,9 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) error {
 
 	tasks := []gocd.Task{}
-	for _, task_string := range d.Get("tasks").([]interface{}) {
+	for _, rawTask := range d.Get("tasks").([]interface{}) {
 		task := gocd.Task{}
-		err := json.Unmarshal([]byte(task_string.(string)), &task)
+		err := json.Unmarshal([]byte(rawTask.(string)), &task)
 		if err != nil {
 			return err
 		}

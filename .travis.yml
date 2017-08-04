@@ -21,6 +21,7 @@ matrix:
 
 before_install:
   - go get -t -v ./...
+  - go get github.com/golang/lint/golint
 
 script:
   - diff -u <(echo -n) <(gofmt -d -s .)
@@ -28,6 +29,7 @@ script:
     $code)
   - cd gocd
   - go tool vet .
+  - golint . gocd
   - bash ./go.test.sh
 
 after_success:
