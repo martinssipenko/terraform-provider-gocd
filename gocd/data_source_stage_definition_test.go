@@ -8,9 +8,9 @@ import (
 func TestDataSourceStageTemplate(t *testing.T) {
 
 	testSteps := []resource.TestStep{}
-	for _, test := range []TestStepJsonComparison{
+	for _, test := range []TestStepJSONComparison{
 		{
-			Id:           "data.gocd_stage_definition.test",
+			ID:           "data.gocd_stage_definition.test",
 			Config:       testFile("data_source_stage_template.0.rsc.tf"),
 			ExpectedJSON: testFile("data_source_stage_template.0.rsp.json"),
 		},

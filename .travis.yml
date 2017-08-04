@@ -29,7 +29,7 @@ script:
     $code)
   - cd gocd
   - go tool vet .
-  - golint . gocd
+  - golint .
   - bash ./go.test.sh
 
 after_success:
