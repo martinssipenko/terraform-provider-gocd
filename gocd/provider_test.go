@@ -15,8 +15,8 @@ var (
 	testGocdProvider  *schema.Provider
 )
 
-type TestStepJsonComparison struct {
-	Id           string
+type TestStepJSONComparison struct {
+	ID           string
 	Config       string
 	ExpectedJSON string
 }
