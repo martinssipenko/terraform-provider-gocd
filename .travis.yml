@@ -30,7 +30,7 @@ script:
   - cd gocd
   - go tool vet .
   - golint . gocd
-  - bash ./go.test.sh
+  - cd ./gocd && bash ./go.test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
