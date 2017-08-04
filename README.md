@@ -1,4 +1,4 @@
-# terraform-provider-gocd 0.0.2
+# terraform-provider-gocd 0.0.3
 
 [![GoDoc](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd)
 [![Build Status](https://travis-ci.org/drewsonne/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/drewsonne/terraform-provider-gocd)
@@ -8,6 +8,6 @@
 
 Terraform provider for GoCD Server
 
-###Usage
+### Usage
 
 Compile and execute terraform with this file in the directory.
