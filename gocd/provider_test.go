@@ -86,7 +86,7 @@ func testTaskDataSourceStateValue(id string, name string, value string) resource
 	}
 }
 
-func testStepComparisonCheck(testStep TestStepJsonComparison) resource.TestStep {
+func testStepComparisonCheck(testStep TestStepJSONComparison) resource.TestStep {
 	return resource.TestStep{
 		Config: testStep.Config,
 		Check: resource.ComposeTestCheckFunc(
