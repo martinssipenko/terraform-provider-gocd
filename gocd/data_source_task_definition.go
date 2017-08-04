@@ -145,7 +145,7 @@ func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) 
 func dataSourceGocdPluggabeTemplate(t *gocd.Task, d *schema.ResourceData) error {
 	t.Attributes.PluginConfiguration = &gocd.PluginConfiguration{}
 	if pid, ok := d.GetOk("plugin_id"); ok {
-		t.Attributes.PluginConfiguration.Id = pid.(string)
+		t.Attributes.PluginConfiguration.ID = pid.(string)
 	} else {
 		return errors.New("Missing pluging id")
 	}
