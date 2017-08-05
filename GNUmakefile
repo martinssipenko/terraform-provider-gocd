@@ -17,7 +17,7 @@ test: fmtcheck
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 
-testacc: fmtcheck
+testacc: fmtcheck provision-test-gocd
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
@@ -51,5 +51,9 @@ test-compile:
 		exit 1; \
 	fi
 	go test -c $(TEST) $(TESTARGS)
+
+provision-test-gocd:
+	docker-compose up -d
+	bash scripts/wait-for-test-server.sh
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile
