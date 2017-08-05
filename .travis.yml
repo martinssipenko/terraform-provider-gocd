@@ -27,12 +27,12 @@ script:
   - diff -u <(echo -n) <(gofmt -d -s .)
   - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
     $code)
-  - cd gocd
+  - cd "${TRAVIS_BUILD_DIR}/gocd"
   - go tool vet .
   - golint .
-  - bash ./go.test.sh
+  - bash "${TRAVIS_BUILD_DIR}/gocd/go.test.sh"
   - echo "Run Integration Tests"
-  - bash scripts/wait-for-test-server.sh
+  - bash "${TRAVIS_BUILD_DIR}/scripts/wait-for-test-server.sh"
 
 after_failure:
   - docker-compose down
