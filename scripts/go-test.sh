@@ -1,12 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x -e
 
-set -e
-echo "" > coverage.txt
+ROOT_DIR=$(pwd)/../
+COVERAGE_PATH=${ROOT_DIR}/coverage.txt
+
+echo "" > ${COVERAGE_PATH}
 
 for d in $(go list ./... | grep -v vendor | grep -v gocd-response-links); do
     go test -race -coverprofile=profile.out -covermode=atomic $d
     if [ -f profile.out ]; then
-        cat profile.out >> coverage.txt
+        cat profile.out >> ${COVERAGE_PATH}
         rm profile.out
     fi
 done

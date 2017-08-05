@@ -23,7 +23,7 @@ clean:
 	rm -rf $(CWD)/build
 
 test: vet lint
-	bash ./go.test.sh
+	bash ../scripts/go-test.sh
 
 vet:
 	@echo "go vet ."
