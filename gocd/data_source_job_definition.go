@@ -155,17 +155,19 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		j.RunInstanceCount = int64(to.(int))
 	}
 
-	if rscs := decodeConfigStringList(d.Get("resources").([]interface{})); len(rscs) > 0 {
-		j.Resources = rscs
+	if resources, ok := d.Get("resources").([]interface{}); ok {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Resources = rscs
+		}
 	}
 
-	if tabs := decodeConfigStringList(d.Get("resources").([]interface{})); len(tabs) > 0 {
-		j.Resources = tabs
-	}
-
-	if a := decodeConfigStringList(d.Get("resources").([]interface{})); len(a) > 0 {
-		j.Resources = a
-	}
+	//if tabs := decodeConfigStringList(d.Get("resources").([]interface{})); len(tabs) > 0 {
+	//	j.Resources = tabs
+	//}
+	//
+	//if a := decodeConfigStringList(d.Get("resources").([]interface{})); len(a) > 0 {
+	//	j.Resources = a
+	//}
 
 	return definitionDocFinish(d, j)
 }
