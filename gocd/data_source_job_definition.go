@@ -89,7 +89,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				},
 			},
 			"properties": {
-				Type:     schema.TypeMap,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -159,7 +159,6 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		j.EnvironmentVariables = []*gocd.EnvironmentVariable{}
 		for _, envVarRaw := range envVars {
 			envVarStruct := &gocd.EnvironmentVariable{}
-			j.EnvironmentVariables = append(j.EnvironmentVariables)
 			envVar := envVarRaw.(map[string]interface{})
 
 			if name, ok := envVar["name"]; ok {
@@ -182,19 +181,44 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		}
 	}
 
-	if resources, ok := d.Get("resources").([]interface{}); ok {
+	if props, ok := d.Get("properties").([]interface{}); ok && len(props) > 0 {
+		j.Properties = []*gocd.JobProperty{}
+		for _, propRaw := range props {
+			propStruct := &gocd.JobProperty{}
+			prop := propRaw.(map[string]interface{})
+
+			if name, ok := prop["name"]; ok {
+				propStruct.Name = name.(string)
+			}
+
+			if name, ok := prop["source"]; ok {
+				propStruct.Source = name.(string)
+			}
+
+			if name, ok := prop["xpath"]; ok {
+				propStruct.XPath = name.(string)
+			}
+			j.Properties = append(j.Properties, propStruct)
+		}
+	}
+
+	if resources := d.Get("resources").(*schema.Set).List(); len(resources) > 0 {
 		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
 			j.Resources = rscs
 		}
 	}
 
-	//if tabs := decodeConfigStringList(d.Get("resources").([]interface{})); len(tabs) > 0 {
-	//	j.Resources = tabs
-	//}
-	//
-	//if a := decodeConfigStringList(d.Get("resources").([]interface{})); len(a) > 0 {
-	//	j.Resources = a
-	//}
+	if resources := d.Get("tabs").(*schema.Set).List(); len(resources) > 0 {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Tabs = rscs
+		}
+	}
+
+	if resources := d.Get("artifacts").(*schema.Set).List(); len(resources) > 0 {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Artifacts = rscs
+		}
+	}
 
 	return definitionDocFinish(d, j)
 }

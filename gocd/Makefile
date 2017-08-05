@@ -4,11 +4,7 @@ SHELL:=/bin/bash
 CWD:=$(CURDIR)
 TRAVIS_TAG ?= dev
 
-fmt: format
-	git add .
-	git commit -m "Autocommit for 'gofmt -w'."
-
-format:
+fmt:
 	gofmt -w -s .
 
 gocd.%: init
