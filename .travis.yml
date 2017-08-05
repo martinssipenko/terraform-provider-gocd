@@ -31,8 +31,7 @@ script:
   - go tool vet .
   - golint .
   - bash "${TRAVIS_BUILD_DIR}/gocd/go.test.sh"
-  - echo "Run Integration Tests"
-  - bash "${TRAVIS_BUILD_DIR}/scripts/wait-for-test-server.sh"
+  - make testacc
 
 after_failure:
   - docker-compose down
