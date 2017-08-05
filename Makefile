@@ -31,6 +31,7 @@ vet:
 
 fmt: lint
 	gofmt -w $(GOFMT_FILES)
+	$(MAKE) -C ./gocd fmt
 
 fmtcheck:
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
