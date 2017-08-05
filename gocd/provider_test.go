@@ -79,12 +79,12 @@ func testTaskDataSourceStateValue(id string, name string, value string, index in
 			return fmt.Errorf("In '%d'.\nNo ID is set", index)
 		}
 
-		v := rs.Primary.Attributes[name]
-		if v != value {
+		if v := rs.Primary.Attributes[name]; v != value {
 			dmp := diffmatchpatch.New()
-			diffs := dmp.DiffMain(v, value, true)
-			err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", value, dmp.DiffPrettyText(diffs))
-			//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
+			rawDiffs := dmp.DiffMain(v, value, true)
+			rawDiff := dmp.DiffPrettyText(rawDiffs)
+
+			err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", index, rawDiff)
 			return err
 		}
 
@@ -110,14 +110,7 @@ func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 				rawDiffs := dmp.DiffMain(v, t.ExpectedJSON, true)
 				rawDiff := dmp.DiffPrettyText(rawDiffs)
 
-				//diffs := dmp.PatchToText(
-				//	dmp.PatchMake(rawDiffs
-				//	),
-				//)
-				//rawDiff, _ := url.QueryUnescape(diffs)
-
 				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiff)
-				//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
 				return err
 			}
 
