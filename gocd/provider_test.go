@@ -100,7 +100,7 @@ func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 				return fmt.Errorf("In '%d'.\nNo ID is set", t.Index)
 			}
 
-			if v := rs.Primary.Attributes[t.ExpectedJSON]; v != t.ExpectedJSON {
+			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
 				return fmt.Errorf("In '%d'.\nValue for 'json' is:\n%s\nnot:\n%s", t.Index, v, t.ExpectedJSON)
 			}
 
