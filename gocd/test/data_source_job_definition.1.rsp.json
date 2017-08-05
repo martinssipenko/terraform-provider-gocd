@@ -19,9 +19,16 @@
       "secure": true
     }
   ],
+  "properties": [
+    {
+      "name": "coverage.class",
+      "source": "target/emma/coverage.xml",
+      "xpath": "substring-before(//report/data/all/coverage[starts-with(@type,'class')]/@value, '%')"
+    }
+  ],
   "resources": [
-    "alpha",
-    "beta"
+    "beta",
+    "alpha"
   ],
   "tasks": [
     {
@@ -44,12 +51,5 @@
   ],
   "artifacts": [
     "web.war"
-  ],
-  "properties": [
-    {
-      "name": "coverage.class",
-      "source": "target/emma/coverage.xml",
-      "xpath": "substring-before(//report/data/all/coverage[starts-with(@type,'class')]/@value, '%')"
-    }
   ]
 }
