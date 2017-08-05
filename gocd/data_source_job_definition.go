@@ -152,7 +152,7 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if to, ok := d.GetOk("timeout"); ok {
-		j.RunInstanceCount = int64(to.(int))
+		j.Timeout = int64(to.(int))
 	}
 
 	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
