@@ -8,7 +8,7 @@ import (
 
 func TestDataSourceJobDefinition(t *testing.T) {
 
-	for i := 0; i <= 1; i++ {
+	for i := 1; i <= 1; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_job_definition.%d", i),
 			DataSourceJobDefinition(t, i,
