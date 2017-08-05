@@ -27,10 +27,7 @@ script:
   - diff -u <(echo -n) <(gofmt -d -s .)
   - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
     $code)
-  - cd "${TRAVIS_BUILD_DIR}/gocd"
-  - go tool vet .
-  - golint .
-  - bash "${TRAVIS_BUILD_DIR}/gocd/go.test.sh"
+  - make -C gocd test
   - make testacc
 
 after_failure:
