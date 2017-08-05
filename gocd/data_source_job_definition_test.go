@@ -13,8 +13,8 @@ func TestDataSourceJobDefinition(t *testing.T) {
 			testSteps,
 			testStepComparisonCheck(TestStepJSONComparison{
 				ID:           "data.gocd_job_definition.test",
-				Config:       testFile(fmt.Sprintf("data_source_job_template.%d.rsc.tf", i)),
-				ExpectedJSON: testFile(fmt.Sprintf("data_source_job_template.%d.rsp.json", i)),
+				Config:       testFile(fmt.Sprintf("data_source_job_definition.%d.rsc.tf", i)),
+				ExpectedJSON: testFile(fmt.Sprintf("data_source_job_definition.%d.rsp.json", i)),
 			}),
 		)
 	}
