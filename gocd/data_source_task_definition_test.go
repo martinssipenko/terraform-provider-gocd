@@ -12,7 +12,7 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 	for i := 0; i <= 5; i++ {
 		testSteps = append(
 			testSteps,
-			testStepComparisonCheck(TestStepJSONComparison{
+			testStepComparisonCheck(&TestStepJSONComparison{
 				ID:           "data.gocd_task_definition.test",
 				Config:       testFile(fmt.Sprintf("data_source_task_definition.%d.rsc.tf", i)),
 				ExpectedJSON: testFile(fmt.Sprintf("data_source_task_definition.%d.rsp.json", i)),

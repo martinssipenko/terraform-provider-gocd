@@ -16,6 +16,7 @@ var (
 )
 
 type TestStepJSONComparison struct {
+	Index        int
 	ID           string
 	Config       string
 	ExpectedJSON string
@@ -66,35 +67,44 @@ func testFile(name string) string {
 	return string(f)
 }
 
-func testTaskDataSourceStateValue(id string, name string, value string) resource.TestCheckFunc {
+func testTaskDataSourceStateValue(id string, name string, value string, index int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		root := s.RootModule()
 		rs, ok := root.Resources[id]
 		if !ok {
-			return fmt.Errorf("Not found: %s", id)
+			return fmt.Errorf("In '%d'.\nNot found: %s", index, id)
 		}
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ID is set")
+			return fmt.Errorf("In '%d'.\nNo ID is set", index)
 		}
 
 		v := rs.Primary.Attributes[name]
 		if v != value {
-			return fmt.Errorf("Value for '%s' is:\n%s\nnot:\n%s", name, v, value)
+			return fmt.Errorf("In '%d'.\nValue for '%s' is:\n%s\nnot:\n%s", index, name, v, value)
 		}
 
 		return nil
 	}
 }
 
-func testStepComparisonCheck(testStep TestStepJSONComparison) resource.TestStep {
+func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 	return resource.TestStep{
-		Config: testStep.Config,
-		Check: resource.ComposeTestCheckFunc(
-			testTaskDataSourceStateValue(
-				testStep.ID,
-				"json",
-				testStep.ExpectedJSON,
-			),
-		),
+		Config: t.Config,
+		Check: func(s *terraform.State) error {
+			root := s.RootModule()
+			rs, ok := root.Resources[t.ID]
+			if !ok {
+				return fmt.Errorf("In '%d'.\nNot found: %s", t.Index, t.ID)
+			}
+			if rs.Primary.ID == "" {
+				return fmt.Errorf("In '%d'.\nNo ID is set", t.Index)
+			}
+
+			if v := rs.Primary.Attributes[t.ExpectedJSON]; v != t.ExpectedJSON {
+				return fmt.Errorf("In '%d'.\nValue for 'json' is:\n%s\nnot:\n%s", t.Index, v, t.ExpectedJSON)
+			}
+
+			return nil
+		},
 	}
 }

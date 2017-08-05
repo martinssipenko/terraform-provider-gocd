@@ -17,7 +17,7 @@ func TestDataSourceStageTemplate(t *testing.T) {
 	} {
 		testSteps = append(
 			testSteps,
-			testStepComparisonCheck(test),
+			testStepComparisonCheck(&test),
 		)
 	}
 
