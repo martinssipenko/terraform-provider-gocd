@@ -8,6 +8,5 @@
 
 Terraform provider for GoCD Server
 
-### Usage
+### Building the Provider
 
-Compile and execute terraform with this file in the directory.

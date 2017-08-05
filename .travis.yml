@@ -1,8 +1,6 @@
 language: go
 go:
   - 1.8.x
-  - release
-  - tip
 
 addons:
   apt:
@@ -27,12 +25,14 @@ script:
   - diff -u <(echo -n) <(gofmt -d -s .)
   - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
     $code)
-  - cd gocd
-  - go tool vet .
-  - golint .
-  - bash ./go.test.sh
+  - make -C gocd test
+  - make testacc
+
+after_failure:
+  - docker-compose down
 
 after_success:
+  - docker-compose down
   - bash <(curl -s https://codecov.io/bash)
   - go get github.com/goreleaser/goreleaser
 

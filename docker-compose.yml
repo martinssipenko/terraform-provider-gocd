@@ -7,21 +7,14 @@ services:
      - "8154:8154"
     volumes:
      - ./godata/server:/godata
-  gocd-agent1:
+    environment:
+      AGENT_AUTO_REGISTER_KEY: terraform-testing
+  gocd-agent:
     image: gocd/gocd-agent-ubuntu-16.04:v17.7.0
     links:
       - gocd-server:server
     depends_on:
       - gocd-server
     environment:
-      AGENT_AUTO_REGISTER_KEY: fca06912-b3e8-454d-b397-5708f1807a24
-      GO_SERVER_URL: https://server:8154/go
-  gocd-agent2:
-    image: gocd/gocd-agent-ubuntu-16.04:v17.7.0
-    links:
-      - gocd-server:server
-    depends_on:
-      - gocd-server
-    environment:
-      AGENT_AUTO_REGISTER_KEY: fca06912-b3e8-454d-b397-5708f1807a24
+      AGENT_AUTO_REGISTER_KEY: terraform-testing
       GO_SERVER_URL: https://server:8154/go
