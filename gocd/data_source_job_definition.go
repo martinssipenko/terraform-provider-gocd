@@ -151,8 +151,35 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		j.RunInstanceCount = int64(ric.(int))
 	}
 
-	if to, ok := d.GetOk("time_out"); ok {
+	if to, ok := d.GetOk("timeout"); ok {
 		j.RunInstanceCount = int64(to.(int))
+	}
+
+	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
+		j.EnvironmentVariables = []*gocd.EnvironmentVariable{}
+		for _, envVarRaw := range envVars {
+			envVarStruct := &gocd.EnvironmentVariable{}
+			j.EnvironmentVariables = append(j.EnvironmentVariables)
+			envVar := envVarRaw.(map[string]interface{})
+
+			if name, ok := envVar["name"]; ok {
+				envVarStruct.Name = name.(string)
+			}
+
+			if val, ok := envVar["value"]; ok {
+				envVarStruct.Value = val.(string)
+			}
+
+			if encrypted, ok := envVar["encrypted_value"]; ok {
+				envVarStruct.EncryptedValue = encrypted.(string)
+			}
+
+			if secure, ok := envVar["secure"]; ok {
+				envVarStruct.Secure = (secure.(string) == "1")
+			}
+
+			j.EnvironmentVariables = append(j.EnvironmentVariables, envVarStruct)
+		}
 	}
 
 	if resources, ok := d.Get("resources").([]interface{}); ok {

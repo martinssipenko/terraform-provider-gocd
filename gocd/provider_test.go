@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -80,7 +81,11 @@ func testTaskDataSourceStateValue(id string, name string, value string, index in
 
 		v := rs.Primary.Attributes[name]
 		if v != value {
-			return fmt.Errorf("In '%d'.\nValue for '%s' is:\n%s\nnot:\n%s", index, name, v, value)
+			dmp := diffmatchpatch.New()
+			diffs := dmp.DiffMain(v, value, true)
+			err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", value, dmp.DiffPrettyText(diffs))
+			//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
+			return err
 		}
 
 		return nil
@@ -101,7 +106,13 @@ func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 			}
 
 			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
-				return fmt.Errorf("In '%d'.\nValue for 'json' is:\n%s\nnot:\n%s", t.Index, v, t.ExpectedJSON)
+				dmp := diffmatchpatch.New()
+				diffs := dmp.DiffMain(v, t.ExpectedJSON, false)
+				diff_str := dmp.DiffPrettyText(diffs)
+				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, dmp.DiffPrettyText(diffs))
+				//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
+				fmt.Println(diff_str)
+				return err
 			}
 
 			return nil
