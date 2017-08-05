@@ -11,7 +11,7 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 	for i := 0; i <= 5; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_task_definition.%d", i),
-			DataSourceTaskDefinition(t,
+			DataSourceTaskDefinition(t, i,
 				fmt.Sprintf("data_source_task_definition.%d.rsc.tf", i),
 				fmt.Sprintf("data_source_task_definition.%d.rsp.json", i),
 			),
@@ -19,7 +19,7 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 	}
 }
 
-func DataSourceTaskDefinition(t *testing.T, configPath string, expectedPath string) func(t *testing.T) {
+func DataSourceTaskDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
 	return func(t *testing.T) {
 		config := testFile(configPath)
 		expected := testFile(expectedPath)
@@ -27,6 +27,7 @@ func DataSourceTaskDefinition(t *testing.T, configPath string, expectedPath stri
 			PreCheck:  func() { testAccPreCheck(t) },
 			Providers: testGocdProviders,
 			Steps: []resource.TestStep{testStepComparisonCheck(&TestStepJSONComparison{
+				Index:        index,
 				ID:           "data.gocd_task_definition.test",
 				Config:       config,
 				ExpectedJSON: expected,
