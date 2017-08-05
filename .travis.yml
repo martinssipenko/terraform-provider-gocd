@@ -34,6 +34,7 @@ after_failure:
   - docker-compose down
 
 after_success:
+  - docker-compose down
   - bash <(curl -s https://codecov.io/bash)
   - go get github.com/goreleaser/goreleaser
 
