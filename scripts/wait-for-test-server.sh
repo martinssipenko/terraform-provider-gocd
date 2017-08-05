@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 function get_status {
     curl -H 'Accept: application/vnd.go.cd.v3+json' \
