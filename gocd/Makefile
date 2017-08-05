@@ -1,13 +1,10 @@
 .DEFAULT_GOAL := gocd
 
+SHELL:=/bin/bash
 CWD:=$(CURDIR)
 TRAVIS_TAG ?= dev
 
-fmt: format
-	git add .
-	git commit -m "Autocommit for 'gofmt -w'."
-
-format:
+fmt:
 	gofmt -w -s .
 
 gocd.%: init
@@ -24,3 +21,18 @@ init:
 clean:
 	rm -rf $(CWD)/target
 	rm -rf $(CWD)/build
+
+test: vet lint
+	bash ./go.test.sh
+
+vet:
+	@echo "go vet ."
+	@go vet $$(go list ./... | grep -v vendor/) ; if [ $$? -eq 1 ]; then \
+		echo ""; \
+		echo "Vet found suspicious constructs. Please check the reported constructs"; \
+		echo "and fix them if necessary before submitting the code for review."; \
+		exit 1; \
+	fi
+
+lint:
+	golint .

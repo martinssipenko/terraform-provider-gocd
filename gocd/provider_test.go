@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -16,6 +17,7 @@ var (
 )
 
 type TestStepJSONComparison struct {
+	Index        int
 	ID           string
 	Config       string
 	ExpectedJSON string
@@ -66,35 +68,53 @@ func testFile(name string) string {
 	return string(f)
 }
 
-func testTaskDataSourceStateValue(id string, name string, value string) resource.TestCheckFunc {
+func testTaskDataSourceStateValue(id string, name string, value string, index int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		root := s.RootModule()
 		rs, ok := root.Resources[id]
 		if !ok {
-			return fmt.Errorf("Not found: %s", id)
+			return fmt.Errorf("In '%d'.\nNot found: %s", index, id)
 		}
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No ID is set")
+			return fmt.Errorf("In '%d'.\nNo ID is set", index)
 		}
 
-		v := rs.Primary.Attributes[name]
-		if v != value {
-			return fmt.Errorf("Value for '%s' is:\n%s\nnot:\n%s", name, v, value)
+		if v := rs.Primary.Attributes[name]; v != value {
+			dmp := diffmatchpatch.New()
+			rawDiffs := dmp.DiffMain(v, value, true)
+			rawDiff := dmp.DiffPrettyText(rawDiffs)
+
+			err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", index, rawDiff)
+			return err
 		}
 
 		return nil
 	}
 }
 
-func testStepComparisonCheck(testStep TestStepJSONComparison) resource.TestStep {
+func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 	return resource.TestStep{
-		Config: testStep.Config,
-		Check: resource.ComposeTestCheckFunc(
-			testTaskDataSourceStateValue(
-				testStep.ID,
-				"json",
-				testStep.ExpectedJSON,
-			),
-		),
+		Config: t.Config,
+		Check: func(s *terraform.State) error {
+			root := s.RootModule()
+			rs, ok := root.Resources[t.ID]
+			if !ok {
+				return fmt.Errorf("In '%d'.\nNot found: %s", t.Index, t.ID)
+			}
+			if rs.Primary.ID == "" {
+				return fmt.Errorf("In '%d'.\nNo ID is set", t.Index)
+			}
+
+			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
+				dmp := diffmatchpatch.New()
+				rawDiffs := dmp.DiffMain(v, t.ExpectedJSON, true)
+				rawDiff := dmp.DiffPrettyText(rawDiffs)
+
+				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiff)
+				return err
+			}
+
+			return nil
+		},
 	}
 }

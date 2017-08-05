@@ -89,7 +89,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				},
 			},
 			"properties": {
-				Type:     schema.TypeMap,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -151,20 +151,73 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		j.RunInstanceCount = int64(ric.(int))
 	}
 
-	if to, ok := d.GetOk("time_out"); ok {
-		j.RunInstanceCount = int64(to.(int))
+	if to, ok := d.GetOk("timeout"); ok {
+		j.Timeout = int64(to.(int))
 	}
 
-	if rscs := decodeConfigStringList(d.Get("resources").([]interface{})); len(rscs) > 0 {
-		j.Resources = rscs
+	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
+		j.EnvironmentVariables = []*gocd.EnvironmentVariable{}
+		for _, envVarRaw := range envVars {
+			envVarStruct := &gocd.EnvironmentVariable{}
+			envVar := envVarRaw.(map[string]interface{})
+
+			if name, ok := envVar["name"]; ok {
+				envVarStruct.Name = name.(string)
+			}
+
+			if val, ok := envVar["value"]; ok {
+				envVarStruct.Value = val.(string)
+			}
+
+			if encrypted, ok := envVar["encrypted_value"]; ok {
+				envVarStruct.EncryptedValue = encrypted.(string)
+			}
+
+			if secure, ok := envVar["secure"]; ok {
+				envVarStruct.Secure = (secure.(string) == "1")
+			}
+
+			j.EnvironmentVariables = append(j.EnvironmentVariables, envVarStruct)
+		}
 	}
 
-	if tabs := decodeConfigStringList(d.Get("resources").([]interface{})); len(tabs) > 0 {
-		j.Resources = tabs
+	if props, ok := d.Get("properties").([]interface{}); ok && len(props) > 0 {
+		j.Properties = []*gocd.JobProperty{}
+		for _, propRaw := range props {
+			propStruct := &gocd.JobProperty{}
+			prop := propRaw.(map[string]interface{})
+
+			if name, ok := prop["name"]; ok {
+				propStruct.Name = name.(string)
+			}
+
+			if name, ok := prop["source"]; ok {
+				propStruct.Source = name.(string)
+			}
+
+			if name, ok := prop["xpath"]; ok {
+				propStruct.XPath = name.(string)
+			}
+			j.Properties = append(j.Properties, propStruct)
+		}
 	}
 
-	if a := decodeConfigStringList(d.Get("resources").([]interface{})); len(a) > 0 {
-		j.Resources = a
+	if resources := d.Get("resources").(*schema.Set).List(); len(resources) > 0 {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Resources = rscs
+		}
+	}
+
+	if resources := d.Get("tabs").(*schema.Set).List(); len(resources) > 0 {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Tabs = rscs
+		}
+	}
+
+	if resources := d.Get("artifacts").(*schema.Set).List(); len(resources) > 0 {
+		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
+			j.Artifacts = rscs
+		}
 	}
 
 	return definitionDocFinish(d, j)
