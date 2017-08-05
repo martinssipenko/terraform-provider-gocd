@@ -108,11 +108,11 @@ func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
 				dmp := diffmatchpatch.New()
 				diffs := dmp.DiffMain(v, t.ExpectedJSON, true)
-				patchString := ""
-				for _, patch := range dmp.PatchMake(diffs) {
-					patchString = fmt.Sprintf("%s\n%s", patchString, patch.String())
-				}
-				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, patchString)
+				//patchString := ""
+				//for _, patch := range  {
+				//	patchString = fmt.Sprintf("%s\n%s", patchString, patch.String())
+				//}
+				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, dmp.PatchToText(dmp.PatchMake(diffs)))
 				//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
 				return err
 			}
