@@ -10,18 +10,20 @@ function get_status {
 
 counter=0
 wait_length=5
+elapsed=0
 
 while [ $counter -lt 30 ]; do
 
     code=$(get_status)
     if [ "200" == "$code" ]; then
-        echo "Got status ${code}. Exiting..."
+        echo "Got status ${code}. Exiting."
         exit 0
     fi
 
-    echo "Got status ${code}. Waiting for '${wait_length}' seconds..."
+    echo "Got status ${code}. Elapsed: '${elapsed}' seconds."
 
     sleep "${wait_length}"
+    elapsed=$((elapsed+wait_length))
 
 done
 
