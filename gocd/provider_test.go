@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/sergi/go-diff/diffmatchpatch"
 	"io/ioutil"
-	"net/url"
 	"os"
 	"testing"
 )
@@ -108,14 +107,15 @@ func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
 
 			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
 				dmp := diffmatchpatch.New()
-				diffs := dmp.PatchToText(
-					dmp.PatchMake(
-						dmp.DiffMain(v, t.ExpectedJSON, true),
-					),
-				)
-				rawDiff, _ := url.QueryUnescape(diffs)
+				rawDiffs := dmp.DiffMain(v, t.ExpectedJSON, true)
 
-				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiff)
+				//diffs := dmp.PatchToText(
+				//	dmp.PatchMake(rawDiffs
+				//	),
+				//)
+				//rawDiff, _ := url.QueryUnescape(diffs)
+
+				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiffs)
 				//return fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, )
 				return err
 			}
