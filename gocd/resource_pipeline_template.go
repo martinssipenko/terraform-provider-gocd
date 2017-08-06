@@ -30,7 +30,7 @@ func resourcePipelineTemplate() *schema.Resource {
 				Required: true,
 				Elem: &schema.Schema{
 					Type:             schema.TypeString,
-					DiffSuppressFunc: supressJsonDiffs,
+					DiffSuppressFunc: supressJSONDiffs,
 				},
 			},
 			"version": {
