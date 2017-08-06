@@ -23,13 +23,13 @@ script:
 after_failure:
   - make after_failure
 
-after_success:
-  - make after_success
+#after_success:
+#  - make after_success
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: gem install --no-ri --no-rdoc fpm && cd $TRAVIS_BUILD_DIR && go get && goreleaser
+    script: make deploy_on_tag
     on:
       tags: true
       condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
