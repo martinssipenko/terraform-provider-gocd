@@ -1,7 +1,7 @@
 # .goreleaser.yml
 # Build customization
 
-project_name: go-gocd
+project_name: terraform-provider-gocd
 
 builds:
   - binary: terraform-provider-gocd
@@ -13,7 +13,7 @@ builds:
       - amd64
 
 archive:
-  name_template: "gocd-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+  name_template: "terraform-provider-gocd-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
   format_overrides:
     - goos: windows
       format: zip
@@ -23,13 +23,6 @@ archive:
     - LICENSE
     - README.md
     - CHANGELOG.md
-fpm:
-  homepage: https://github.com/drewsonne/terraform-provider-gocd
-  maintainer: Drew J. Sonne <drew.sonne@gmail.com>
-  license: LGPLv3
-  formats:
-    - deb
-    - rpm
 
 #brew:
 #  github:

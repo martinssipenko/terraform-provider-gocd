@@ -37,7 +37,7 @@ func definitionDocFinish(d *schema.ResourceData, r interface{}) error {
 
 }
 
-func supressJsonDiffs(k, old, new string, d *schema.ResourceData) bool {
+func supressJSONDiffs(k, old, new string, d *schema.ResourceData) bool {
 	var j1, j2 interface{}
 	if (old == "" || new == "") && old != new {
 		return false
