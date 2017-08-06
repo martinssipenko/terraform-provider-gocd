@@ -24,7 +24,7 @@ func testDefinitionDocFinishFail(t *testing.T) {
 }
 
 func testDefinitionDocFinishSuccess(t *testing.T) {
-	expectedJson := `{
+	expectedJSON := `{
   "one": "hello",
   "two": "world"
 }`
@@ -35,7 +35,7 @@ func testDefinitionDocFinishSuccess(t *testing.T) {
 	err := definitionDocFinish(rd, st)
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedJson, rd.Get("json"))
+	assert.Equal(t, expectedJSON, rd.Get("json"))
 	assert.Equal(t, "3710939758", rd.Id())
 }
 
