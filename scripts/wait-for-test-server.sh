@@ -20,6 +20,10 @@ while [ $counter -lt 30 ]; do
         exit 0
     fi
 
+    if [ "$elapsed" == "20" ]; then
+        docker-compose top
+    fi
+
     echo "Got status ${code}. Elapsed: '${elapsed}' seconds."
 
     sleep "${wait_length}"
