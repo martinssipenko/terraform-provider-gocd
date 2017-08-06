@@ -17,6 +17,7 @@ test: fmtcheck
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 	$(MAKE) -C gocd test
+
 testacc: fmtcheck provision-test-gocd
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
@@ -29,7 +30,7 @@ vet:
 		exit 1; \
 	fi
 
-fmt: lint
+format: lint
 	gofmt -w $(GOFMT_FILES)
 	$(MAKE) -C ./gocd fmt
 
