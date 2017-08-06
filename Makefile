@@ -35,7 +35,7 @@ deploy_on_tag:
 deploy_on_develop:
 	gem install --no-ri --no-rdoc fpm
 	go get
-	goreleaser --snapsho
+	goreleaser --snapshot
 
 default: build
 
