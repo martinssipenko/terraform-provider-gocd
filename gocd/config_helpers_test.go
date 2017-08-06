@@ -1,10 +1,10 @@
 package gocd
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestConfigHelper(t *testing.T) {
@@ -29,7 +29,7 @@ func testDefinitionDocFinishSuccess(t *testing.T) {
   "two": "world"
 }`
 	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
-		"json": {Type: schema.TypeString, Computed: true,},
+		"json": {Type: schema.TypeString, Computed: true},
 	}}).Data(&terraform.InstanceState{})
 	st := map[string]string{"one": "hello", "two": "world"}
 	err := definitionDocFinish(rd, st)
