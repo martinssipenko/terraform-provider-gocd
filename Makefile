@@ -40,7 +40,7 @@ deploy_on_develop:
 default: build
 
 build: format
-	go install
+	go build
 
 test: format
 	go test -i $(TEST) || exit 1
@@ -48,7 +48,7 @@ test: format
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 	$(MAKE) -C gocd test
 
-testacc: fmtcheck provision-test-gocd
+testacc: format provision-test-gocd
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
@@ -64,25 +64,8 @@ format: lint
 	gofmt -w $(GOFMT_FILES)
 	$(MAKE) -C ./gocd fmt
 
-fmtcheck:
-	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
-
 lint:
 	golint . gocd
-
-errcheck:
-	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
-vendor-status:
-	@govendor status
-
-test-compile:
-	@if [ "$(TEST)" = "./..." ]; then \
-		echo "ERROR: Set TEST to a specific package. For example,"; \
-		echo "  make test-compile TEST=./gocd"; \
-		exit 1; \
-	fi
-	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
 	docker-compose up -d
