@@ -10,6 +10,7 @@ import (
 
 // Give an abstract list of strings cast as []interface{}, convert them back to []string{}.
 func decodeConfigStringList(lI []interface{}) []string {
+
 	if len(lI) == 1 {
 		return []string{lI[0].(string)}
 	}
@@ -17,7 +18,7 @@ func decodeConfigStringList(lI []interface{}) []string {
 	for i, vI := range lI {
 		ret[i] = vI.(string)
 	}
-	sort.Sort(sort.Reverse(sort.StringSlice(ret)))
+	sort.Sort(sort.StringSlice(ret))
 	return ret
 }
 
