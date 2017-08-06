@@ -23,7 +23,6 @@ script:
   - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
     $code)
   - make -C gocd test
-  - make testacc
 
 after_failure:
   - docker-compose down
