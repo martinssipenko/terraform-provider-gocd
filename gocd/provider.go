@@ -65,6 +65,7 @@ func init() {
 		"username": "User to interact with the GoCD API with.",
 		"password": "Password for User for GoCD API interaction.",
 	}
+
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {

@@ -20,6 +20,10 @@ while [ $counter -lt 30 ]; do
         exit 0
     fi
 
+    if [ "$elapsed" == "50" ]; then
+        cat godata/server/logs/go-server.log
+    fi
+
     echo "Got status ${code}. Elapsed: '${elapsed}' seconds."
 
     sleep "${wait_length}"

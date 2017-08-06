@@ -27,8 +27,8 @@
     }
   ],
   "resources": [
-    "beta",
-    "alpha"
+    "alpha",
+    "beta"
   ],
   "tasks": [
     {
@@ -40,8 +40,8 @@
         "command": "/usr/local/bin/terraform",
         "working_directory": "/tmp/",
         "arguments": [
-          "version",
-          "-debug"
+          "-debug",
+          "version"
         ]
       }
     }
