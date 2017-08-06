@@ -16,7 +16,7 @@ before_install:
 
 script: test
 	diff -u <(echo -n) <(gofmt -d -s .)
-	go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+	bash ./scripts/clean-workspace.sh
 	$(MAKE) -C gocd test
 
 after_failure:
