@@ -13,7 +13,7 @@ func TestResourcePipelineTemplate_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
-		CheckDestroy: testAccCheckPipelineTemplateDestroy,
+		CheckDestroy: testGocdPipelineTemplateDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testFile("resource_pipeline_template.0.rsc.tf"),

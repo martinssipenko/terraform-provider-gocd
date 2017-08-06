@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
+	"reflect"
 	"sort"
 	"strconv"
 )
@@ -34,4 +35,18 @@ func definitionDocFinish(d *schema.ResourceData, r interface{}) error {
 
 	return nil
 
+}
+
+func supressJsonDiffs(k, old, new string, d *schema.ResourceData) bool {
+	var j1, j2 interface{}
+	if (old == "" || new == "") && old != new {
+		return false
+	}
+	if err := json.Unmarshal([]byte(old), &j1); err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal([]byte(new), &j2); err != nil {
+		panic(err)
+	}
+	return reflect.DeepEqual(j2, j1)
 }

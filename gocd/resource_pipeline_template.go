@@ -7,6 +7,11 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
+func stateImportTest(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	d.Set("name", d.Id())
+	return []*schema.ResourceData{d}, nil
+}
+
 func resourcePipelineTemplate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineTemplateCreate,
@@ -14,18 +19,20 @@ func resourcePipelineTemplate() *schema.Resource {
 		Update: resourcePipelineTemplateUpdate,
 		Delete: resourcePipelineTemplateDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: stateImportTest,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Required: true,
 			},
 			"stages": {
 				Type:     schema.TypeList,
 				Required: true,
 				Elem: &schema.Schema{
-					Type: schema.TypeString,
+					Type:             schema.TypeString,
+					DiffSuppressFunc: supressJsonDiffs,
 				},
 			},
 		},
@@ -81,10 +88,26 @@ func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	//d.SetId("")
 	return nil
 }
 
 func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate) error {
 	d.SetId(p.Name)
+
+	stages := []string{}
+
+	for _, stage := range p.Stages {
+		bdy, err := stage.JSONString()
+		if err != nil {
+			return err
+		}
+		stages = append(stages, bdy)
+	}
+
+	if err := d.Set("stages", stages); err != nil {
+		return err
+	}
+
 	return nil
 }

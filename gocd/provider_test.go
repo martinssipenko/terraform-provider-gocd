@@ -7,8 +7,10 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/sergi/go-diff/diffmatchpatch"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"testing"
+	"time"
 )
 
 var (
@@ -119,4 +121,14 @@ func testStepComparisonCheck(t *TestStepJSONComparison) []resource.TestStep {
 			},
 		},
 	}
+}
+
+func randomString(strlen int) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+	const chars = "abcdefghijklmnopqrstuvwxyz"
+	result := make([]byte, strlen)
+	for i := 0; i < strlen; i++ {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
 }
