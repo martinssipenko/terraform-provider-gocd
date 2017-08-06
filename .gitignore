@@ -5,3 +5,4 @@
 /terraform-provider-gocd
 /terraform.tfstate
 /terraform.tfstate.backup
+/godata/server/config/cruise-config.xml

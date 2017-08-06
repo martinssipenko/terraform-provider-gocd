@@ -92,29 +92,31 @@ func testTaskDataSourceStateValue(id string, name string, value string, index in
 	}
 }
 
-func testStepComparisonCheck(t *TestStepJSONComparison) resource.TestStep {
-	return resource.TestStep{
-		Config: t.Config,
-		Check: func(s *terraform.State) error {
-			root := s.RootModule()
-			rs, ok := root.Resources[t.ID]
-			if !ok {
-				return fmt.Errorf("In '%d'.\nNot found: %s", t.Index, t.ID)
-			}
-			if rs.Primary.ID == "" {
-				return fmt.Errorf("In '%d'.\nNo ID is set", t.Index)
-			}
+func testStepComparisonCheck(t *TestStepJSONComparison) []resource.TestStep {
+	return []resource.TestStep{
+		{
+			Config: t.Config,
+			Check: func(s *terraform.State) error {
+				root := s.RootModule()
+				rs, ok := root.Resources[t.ID]
+				if !ok {
+					return fmt.Errorf("In '%d'.\nNot found: %s", t.Index, t.ID)
+				}
+				if rs.Primary.ID == "" {
+					return fmt.Errorf("In '%d'.\nNo ID is set", t.Index)
+				}
 
-			if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
-				dmp := diffmatchpatch.New()
-				rawDiffs := dmp.DiffMain(v, t.ExpectedJSON, true)
-				rawDiff := dmp.DiffPrettyText(rawDiffs)
+				if v := rs.Primary.Attributes["json"]; v != t.ExpectedJSON {
+					dmp := diffmatchpatch.New()
+					rawDiffs := dmp.DiffMain(v, t.ExpectedJSON, true)
+					rawDiff := dmp.DiffPrettyText(rawDiffs)
 
-				err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiff)
-				return err
-			}
+					err := fmt.Errorf("In '%d'.\nValue mismatch for 'json' is:\n%s", t.Index, rawDiff)
+					return err
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 }
