@@ -9,10 +9,10 @@ export GOCD_SKIP_SSL_CHECK=1
 
 default: build
 
-build: fmtcheck
+build: format
 	go install
 
-test: fmtcheck
+test: format
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
