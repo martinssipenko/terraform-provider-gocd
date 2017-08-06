@@ -156,50 +156,12 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
-		j.EnvironmentVariables = []*gocd.EnvironmentVariable{}
-		for _, envVarRaw := range envVars {
-			envVarStruct := &gocd.EnvironmentVariable{}
-			envVar := envVarRaw.(map[string]interface{})
-
-			if name, ok := envVar["name"]; ok {
-				envVarStruct.Name = name.(string)
-			}
-
-			if val, ok := envVar["value"]; ok {
-				envVarStruct.Value = val.(string)
-			}
-
-			if encrypted, ok := envVar["encrypted_value"]; ok {
-				envVarStruct.EncryptedValue = encrypted.(string)
-			}
-
-			if secure, ok := envVar["secure"]; ok {
-				envVarStruct.Secure = (secure.(string) == "1")
-			}
-
-			j.EnvironmentVariables = append(j.EnvironmentVariables, envVarStruct)
-		}
+		j.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
 	}
 
 	if props, ok := d.Get("properties").([]interface{}); ok && len(props) > 0 {
-		j.Properties = []*gocd.JobProperty{}
-		for _, propRaw := range props {
-			propStruct := &gocd.JobProperty{}
-			prop := propRaw.(map[string]interface{})
+		j.Properties = dataSourceGocdJobPropertiesRead(props)
 
-			if name, ok := prop["name"]; ok {
-				propStruct.Name = name.(string)
-			}
-
-			if name, ok := prop["source"]; ok {
-				propStruct.Source = name.(string)
-			}
-
-			if name, ok := prop["xpath"]; ok {
-				propStruct.XPath = name.(string)
-			}
-			j.Properties = append(j.Properties, propStruct)
-		}
 	}
 
 	if resources := d.Get("resources").(*schema.Set).List(); len(resources) > 0 {
@@ -221,4 +183,55 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	return definitionDocFinish(d, j)
+}
+
+func dataSourceGocdJobPropertiesRead(rawProps []interface{}) []*gocd.JobProperty {
+	props := []*gocd.JobProperty{}
+	for _, propRaw := range rawProps {
+		propStruct := &gocd.JobProperty{}
+		prop := propRaw.(map[string]interface{})
+
+		if name, ok := prop["name"]; ok {
+			propStruct.Name = name.(string)
+		}
+
+		if name, ok := prop["source"]; ok {
+			propStruct.Source = name.(string)
+		}
+
+		if name, ok := prop["xpath"]; ok {
+			propStruct.XPath = name.(string)
+		}
+		props = append(props, propStruct)
+	}
+	return props
+}
+
+func dataSourceGocdJobEnvVarsRead(rawEnvVars []interface{}) []*gocd.EnvironmentVariable {
+	envVars := []*gocd.EnvironmentVariable{}
+	for _, envVarRaw := range rawEnvVars {
+		envVarStruct := &gocd.EnvironmentVariable{}
+		envVar := envVarRaw.(map[string]interface{})
+
+		if name, ok := envVar["name"]; ok {
+			envVarStruct.Name = name.(string)
+		}
+
+		if val, ok := envVar["value"]; ok {
+			envVarStruct.Value = val.(string)
+		}
+
+		if encrypted, ok := envVar["encrypted_value"]; ok {
+			envVarStruct.EncryptedValue = encrypted.(string)
+		}
+
+		if secure, ok := envVar["secure"]; ok {
+			envVarStruct.Secure = (secure.(string) == "1")
+		}
+
+		envVars = append(envVars, envVarStruct)
+	}
+
+	return envVars
+
 }
