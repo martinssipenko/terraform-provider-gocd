@@ -18,13 +18,7 @@
       "clean_working_directory": false,
       "never_cleanup_artifacts": false,
       "approval": {
-        "type": "success",
-        "authorization": {
-          "roles": [
-          ],
-          "users": [
-          ]
-        }
+        "type": "success"
       },
       "environment_variables": [
       ],

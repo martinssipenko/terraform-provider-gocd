@@ -7,7 +7,6 @@ import (
 )
 
 func TestDataSourceTaskDefinition(t *testing.T) {
-
 	for i := 0; i <= 5; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_task_definition.%d", i),
@@ -26,13 +25,12 @@ func DataSourceTaskDefinition(t *testing.T, index int, configPath string, expect
 		resource.Test(t, resource.TestCase{
 			PreCheck:  func() { testAccPreCheck(t) },
 			Providers: testGocdProviders,
-			Steps: []resource.TestStep{testStepComparisonCheck(&TestStepJSONComparison{
+			Steps: testStepComparisonCheck(&TestStepJSONComparison{
 				Index:        index,
 				ID:           "data.gocd_task_definition.test",
 				Config:       config,
 				ExpectedJSON: expected,
-			})},
+			}),
 		})
 	}
-
 }
