@@ -1,5 +1,5 @@
 provider "gocd" {
-  baseurl = "http://localhost:8153/go/"
+  baseurl = "https://localhost:8153/go/"
   skip_ssl_check = true
 }
 
