@@ -20,7 +20,7 @@ while [ $counter -lt 30 ]; do
         exit 0
     fi
 
-    if [ "$elapsed" == "20" ]; then
+    if [ "$elapsed" == "50" ]; then
         cat godata/server/logs/go-server.log
     fi
 
