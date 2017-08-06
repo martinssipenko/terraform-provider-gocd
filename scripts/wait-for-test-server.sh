@@ -21,7 +21,7 @@ while [ $counter -lt 30 ]; do
     fi
 
     if [ "$elapsed" == "20" ]; then
-        docker-compose top
+        cat godata/server/logs/go-server.log
     fi
 
     echo "Got status ${code}. Elapsed: '${elapsed}' seconds."
