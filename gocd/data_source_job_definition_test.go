@@ -7,8 +7,7 @@ import (
 )
 
 func TestDataSourceJobDefinition(t *testing.T) {
-
-	for i := 1; i <= 1; i++ {
+	for i := 0; i <= 1; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_job_definition.%d", i),
 			DataSourceJobDefinition(t, i,
@@ -26,12 +25,12 @@ func DataSourceJobDefinition(t *testing.T, index int, configPath string, expecte
 		resource.Test(t, resource.TestCase{
 			PreCheck:  func() { testAccPreCheck(t) },
 			Providers: testGocdProviders,
-			Steps: []resource.TestStep{testStepComparisonCheck(&TestStepJSONComparison{
+			Steps: testStepComparisonCheck(&TestStepJSONComparison{
 				Index:        index,
 				ID:           "data.gocd_job_definition.test",
 				Config:       config,
 				ExpectedJSON: expected,
-			})},
+			}),
 		})
 	}
 }
