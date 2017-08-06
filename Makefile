@@ -7,6 +7,36 @@ SERVER ?=http://localhost:8153/go/
 export GOCD_URL=$(SERVER)
 export GOCD_SKIP_SSL_CHECK=1
 
+
+travis: before_install script after_success deploy_on_develop
+
+before_install:
+	go get -t -v ./...
+	go get github.com/golang/lint/golint
+
+script: test
+	diff -u <(echo -n) <(gofmt -d -s .)
+	go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+	$(MAKE) -C gocd test
+
+after_failure:
+	docker-compose down
+
+after_success:
+	docker-compose down
+	bash <(curl -s https://codecov.io/bash)
+	go get github.com/goreleaser/goreleaser
+
+deploy_on_tag:
+	gem install --no-ri --no-rdoc fpm
+	go get
+	goreleaser
+
+deploy_on_develop:
+	gem install --no-ri --no-rdoc fpm
+	go get
+	goreleaser --snapsho
+
 default: build
 
 build: format
