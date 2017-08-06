@@ -15,22 +15,16 @@ matrix:
   fast_finish: true
 
 before_install:
-  - go get -t -v ./...
-  - go get github.com/golang/lint/golint
+  - make before_install
 
 script:
-  - diff -u <(echo -n) <(gofmt -d -s .)
-  - go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit
-    $code)
-  - make -C gocd test
+  - make script
 
 after_failure:
-  - docker-compose down
+  - make after_failure
 
 after_success:
-  - docker-compose down
-  - bash <(curl -s https://codecov.io/bash)
-  - go get github.com/goreleaser/goreleaser
+  - make after_success
 
 deploy:
   - provider: script
@@ -39,6 +33,6 @@ deploy:
       tags: true
       condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
   - provider: script
-    script: gem install --no-ri --no-rdoc fpm && cd $TRAVIS_BUILD_DIR && go get && goreleaser --snapshot
+    script: make deploy_on_develop
     on:
       branch: develop
