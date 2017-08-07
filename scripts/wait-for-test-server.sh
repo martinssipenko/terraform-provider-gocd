@@ -1,4 +1,8 @@
-#! /bin/bash -x
+#!/usr/bin/env bash
+set -x
+set -e
+
+pwd
 
 function get_status {
     curl -H 'Accept: application/vnd.go.cd.v3+json' \
@@ -22,6 +26,9 @@ while [ $counter -lt 30 ]; do
 
     if [ "$elapsed" == "50" ]; then
         cat godata/server/logs/go-server.log
+        curl -H 'Accept: application/vnd.go.cd.v3+json' \
+            http://localhost:8153/go/api/admin/templates
+
     fi
 
     echo "Got status ${code}. Elapsed: '${elapsed}' seconds."
