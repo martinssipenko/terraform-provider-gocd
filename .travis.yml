@@ -28,8 +28,8 @@ script:
 after_failure:
   - make after_failure
 
-#after_success:
-#  - make after_success
+after_success:
+  - make after_success
 
 deploy:
   - provider: script
