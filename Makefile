@@ -15,6 +15,7 @@ before_install:
 	go get github.com/golang/lint/golint
 
 script: test
+	git diff-index --quiet HEAD --
 	diff -u <(echo -n) <(gofmt -d -s .)
 	bash ./scripts/clean-workspace.sh
 	$(MAKE) -C gocd test
