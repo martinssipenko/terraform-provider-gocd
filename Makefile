@@ -18,8 +18,7 @@ script: test
 	git diff-index HEAD --
 	diff -u <(echo -n) <(gofmt -d -s .)
 	bash ./scripts/clean-workspace.sh
-	ls -lah ./godata/server/
-	chmod -R 777 ./godata/
+	chmod -R 777 ./godata/server
 	make testacc
 
 after_failure:
