@@ -18,7 +18,7 @@ script: test
 	git diff-index --quiet HEAD --
 	diff -u <(echo -n) <(gofmt -d -s .)
 	bash ./scripts/clean-workspace.sh
-	$(MAKE) -C gocd test
+	make testacc
 
 after_failure:
 	docker-compose down
