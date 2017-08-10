@@ -226,7 +226,7 @@ func dataSourceGocdJobEnvVarsRead(rawEnvVars []interface{}) []*gocd.EnvironmentV
 		}
 
 		if secure, ok := envVar["secure"]; ok {
-			envVarStruct.Secure = (secure.(string) == "1")
+			envVarStruct.Secure = secure.(string) == "1"
 		}
 
 		envVars = append(envVars, envVarStruct)

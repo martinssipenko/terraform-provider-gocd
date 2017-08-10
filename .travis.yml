@@ -2,6 +2,11 @@ language: go
 go:
   - 1.8.x
 
+sudo: required
+
+services:
+  - docker
+
 addons:
   apt:
     packages:
@@ -23,18 +28,16 @@ script:
 after_failure:
   - make after_failure
 
-#after_success:
-#  - make after_success
+after_success:
+  - make after_success
 
 deploy:
   - provider: script
-    skip_cleanup: true
     script: make deploy_on_tag
     on:
       tags: true
       condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
   - provider: script
-    skip_cleanup: true
     script: make deploy_on_develop
     on:
       branch: develop
