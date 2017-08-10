@@ -83,10 +83,12 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 		doc.Approval.Authorization = nil
 	}
 
-	if jobs := decodeConfigStringList(d.Get("jobs").([]interface{})); len(jobs) > 0 {
-		dataSourceStageParseJobs(jobs, &doc)
-	}
+	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {
+		if jobs := decodeConfigStringList(rJobs.([]interface{})); len(jobs) > 0 {
+			dataSourceStageParseJobs(jobs, &doc)
+		}
 
+	}
 	return definitionDocFinish(d, doc)
 }
 
