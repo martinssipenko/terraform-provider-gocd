@@ -4,9 +4,18 @@ import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/pkg/errors"
 )
 
 func dataSourceGocdStageTemplate() *schema.Resource {
+
+	optionalBoolArg := &schema.Schema{
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	}
+
+	stringArg := &schema.Schema{Type: schema.TypeString}
 
 	return &schema.Resource{
 		Read: dataSourceGocdStageTemplateRead,
@@ -15,27 +24,13 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"fetch_materials": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"clean_working_directory": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"never_cleanup_artifacts": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
+			"fetch_materials":         optionalBoolArg,
+			"clean_working_directory": optionalBoolArg,
+			"never_cleanup_artifacts": optionalBoolArg,
 			"jobs": {
 				Type:     schema.TypeList,
 				Required: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Elem:     stringArg,
 			},
 			"manual_approval": {
 				Type:          schema.TypeBool,
@@ -51,24 +46,18 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 				Type:          schema.TypeSet,
 				Optional:      true,
 				ConflictsWith: []string{"success_approval", "authorization_roles"},
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Elem:          stringArg,
 			},
 			"authorization_roles": {
 				Type:          schema.TypeSet,
 				Optional:      true,
 				ConflictsWith: []string{"success_approval", "authorization_users"},
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Elem:          stringArg,
 			},
 			"environment_variables": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Elem:     stringArg,
 			},
 			"json": {
 				Type:     schema.TypeString,
@@ -79,31 +68,46 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 }
 
 func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) error {
-	doc := gocd.Stage{
-		Name:     d.Get("name").(string),
-		Approval: &gocd.Approval{},
+	doc := gocd.Stage{Approval: &gocd.Approval{}}
+
+	if name, hasName := d.GetOk("name"); hasName {
+		doc.Name = name.(string)
+	} else {
+		return errors.New("Missing `name`")
 	}
 
 	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
-		doc.Approval.Type = "manual"
-		doc.Approval.Authorization = &gocd.Authorization{}
-		if users := d.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
-			doc.Approval.Authorization.Users = decodeConfigStringList(users)
-		} else if roles := d.Get("authorization_roles").(*schema.Set).List(); len(roles) > 0 {
-			doc.Approval.Authorization.Roles = decodeConfigStringList(roles)
-		}
+		dataSourceStageParseManuallApproval(d, &doc)
 	} else if d.Get("success_approval").(bool) {
 		doc.Approval.Type = "success"
 		doc.Approval.Authorization = nil
 	}
 
 	if jobs := decodeConfigStringList(d.Get("jobs").([]interface{})); len(jobs) > 0 {
-		for _, rawjob := range jobs {
-			job := gocd.Job{}
-			json.Unmarshal([]byte(rawjob), &job)
-			doc.Jobs = append(doc.Jobs, &job)
-		}
+		dataSourceStageParseJobs(jobs, &doc)
 	}
 
 	return definitionDocFinish(d, doc)
+}
+
+func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.Stage) error {
+	doc.Approval.Type = "manual"
+	doc.Approval.Authorization = &gocd.Authorization{}
+	if users := data.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
+		doc.Approval.Authorization.Users = decodeConfigStringList(users)
+	} else if roles := data.Get("authorization_roles").(*schema.Set).List(); len(roles) > 0 {
+		doc.Approval.Authorization.Roles = decodeConfigStringList(roles)
+	}
+	return nil
+}
+
+func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
+	for _, rawjob := range jobs {
+		job := gocd.Job{}
+		if err := json.Unmarshal([]byte(rawjob), &job); err != nil {
+			return err
+		}
+		doc.Jobs = append(doc.Jobs, &job)
+	}
+	return nil
 }

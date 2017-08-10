@@ -3,7 +3,7 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 
 # For local testing, run `docker-compose up -d`
-SERVER ?=http://localhost:8153/go/
+SERVER ?=http://127.0.0.1:8153/go/
 export GOCD_URL=$(SERVER)
 export GOCD_SKIP_SSL_CHECK=1
 
@@ -15,9 +15,11 @@ before_install:
 	go get github.com/golang/lint/golint
 
 script: test
+	git diff-index HEAD --
 	diff -u <(echo -n) <(gofmt -d -s .)
 	bash ./scripts/clean-workspace.sh
-	$(MAKE) -C gocd test
+	chmod -R 777 ./godata/server
+	make testacc
 
 after_failure:
 	docker-compose down

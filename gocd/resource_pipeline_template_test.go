@@ -24,11 +24,9 @@ func TestResourcePipelineTemplate_Basic(t *testing.T) {
 					testCheckPipelineTemplate1StageCount(
 						"gocd_pipeline_template.test-pipeline", "template1"),
 				),
-				Destroy: false,
 			},
 			{
-				ExpectNonEmptyPlan: true,
-				Config:             testFile("resource_pipeline_template.1.rsc.tf"),
+				Config: testFile("resource_pipeline_template.1.rsc.tf"),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline", &out),
 					testCheckPipelineTemplateName(
