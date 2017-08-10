@@ -53,7 +53,8 @@ test: format
 	$(MAKE) -C gocd test
 
 testacc: format provision-test-gocd
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 TESTARGS=-v $(MAKE) test
+#	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
 	@echo "go vet ."
