@@ -3,9 +3,9 @@ package gocd
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
-	"testing"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestDataSourceGocdStageTemplateRead(t *testing.T) {
