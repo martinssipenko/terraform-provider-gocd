@@ -14,7 +14,7 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 		Optional: true,
 		Default:  false,
 	}
-	
+
 	stringArg := &schema.Schema{Type: schema.TypeString}
 
 	return &schema.Resource{
@@ -59,7 +59,10 @@ func dataSourceGocdStageTemplate() *schema.Resource {
 				Optional: true,
 				Elem:     stringArg,
 			},
-			"json": stringArg,
+			"json": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -70,7 +73,7 @@ func dataSourceGocdStageTemplateRead(d *schema.ResourceData, meta interface{}) e
 	if name, hasName := d.GetOk("name"); hasName {
 		doc.Name = name.(string)
 	} else {
-		return errors.New("Missing `name`.")
+		return errors.New("Missing `name`")
 	}
 
 	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
