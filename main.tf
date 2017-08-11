@@ -1,5 +1,5 @@
 provider "gocd" {
-  baseurl = "https://127.0.0.1:8153/go/"
+  baseurl = "http://localhost:8153/go/"
   skip_ssl_check = true
 }
 
@@ -9,7 +9,7 @@ data "gocd_task_definition" "task1" {
     "arg1",
     "arg2"]
   run_if = [
-    "success"]
+    "passed"]
   command = "/usr/loca/bin/terraform"
 }
 
@@ -20,7 +20,7 @@ data "gocd_job_definition" "job1" {
 }
 
 data "gocd_stage_definition" "manual-approval" {
-  name = "test-stage"
+  name = "test-stage-manual"
   jobs = [
     "${data.gocd_job_definition.job1.json}"]
   manual_approval = true
@@ -30,7 +30,7 @@ data "gocd_stage_definition" "manual-approval" {
 }
 
 data "gocd_stage_definition" "success-approval" {
-  name = "test-stage"
+  name = "test-stage-success"
   jobs = [
     "${data.gocd_job_definition.job1.json}"]
   success_approval = true
