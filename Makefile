@@ -13,6 +13,7 @@ travis: before_install script after_success deploy_on_develop
 before_install:
 	go get -t -v ./...
 	go get github.com/golang/lint/golint
+	go get github.com/sergi/go-diff/diffmatchpatch
 
 script: test
 	git diff-index HEAD --
@@ -46,7 +47,7 @@ default: build
 build: format
 	go build
 
-test: format
+test: format before_install
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
