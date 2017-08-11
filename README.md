@@ -19,7 +19,7 @@ Either build the provider with `go build` or download it from the gihub reposito
 
 	$ go build
 
-Spin up the test gocd server
+Spin up the test gocd server, with endpoint at http://127.0.0.1:8153/go/
 
     $ make provision-test-gocd
 
