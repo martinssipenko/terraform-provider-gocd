@@ -9,3 +9,4 @@
 /gocd/profile.out
 /dist
 /.terraform
+/coverage.txt
