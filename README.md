@@ -11,3 +11,20 @@ Terraform provider for GoCD Server
 
 ### Building the Provider
 
+## Demo
+
+You will need docker and terraform >= 0.10.0 installed for this demo to work.
+
+Either build the provider with `go build` or download it from the gihub repository. If you download it, make sure the binary is in the current folder.
+
+	$ go build
+
+Spin up the test gocd server
+
+    $ make provision-test-gocd
+
+Then initialise and apply the configuration.
+
+    $ terraform init
+    $ terraform apply
+
