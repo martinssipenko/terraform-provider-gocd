@@ -1,5 +1,6 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+SHELL:=/bin/bash
 
 # For local testing, run `docker-compose up -d`
 SERVER ?=http://127.0.0.1:8153/go/
@@ -90,4 +91,3 @@ provision-test-gocd:
 	bash scripts/wait-for-test-server.sh
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile
-
