@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="93">
   <server artifactsdir="artifacts" agentAutoRegisterKey="terraform-testing" webhookSecret="terraform-testing" commandRepositoryLocation="default" serverId="terraform-testing" />
+  <agents>
+    <agent hostname="8c6adfa899cd" ipaddress="172.18.0.3" uuid="516314b0-0afe-4f68-aa1e-70279177e9b9" />
+  </agents>
 </cruise>

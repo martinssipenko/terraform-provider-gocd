@@ -35,7 +35,8 @@ func testGocdPipelineTemplateDestroy(s *terraform.State) error {
 
 	gocdclient := testGocdProvider.Meta().(*gocd.Client)
 
-	for _, rs := range s.RootModule().Resources {
+	root := s.RootModule()
+	for _, rs := range root.Resources {
 		if rs.Type != "gocd_pipeline_template" {
 			continue
 		}
