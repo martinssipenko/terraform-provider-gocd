@@ -1,6 +1,6 @@
-SHELL:=/bin/bash
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+SHELL:=/bin/bash
 
 # For local testing, run `docker-compose up -d`
 SERVER ?=http://127.0.0.1:8153/go/
@@ -12,13 +12,12 @@ travis: before_install script after_success deploy_on_develop
 
 before_install:
 	go get -t -v ./...
-	go get github.com/golang/lint/golint
+	go get -u github.com/golang/lint/golint
+	go get -u github.com/kardianos/govendor
 	go get github.com/sergi/go-diff/diffmatchpatch
 
+
 script: test
-	git diff-index HEAD --
-	diff -u <(echo -n) <(gofmt -d -s .)
-	bash ./scripts/clean-workspace.sh
 	chmod -R 777 ./godata/server
 	make testacc
 
@@ -44,18 +43,16 @@ deploy_on_develop:
 
 default: build
 
-build: format
-	go build
+build: fmtcheck
+	go install
 
-test: format before_install
+test: fmtcheck before_install
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
-	$(MAKE) -C gocd test
 
-testacc: format provision-test-gocd
-	TF_ACC=1 TESTARGS=-v $(MAKE) test
-#	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+testacc: fmtcheck provision-test-gocd
+	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
 	@echo "go vet ."
@@ -66,12 +63,25 @@ vet:
 		exit 1; \
 	fi
 
-format: lint
+fmt:
 	gofmt -w $(GOFMT_FILES)
-	$(MAKE) -C ./gocd fmt
 
-lint:
-	golint . gocd
+fmtcheck:
+	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
+
+errcheck:
+	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
+
+vendor-status:
+	@govendor status
+
+test-compile:
+	@if [ "$(TEST)" = "./..." ]; then \
+		echo "ERROR: Set TEST to a specific package. For example,"; \
+		echo "  make test-compile TEST=./gocd"; \
+		exit 1; \
+	fi
+	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
 	docker-compose up -d

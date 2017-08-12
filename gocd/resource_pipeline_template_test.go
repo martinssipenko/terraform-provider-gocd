@@ -2,37 +2,42 @@ package gocd
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
+	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"testing"
 )
 
-func TestResourcePipelineTemplate_Basic(t *testing.T) {
+func TestResourcePipelineTemplate(t *testing.T) {
+	t.Run("Basic", testResourcePipelineTemplateBasic)
+	t.Run("ImportBasic", testResourcePipelineTemplateImportBasic)
+}
+
+func testResourcePipelineTemplateBasic(t *testing.T) {
 	var out string
 
-	resource.Test(t, resource.TestCase{
+	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
 		CheckDestroy: testGocdPipelineTemplateDestroy,
-		Steps: []resource.TestStep{
+		Steps: []r.TestStep{
 			{
 				Config: testFile("resource_pipeline_template.0.rsc.tf"),
-				Check: resource.ComposeTestCheckFunc(
+				Check: r.ComposeTestCheckFunc(
 					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline", &out),
 					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template1"),
+						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
 					testCheckPipelineTemplate1StageCount(
-						"gocd_pipeline_template.test-pipeline", "template1"),
+						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
 				),
 			},
 			{
 				Config: testFile("resource_pipeline_template.1.rsc.tf"),
-				Check: resource.ComposeTestCheckFunc(
+				Check: r.ComposeTestCheckFunc(
 					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline", &out),
 					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template1"),
+						"gocd_pipeline_template.test-pipeline", "template1-terraform"),
 					testCheckPipelineTemplate2StageCount(
-						"gocd_pipeline_template.test-pipeline", "template1"),
+						"gocd_pipeline_template.test-pipeline", "template1-terraform"),
 				),
 			},
 		},
@@ -40,7 +45,7 @@ func TestResourcePipelineTemplate_Basic(t *testing.T) {
 
 }
 
-func testCheckPipelineTemplate1StageCount(resource string, id string) resource.TestCheckFunc {
+func testCheckPipelineTemplate1StageCount(resource string, id string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs := s.RootModule().Resources[resource].Primary
 		if rs.Attributes["stages.#"] != "1" {
@@ -50,7 +55,7 @@ func testCheckPipelineTemplate1StageCount(resource string, id string) resource.T
 	}
 }
 
-func testCheckPipelineTemplate2StageCount(resource string, id string) resource.TestCheckFunc {
+func testCheckPipelineTemplate2StageCount(resource string, id string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs := s.RootModule().Resources[resource].Primary
 		if rs.Attributes["stages.#"] != "2" {
@@ -60,7 +65,7 @@ func testCheckPipelineTemplate2StageCount(resource string, id string) resource.T
 	}
 }
 
-func testCheckPipelineTemplateName(resource string, id string) resource.TestCheckFunc {
+func testCheckPipelineTemplateName(resource string, id string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs := s.RootModule().Resources[resource]
 		if rs.Primary.ID != "template1-terraform" {
@@ -71,7 +76,7 @@ func testCheckPipelineTemplateName(resource string, id string) resource.TestChec
 	}
 }
 
-func testCheckPipelineTemplateExists(resource string, res *string) resource.TestCheckFunc {
+func testCheckPipelineTemplateExists(resource string, res *string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resource]
 		if !ok {
