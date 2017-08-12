@@ -11,8 +11,10 @@ travis: before_install script after_success deploy_on_develop
 
 before_install:
 	go get -t -v ./...
-	go get github.com/golang/lint/golint
+	go get -u github.com/golang/lint/golint
+	go get -u github.com/kardianos/govendor
 	go get github.com/sergi/go-diff/diffmatchpatch
+
 
 script: test
 	git diff-index HEAD --
@@ -78,7 +80,7 @@ vendor-status:
 test-compile:
 	@if [ "$(TEST)" = "./..." ]; then \
 		echo "ERROR: Set TEST to a specific package. For example,"; \
-		echo "  make test-compile TEST=./aws"; \
+		echo "  make test-compile TEST=./gocd"; \
 		exit 1; \
 	fi
 	go test -c $(TEST) $(TESTARGS)
