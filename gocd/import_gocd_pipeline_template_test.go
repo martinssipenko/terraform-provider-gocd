@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestResourcePipelineTemplate_ImportBasic(t *testing.T) {
+func testResourcePipelineTemplateImportBasic(t *testing.T) {
 	suffix := randomString(10)
 	resourceName := fmt.Sprintf("gocd_pipeline_template.test-%s", suffix)
 

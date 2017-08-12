@@ -7,7 +7,12 @@ import (
 	"testing"
 )
 
-func TestResourcePipelineTemplate_Basic(t *testing.T) {
+func TestResourcePipelineTemplate(t *testing.T) {
+	t.Run("Basic",testResourcePipelineTemplateBasic)
+	t.Run("ImportBasic",testResourcePipelineTemplateImportBasic)
+}
+
+func testResourcePipelineTemplateBasic(t *testing.T) {
 	var out string
 
 	resource.Test(t, resource.TestCase{
