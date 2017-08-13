@@ -20,10 +20,7 @@ func Provider() terraform.ResourceProvider {
 			"gocd_task_definition":  dataSourceGocdTaskDefinition(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"gocd_pipeline_template": schema.DataSourceResourceShim(
-				"gocd_pipeline_template",
-				resourcePipelineTemplate(),
-			),
+			"gocd_pipeline_template": resourcePipelineTemplate(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {
