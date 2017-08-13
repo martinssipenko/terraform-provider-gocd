@@ -23,6 +23,10 @@ func (c *Client) genericHeadAction(ctx context.Context, path string, apiversion 
 		ResponseType: responseTypeJSON,
 	})
 
+	if (resp.HTTP.StatusCode == 404) {
+		return false, resp, nil
+	}
+
 	exists := resp.HTTP.StatusCode >= 300 || resp.HTTP.StatusCode < 200
 
 	return exists, resp, err
@@ -89,10 +93,10 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 		reqType = r.ResponseType
 	}
 
-	resp, err := c.Do(ctx, req, &r.ResponseBody, reqType)
+	resp, err := c.Do(ctx, req, r.ResponseBody, reqType)
 	if err != nil {
 		return false, resp, err
 	}
 
-	return r.ResponseBody, nil, nil
+	return r.ResponseBody, resp, nil
 }
