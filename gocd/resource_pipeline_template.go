@@ -43,7 +43,12 @@ func resourcePipelineTemplate() *schema.Resource {
 }
 
 func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	return false, nil
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	}
+	exists, _, err := meta.(*gocd.Client).PipelineTemplates.Exists(context.Background(), name)
+	return exists, err
 }
 
 func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {
@@ -105,7 +110,6 @@ func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
-	//d.SetId("")
 	return nil
 }
 
