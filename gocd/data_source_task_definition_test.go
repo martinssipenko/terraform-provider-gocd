@@ -22,7 +22,7 @@ func DataSourceTaskDefinition(t *testing.T, index int, configPath string, expect
 	return func(t *testing.T) {
 		config := testFile(configPath)
 		expected := testFile(expectedPath)
-		r.Test(t, r.TestCase{
+		r.UnitTest(t, r.TestCase{
 			PreCheck:  func() { testAccPreCheck(t) },
 			Providers: testGocdProviders,
 			Steps: testStepComparisonCheck(&TestStepJSONComparison{
