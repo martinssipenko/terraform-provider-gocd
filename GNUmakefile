@@ -47,9 +47,9 @@ build: fmtcheck
 	go install
 
 test: fmtcheck before_install
-	go test -i $(TEST) || exit 1
+	go test -v -i $(TEST) || exit 1
 	echo $(TEST) | \
-		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+		xargs -t -n4 go test $(TESTARGS) -v -timeout=30s -parallel=4
 
 testacc: fmtcheck provision-test-gocd
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
