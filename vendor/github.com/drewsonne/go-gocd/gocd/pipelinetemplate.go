@@ -49,15 +49,17 @@ type PipelineTemplatesResponse struct {
 	} `json:"_embedded,omitempty"`
 }
 
+type embeddedPipelineTemplate struct {
+	Pipelines []*Pipeline `json:"pipelines,omitempty"`
+}
+
 // PipelineTemplate describes a response from the API for a pipeline template object.
 type PipelineTemplate struct {
-	Links    *PipelineTemplateLinks `json:"_links,omitempty"`
-	Name     string                 `json:"name"`
-	Embedded *struct {
-		Pipelines []*Pipeline `json:"pipelines,omitempty"`
-	} `json:"_embedded,omitempty"`
-	Version string   `json:"template_version"`
-	Stages  []*Stage `json:"stages,omitempty"`
+	Links    *PipelineTemplateLinks    `json:"_links,omitempty"`
+	Name     string                    `json:"name"`
+	Embedded *embeddedPipelineTemplate `json:"_embedded,omitempty"`
+	Version  string                    `json:"template_version"`
+	Stages   []*Stage                  `json:"stages,omitempty"`
 }
 
 // RemoveLinks gets the PipelineTemplate ready to be submitted to the GoCD API.
@@ -68,11 +70,6 @@ func (pt *PipelineTemplate) RemoveLinks() {
 // Pipelines returns a list of Pipelines attached to this PipelineTemplate object.
 func (pt *PipelineTemplate) Pipelines() []*Pipeline {
 	return pt.Embedded.Pipelines
-}
-
-// Exists ensures whether or not a PipelineTemplate is present in the API.
-func (pts *PipelineTemplatesService) Exists(ctx context.Context, name string) (bool, *APIResponse, error) {
-	return pts.client.genericHeadAction(ctx, fmt.Sprintf("admin/templates/%s", name), apiV3)
 }
 
 // Get a single PipelineTemplate object in the GoCD API.
@@ -108,14 +105,15 @@ func (pts *PipelineTemplatesService) Create(ctx context.Context, name string, st
 	}
 	ptr := PipelineTemplate{}
 
-	_, resp, err := pts.client.putAction(ctx, &APIClientRequest{
+	_, resp, err := pts.client.postAction(ctx, &APIClientRequest{
 		Path:         "admin/templates",
 		APIVersion:   apiV3,
 		RequestBody:  pt,
 		ResponseBody: &ptr,
 	})
 
-	ptr.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
+	etag := resp.HTTP.Header.Get("Etag")
+	ptr.Version = strings.Replace(etag, "\"", "", -1)
 
 	return &ptr, resp, err
 

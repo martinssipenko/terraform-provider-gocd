@@ -16,18 +16,19 @@ type Stage struct {
 	NeverCleanupArtifacts bool      `json:"never_cleanup_artifacts"`
 	Approval              *Approval `json:"approval,omitempty"`
 	EnvironmentVariables  []string  `json:"environment_variables,omitempty"`
+	Resources             []string  `json:"resource,omitempty"`
 	Jobs                  []*Job    `json:"jobs,omitempty"`
 }
 
 // JSONString returns a string of this stage as a JSON object.
 func (s *Stage) JSONString() (string, error) {
-	s.Clean()
-	bdy, err := json.MarshalIndent(s, "", "  ")
+	err := s.Validate()
 	if err != nil {
 		return "", err
 	}
-
-	return string(bdy), nil
+	s.Clean()
+	bdy, err := json.MarshalIndent(s, "", "  ")
+	return string(bdy), err
 }
 
 // Validate ensures the attributes attached to this structure are ready for submission to the GoCD API.

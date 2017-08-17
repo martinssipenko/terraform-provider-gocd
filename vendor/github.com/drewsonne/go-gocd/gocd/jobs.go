@@ -1,6 +1,9 @@
 package gocd
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 const (
 	// JobStateTransitionPassed "Passed"
@@ -54,8 +57,15 @@ type EnvironmentVariable struct {
 
 // PluginConfiguration describes how to reference a plugin.
 type PluginConfiguration struct {
-	ID      string `json:"id"`
-	Version string `json:"version"`
+	Key      string                      `json:"key"`
+	Metadata PluginConfigurationMetadata `json:"metadata"`
+}
+
+// PluginConfigurationMetadata describes the schema for a single configuration option for a plugin
+type PluginConfigurationMetadata struct {
+	Secure         bool `json:"secure"`
+	Required       bool `json:"required"`
+	PartOfIdentity bool `json:"part_of_identity"`
 }
 
 // PluginConfigurationKVPair describes a key/value pair of plugin configurations.
@@ -116,10 +126,49 @@ type JobRunHistoryResponse struct {
 	Pagination *PaginationResponse `json:"pagination,omitempty"`
 }
 
+// JobScheduleResponse contains a collection of jobs
+type JobScheduleResponse struct {
+	Jobs []*JobSchedule `xml:"job"`
+}
+
+// JobSchedule describes the event causes for a job
+type JobSchedule struct {
+	Name                 string               `xml:"name,attr"`
+	ID                   string               `xml:"id,attr"`
+	Link                 JobScheduleLink      `xml:"link"`
+	BuildLocator         string               `xml:"buildLocator"`
+	Resources            []string             `xml:"resources>resource"`
+	EnvironmentVariables *[]JobScheduleEnvVar `xml:"environmentVariables,omitempty>variable"`
+}
+
+// JobScheduleEnvVar describes the environmnet variables for a job schedule
+type JobScheduleEnvVar struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:",innerxml"`
+}
+
+// JobScheduleLink describes the HAL links for a job schedule
+type JobScheduleLink struct {
+	Rel  string `xml:"rel,attr"`
+	HRef string `xml:"href,attr"`
+}
+
 // Validate a job structure has non-nil values on correct attributes
 func (j *Job) Validate() error {
 	if j.Name == "" {
 		return errors.New("`gocd.Jobs.Name` is empty")
 	}
 	return nil
+}
+
+// ListScheduled lists Pipeline groups
+func (js *JobsService) ListScheduled(ctx context.Context) ([]*JobSchedule, *APIResponse, error) {
+	jobs := JobScheduleResponse{}
+	_, resp, err := js.client.getAction(ctx, &APIClientRequest{
+		Path:         "jobs/scheduled.xml",
+		ResponseBody: &jobs,
+		ResponseType: responseTypeXML,
+	})
+
+	return jobs.Jobs, resp, err
 }

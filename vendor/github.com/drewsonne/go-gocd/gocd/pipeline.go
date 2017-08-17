@@ -15,14 +15,17 @@ type Pipeline struct {
 	EnablePipelineLocking bool       `json:"enable_pipeline_locking,omitempty"`
 	Template              string     `json:"template,omitempty"`
 	Materials             []Material `json:"materials,omitempty"`
+	Label                 string     `json:"label,omitempty"`
 	Stages                []Stage    `json:"stages"`
 	Version               string
 }
 
 // Material describes an artifact dependency for a pipeline object.
 type Material struct {
-	Type       string `json:"type"`
-	Attributes struct {
+	Type        string `json:"type"`
+	Fingerprint string `json:"fingerprint,omitempty"`
+	Description string `json:"description,omitempty"`
+	Attributes  struct {
 		URL             string      `json:"url"`
 		Destination     string      `json:"destination,omitempty"`
 		Filter          interface{} `json:"filter,omitempty"`
@@ -100,91 +103,62 @@ func (pgs *PipelinesService) GetStatus(ctx context.Context, name string, offset 
 
 // Pause allows a pipeline to handle new build events
 func (pgs *PipelinesService) Pause(ctx context.Context, name string) (bool, *APIResponse, error) {
-	ps := PipelineStatus{}
+	return pgs.pipelineAction(ctx, name, "pause")
+}
+
+// Unpause allows a pipeline to handle new build events
+func (pgs *PipelinesService) Unpause(ctx context.Context, name string) (bool, *APIResponse, error) {
+	return pgs.pipelineAction(ctx, name, "unpause")
+}
+
+// ReleaseLock frees a pipeline to handle new build events
+func (pgs *PipelinesService) ReleaseLock(ctx context.Context, name string) (bool, *APIResponse, error) {
+	return pgs.pipelineAction(ctx, name, "releaseLock")
+}
+
+// Get returns a list of pipeline instanves describing the pipeline history.
+func (pgs *PipelinesService) Get(ctx context.Context, name string, offset int) (*PipelineInstance, *APIResponse, error) {
+	stub := pgs.buildPaginatedStub("pipelines/%s/instance", name, offset)
+
+	pt := PipelineInstance{}
+	_, resp, err := pgs.client.getAction(ctx, &APIClientRequest{
+		Path:         stub,
+		ResponseBody: &pt,
+	})
+
+	return &pt, resp, err
+}
+
+// GetHistory returns a list of pipeline instances describing the pipeline history.
+func (pgs *PipelinesService) GetHistory(ctx context.Context, name string, offset int) (*PipelineHistory, *APIResponse, error) {
+	stub := pgs.buildPaginatedStub("pipelines/%s/history", name, offset)
+
+	pt := PipelineHistory{}
+	_, resp, err := pgs.client.getAction(ctx, &APIClientRequest{
+		Path:         stub,
+		ResponseBody: &pt,
+	})
+
+	return &pt, resp, err
+}
+
+func (pgs *PipelinesService) pipelineAction(ctx context.Context, name string, action string) (bool, *APIResponse, error) {
+
 	_, resp, err := pgs.client.postAction(ctx, &APIClientRequest{
-		Path:         fmt.Sprintf("pipelines/%s/pause", name),
-		ResponseBody: &ps,
+		Path:         fmt.Sprintf("pipelines/%s/%s", name, action),
+		ResponseType: responseTypeJSON,
+		Headers: map[string]string{
+			"Confirm": "true",
+		},
 	})
 
 	return resp.HTTP.StatusCode == 200, resp, err
 }
 
-// Unpause allows a pipeline to handle new build events
-func (pgs *PipelinesService) Unpause(ctx context.Context, name string) (bool, *APIResponse, error) {
-	stub := fmt.Sprintf("pipelines/%s/unpause", name)
-
-	req, err := pgs.client.NewRequest("POST", stub, nil, "")
-	if err != nil {
-		return false, nil, err
-	}
-
-	req.HTTP.Header.Set("Confirm", "true")
-
-	resp, err := pgs.client.Do(ctx, req, nil, responseTypeJSON)
-	if err != nil {
-		return false, resp, err
-	}
-
-	return resp.HTTP.StatusCode == 200, resp, nil
-}
-
-// ReleaseLock frees a pipeline to handle new build events
-func (pgs *PipelinesService) ReleaseLock(ctx context.Context, name string) (bool, *APIResponse, error) {
-	stub := fmt.Sprintf("pipelines/%s/releaseLock", name)
-
-	req, err := pgs.client.NewRequest("POST", stub, nil, "")
-	if err != nil {
-		return false, nil, err
-	}
-
-	req.HTTP.Header.Set("Confirm", "true")
-
-	resp, err := pgs.client.Do(ctx, req, nil, responseTypeJSON)
-	if err != nil {
-		return false, resp, err
-	}
-
-	return resp.HTTP.StatusCode == 200, resp, nil
-}
-
-// Get returns a list of pipeline instanves describing the pipeline history.
-func (pgs *PipelinesService) Get(ctx context.Context, name string, offset int) (*PipelineInstance, *APIResponse, error) {
-	stub := fmt.Sprintf("pipelines/%s/instance", name)
+func (pgs *PipelinesService) buildPaginatedStub(format string, name string, offset int) string {
+	stub := fmt.Sprintf(format, name)
 	if offset > 0 {
 		stub = fmt.Sprintf("%s/%d", stub, offset)
 	}
-
-	req, err := pgs.client.NewRequest("GET", stub, nil, "")
-	if err != nil {
-		return nil, nil, err
-	}
-
-	pt := PipelineInstance{}
-	resp, err := pgs.client.Do(ctx, req, &pt, responseTypeJSON)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return &pt, resp, nil
-}
-
-// GetHistory returns a list of pipeline instanves describing the pipeline history.
-func (pgs *PipelinesService) GetHistory(ctx context.Context, name string, offset int) (*PipelineHistory, *APIResponse, error) {
-	stub := fmt.Sprintf("pipelines/%s/history", name)
-	if offset > 0 {
-		stub = fmt.Sprintf("%s/%d", stub, offset)
-	}
-
-	req, err := pgs.client.NewRequest("GET", stub, nil, "")
-	if err != nil {
-		return nil, nil, err
-	}
-
-	pt := PipelineHistory{}
-	resp, err := pgs.client.Do(ctx, req, &pt, responseTypeJSON)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	return &pt, resp, nil
+	return stub
 }

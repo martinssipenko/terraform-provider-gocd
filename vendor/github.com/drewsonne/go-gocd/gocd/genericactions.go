@@ -12,6 +12,7 @@ type APIClientRequest struct {
 	RequestBody  interface{}
 	ResponseType string
 	ResponseBody interface{}
+	Headers      map[string]string
 }
 
 // Handles any call to HEAD by returning whether or not we got a 2xx code.
@@ -81,18 +82,12 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 		return false, nil, err
 	}
 
-	// Build the response
-	var reqType string
-	if r.ResponseType == "" {
-		reqType = responseTypeJSON
-	} else {
-		reqType = r.ResponseType
+	if len(r.Headers) > 0 {
+		for key, value := range r.Headers {
+			req.HTTP.Header.Set(key, value)
+		}
 	}
 
-	resp, err := c.Do(ctx, req, &r.ResponseBody, reqType)
-	if err != nil {
-		return false, resp, err
-	}
-
-	return r.ResponseBody, nil, nil
+	resp, err := c.Do(ctx, req, &r.ResponseBody, r.ResponseType)
+	return r.ResponseBody, resp, err
 }

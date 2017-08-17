@@ -7,10 +7,12 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -160,14 +162,20 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 
 // NewRequest creates an HTTP requests to the GoCD API endpoints.
 func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion string) (*APIRequest, error) {
-	rel, err := url.Parse("api/" + urlStr)
+	request := &APIRequest{}
 
+	// I'm not sure how to get this method to return an error intentionally for testing. For testing purposes, I've
+	// added a switch so that the error handling in dependent methods can be tested.
+	if os.Getenv("GOCD_RAISE_ERROR_NEW_REQUEST") == "yes" {
+		return request, errors.New("Mock Testing Error")
+	}
+
+	rel, err := url.Parse("api/" + urlStr)
 	if err != nil {
-		return nil, err
+		return request, err
 	}
 
 	u := c.BaseURL.ResolveReference(rel)
-	request := &APIRequest{}
 
 	var buf io.ReadWriter
 	if body != nil {
@@ -186,17 +194,13 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 		buf = new(bytes.Buffer)
 		enc = json.NewEncoder(buf)
 		enc.SetIndent("", "  ")
-		err = enc.Encode(body)
-
-		if err != nil {
-			return nil, err
-		}
+		enc.Encode(body)
 	}
 
 	req, err := http.NewRequest(method, u.String(), buf)
 	request.HTTP = req
 	if err != nil {
-		return nil, err
+		return request, err
 	}
 
 	if body != nil {
@@ -229,13 +233,6 @@ func (c *Client) Do(ctx context.Context, req *APIRequest, v interface{}, respons
 
 	resp, err := c.client.Do(req.HTTP)
 	if err != nil {
-		if e, ok := err.(*url.Error); ok {
-			if url, err := url.Parse(e.URL); err == nil {
-				e.URL = sanitizeURL(url).String()
-				return nil, e
-			}
-		}
-
 		return nil, err
 	}
 
@@ -270,7 +267,7 @@ func CheckResponse(response *http.Response) error {
 	if response.StatusCode < 200 || response.StatusCode >= 400 {
 		bdy, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			panic(err)
+			return err
 		}
 		return fmt.Errorf(
 			"Received HTTP Status '%s': '%s'",
@@ -279,18 +276,4 @@ func CheckResponse(response *http.Response) error {
 		)
 	}
 	return nil
-}
-
-// sanitizeURL redacts the client_secret parameter from the URL which may be
-// exposed to the user.
-func sanitizeURL(uri *url.URL) *url.URL {
-	if uri == nil {
-		return nil
-	}
-	params := uri.Query()
-	if len(params.Get("client_secret")) > 0 {
-		params.Set("client_secret", "REDACTED")
-		uri.RawQuery = params.Encode()
-	}
-	return uri
 }

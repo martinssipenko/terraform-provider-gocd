@@ -51,16 +51,6 @@ type Agent struct {
 	client           *Client
 }
 
-// JobRunHistory retrieves the list of jobs run on this agent
-func (a *Agent) JobRunHistory(ctx context.Context) ([]*Job, error) {
-	jobs, _, err := a.client.Agents.JobRunHistory(ctx, a.UUID)
-	if err != nil {
-		return nil, err
-	}
-
-	return jobs, nil
-}
-
 // AgentUpdate describes the structure for the PUT payload when updating an agent
 type AgentUpdate struct {
 	Hostname         string   `json:"hostname,omitempty"`

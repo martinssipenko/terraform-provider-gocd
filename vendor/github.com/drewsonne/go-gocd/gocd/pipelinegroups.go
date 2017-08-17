@@ -7,37 +7,22 @@ type PipelineGroupsService service
 
 // PipelineGroup describes a pipeline group API response.
 type PipelineGroup struct {
-	Name      string `json:"name"`
-	Pipelines []struct {
-		Name   string `json:"name"`
-		Stages []struct {
-			Name string `json:"name"`
-		} `json:"stages"`
-		Materials []struct {
-			Description string `json:"description"`
-			Fingerprint string `json:"fingerprint"`
-			Type        string `json:"type"`
-		} `json:"materials"`
-		Label string `json:"label"`
-	} `json:"pipelines"`
+	Name      string      `json:"name"`
+	Pipelines []*Pipeline `json:"pipelines"`
 }
 
 // List Pipeline groups
 func (pgs *PipelineGroupsService) List(ctx context.Context, name string) ([]*PipelineGroup, *APIResponse, error) {
 
-	req, err := pgs.client.NewRequest("GET", "config/pipeline_groups", nil, "")
-	if err != nil {
-		return nil, nil, err
-	}
-
 	pg := []*PipelineGroup{}
-	resp, err := pgs.client.Do(ctx, req, &pg, responseTypeJSON)
-	if err != nil {
-		return nil, resp, err
-	}
+	_, resp, err := pgs.client.getAction(ctx, &APIClientRequest{
+		Path:         "config/pipeline_groups",
+		ResponseType: responseTypeJSON,
+		ResponseBody: &pg,
+	})
 
 	filtered := []*PipelineGroup{}
-	if name != "" {
+	if name != "" && err == nil {
 		for _, pipelineGroup := range pg {
 			if pipelineGroup.Name == name {
 				filtered = append(filtered, pipelineGroup)
@@ -47,5 +32,5 @@ func (pgs *PipelineGroupsService) List(ctx context.Context, name string) ([]*Pip
 		filtered = pg
 	}
 
-	return filtered, resp, nil
+	return filtered, resp, err
 }
