@@ -8,8 +8,6 @@ services:
   - docker
 
 addons:
-  artifacts:
-    working_dir: godata
   apt:
     packages:
     - rpm
