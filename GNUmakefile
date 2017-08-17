@@ -23,6 +23,7 @@ script: test
 
 teardown_docker:
 	docker-compose down
+	chown -R travis:travis godata
 	ls -lah godata/server/db
 	rm -rf godata/server/db
 	git checkout godata
