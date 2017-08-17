@@ -63,7 +63,7 @@ test: fmtcheck before_install
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -v -timeout=30s -parallel=4
 
-testacc: fmtcheck provision-test-gocd
+testacc: provision-test-gocd fmtcheck
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
