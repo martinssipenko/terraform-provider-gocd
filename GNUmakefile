@@ -64,6 +64,7 @@ test: fmtcheck before_install
 		xargs -t -n4 go test $(TESTARGS) -v -timeout=30s -parallel=4
 
 testacc: provision-test-gocd fmtcheck
+	bash scripts/wait-for-test-server.sh
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 vet:
@@ -97,6 +98,5 @@ test-compile:
 
 provision-test-gocd:
 	docker-compose up -d
-	bash scripts/wait-for-test-server.sh
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile
