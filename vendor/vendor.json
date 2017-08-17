@@ -206,10 +206,10 @@
 			"revisionTime": "2017-08-11T17:19:46Z"
 		},
 		{
-			"checksumSHA1": "GAQHLGgf2ePu0q8QPAASLDM/iOE=",
+			"checksumSHA1": "DJ+CSEstR4Qh6bT6Yro+ts1JqCA=",
 			"path": "github.com/drewsonne/go-gocd/gocd",
-			"revision": "1002c7f06582ef5ec7fccd83d18a034d43c0e16c",
-			"revisionTime": "2017-08-17T11:43:48Z"
+			"revision": "74997f5980210b910fc089fa0d88351e8de9dbe5",
+			"revisionTime": "2017-08-17T11:54:10Z"
 		},
 		{
 			"checksumSHA1": "1K+xrZ1PBez190iGt5OnMtGdih4=",

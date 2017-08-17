@@ -109,8 +109,14 @@ type TaskAttributes struct {
 	Source              string                      `json:"source,omitempty"`
 	IsSourceAFile       string                      `json:"is_source_a_file,omitempty"`
 	Destination         string                      `json:"destination,omitempty"`
-	PluginConfiguration *PluginConfiguration        `json:"plugin_configuration,omitempty"`
+	PluginConfiguration *TaskPluginConfiguration    `json:"plugin_configuration,omitempty"`
 	Configuration       []PluginConfigurationKVPair `json:"configuration,omitempty"`
+}
+
+// TaskPluginConfiguration is for specifying options for pluggable task
+type TaskPluginConfiguration struct {
+	ID      string `json:"id"`
+	Version string `json:"version"`
 }
 
 // JobStateTransition describes a State Transition object in a GoCD api response
