@@ -48,7 +48,7 @@ func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (b
 		name = ptname.(string)
 	}
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
-	exists := (pt.Name != "") && (err != nil)
+	exists := (pt.Name == name) && (err == nil)
 	return exists, err
 }
 
