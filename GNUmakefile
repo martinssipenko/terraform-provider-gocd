@@ -24,7 +24,7 @@ script: test
 teardown_docker:
 	docker-compose down
 	ls -lah godata
-	rm -rf godata
+	rm -rf godata/server/db
 	git checkout godata
 
 after_failure: teardown_docker upload_logs
