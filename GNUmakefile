@@ -21,11 +21,14 @@ script: test
 	chmod -R 777 ./godata/server
 	make testacc
 
-after_failure: upload_logs
+teardown_docker:
 	docker-compose down
+	rm -rf godata
+	git checkout godata
 
-after_success: upload_logs
-	docker-compose down
+after_failure: teardown_docker upload_logs
+
+after_success: teardown_docker upload_logs
 	bash <(curl -s https://codecov.io/bash)
 	go get github.com/goreleaser/goreleaser
 
