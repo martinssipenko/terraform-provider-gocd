@@ -23,6 +23,7 @@ script: test
 
 teardown_docker:
 	docker-compose down
+	ls -lah godata
 	rm -rf godata
 	git checkout godata
 
