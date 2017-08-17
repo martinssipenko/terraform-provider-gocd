@@ -42,6 +42,7 @@ deploy_on_develop:
 	goreleaser --snapshot
 
 upload_logs:
+	pip install awscli --upgrade --user
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
