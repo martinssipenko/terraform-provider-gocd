@@ -17,7 +17,7 @@ before_install:
 	go get github.com/sergi/go-diff/diffmatchpatch
 
 
-script: test
+script: fmtcheck
 	chmod -R 777 ./godata/server
 	make testacc
 
