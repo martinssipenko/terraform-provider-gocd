@@ -1,4 +1,5 @@
-TEST?=$$(go list ./... |grep -v 'vendor')
+#TEST?=$$(go list ./... |grep -v 'vendor')
+TEST?=github.com/drewsonne/terraform-provider-gocd/gocd/
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 SHELL:=/bin/bash
 
