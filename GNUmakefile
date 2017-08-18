@@ -14,6 +14,7 @@ before_install:
 	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/kardianos/govendor
+	go get -u github.com/goreleaser/goreleaser
 	go get github.com/sergi/go-diff/diffmatchpatch
 
 
@@ -28,16 +29,13 @@ after_failure: teardown_docker upload_logs
 
 after_success: teardown_docker upload_logs
 	bash <(curl -s https://codecov.io/bash)
-	go get -u github.com/goreleaser/goreleaser
 
 deploy_on_tag:
-	go get -u github.com/goreleaser/goreleaser
 	gem install --no-ri --no-rdoc fpm
 	go get
 	goreleaser
 
 deploy_on_develop:
-	go get -u github.com/goreleaser/goreleaser
 	gem install --no-ri --no-rdoc fpm
 	go get
 	goreleaser --snapshot
