@@ -17,6 +17,7 @@ before_install:
 	go get -u github.com/goreleaser/goreleaser
 	go get github.com/sergi/go-diff/diffmatchpatch
 
+TESTARGS ?= -race -coverprofile=profile.out -covermode=atomic
 
 script: fmtcheck
 	chmod -R 777 ./godata/server
