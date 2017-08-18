@@ -27,8 +27,7 @@ teardown_docker:
 
 after_failure: teardown_docker upload_logs
 
-after_success: teardown_docker upload_logs
-	bash <(curl -s https://codecov.io/bash)
+after_success: report_coverage teardown_docker upload_logs
 
 deploy_on_tag:
 	gem install --no-ri --no-rdoc fpm
@@ -46,6 +45,10 @@ upload_logs:
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
 		aws s3 sync ./godata/server/ s3://$(ARTIFACTS_BUCKET)/drewsonne/terraform-provider-gocd/$(TRAVIS_BUILD_ID)/godata/
+
+report_coverage:
+	bash <(curl -s https://codecov.io/bash)
+
 
 default: build
 
