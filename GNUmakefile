@@ -28,7 +28,7 @@ teardown_docker:
 	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
 	docker-compose logs gocd-server
 	docker-compose down
-	git reset HEAD ./godata
+	git reset --hard
 
 after_failure: teardown_docker upload_logs
 
