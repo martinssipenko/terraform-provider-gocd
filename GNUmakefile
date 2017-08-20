@@ -26,7 +26,6 @@ script: fmtcheck
 
 teardown_docker:
 	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
-	docker-compose logs gocd-server
 	docker-compose down
 	git reset --hard
 
