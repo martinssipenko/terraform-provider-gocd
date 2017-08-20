@@ -25,7 +25,10 @@ script: fmtcheck
 	make testacc
 
 teardown_docker:
+	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
+	docker-compose logs gocd-server
 	docker-compose down
+	git reset HEAD ./godata
 
 after_failure: teardown_docker upload_logs
 
@@ -96,6 +99,6 @@ test-compile:
 	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
-	docker-compose up -d
+	docker-compose up -d --build
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile
