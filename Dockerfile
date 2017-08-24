@@ -1,5 +1,4 @@
-ARG GOCD_VERSION=17.8.0
-FROM gocd/gocd-server:v${GOCD_VERSION}
+FROM gocd/gocd-server:v17.8.0
 
 ARG UID
 
