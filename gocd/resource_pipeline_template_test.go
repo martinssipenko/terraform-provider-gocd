@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestResourcePipelineTemplate(t *testing.T) {
+func testResourcePipelineTemplate(t *testing.T) {
 	t.Run("Basic", testResourcePipelineTemplateBasic)
 	t.Run("ImportBasic", testResourcePipelineTemplateImportBasic)
 	t.Run("Exists", testResourcePipelineTemplateExists)
