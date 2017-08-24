@@ -31,8 +31,6 @@ after_failure: cleanup
 after_success: report_coverage cleanup
 
 cleanup: teardown_docker upload_logs
-	git reset --hard
-	git clean -f
 
 deploy_on_tag:
 	gem install --no-ri --no-rdoc fpm
