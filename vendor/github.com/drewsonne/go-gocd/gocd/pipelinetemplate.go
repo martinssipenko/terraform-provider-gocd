@@ -135,7 +135,7 @@ func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, ve
 		RequestBody:  pt,
 		ResponseBody: &ptr,
 		Headers: map[string]string{
-			"If-Match": version,
+			"If-Match": fmt.Sprintf("\"%s\"", version),
 		},
 	})
 
