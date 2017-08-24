@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"github.com/drewsonne/go-gocd/gocd"
 )
 
 func TestResourcePipelineTemplate(t *testing.T) {
@@ -18,6 +19,33 @@ func TestResourcePipelineTemplate(t *testing.T) {
 }
 
 func testResourcePipelineTemplateReadHelper(t *testing.T) {
+
+	t.Run("MissingName", testResourcePipelineTemplateReadHelperMissingName)
+	t.Run("JSONFail", testResourcePipelineTemplateReadHelperJSONFail)
+}
+
+func testResourcePipelineTemplateReadHelperJSONFail(t *testing.T) {
+	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"name": {Type: schema.TypeString, Required: true},
+	}}).Data(&terraform.InstanceState{
+		Attributes: map[string]string{"name": "mock-name",},
+	})
+
+	p := gocd.PipelineTemplate{
+		Name: "mock-name",
+		Stages: []*gocd.Stage{
+			{Name: ""},
+		},
+	}
+
+	err := readPipelineTemplate(rd, &p, nil)
+
+	assert.EqualError(t, err, "`gocd.Stage.Name` is empty")
+
+}
+
+func testResourcePipelineTemplateReadHelperMissingName(t *testing.T) {
+
 	rd := (&schema.Resource{Schema: map[string]*schema.Schema{}}).Data(&terraform.InstanceState{})
 	e := errors.New("mock-error")
 	err := readPipelineTemplate(rd, nil, e)
