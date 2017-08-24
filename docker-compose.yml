@@ -3,7 +3,6 @@ services:
   gocd-server:
     build:
       context: ./
-#    image: gocd/gocd-server:v17.7.0
     ports:
      - "8153:8153"
      - "8154:8154"

@@ -101,6 +101,7 @@ test-compile:
 	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
-	docker-compose up -d --build
+	docker-compose build --build-arg UID=$(shell id -u) gocd-server
+	docker-compose up -d
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile
