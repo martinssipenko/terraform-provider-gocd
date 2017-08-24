@@ -2,13 +2,13 @@ package gocd
 
 import (
 	"fmt"
+	"github.com/drewsonne/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"github.com/drewsonne/go-gocd/gocd"
 )
 
 func TestResourcePipelineTemplate(t *testing.T) {
@@ -28,7 +28,7 @@ func testResourcePipelineTemplateReadHelperJSONFail(t *testing.T) {
 	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
 		"name": {Type: schema.TypeString, Required: true},
 	}}).Data(&terraform.InstanceState{
-		Attributes: map[string]string{"name": "mock-name",},
+		Attributes: map[string]string{"name": "mock-name"},
 	})
 
 	p := gocd.PipelineTemplate{
