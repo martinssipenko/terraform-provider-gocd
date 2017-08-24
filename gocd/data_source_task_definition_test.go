@@ -4,6 +4,10 @@ import (
 	"fmt"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"testing"
+	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDataSourceTaskDefinition(t *testing.T) {
@@ -16,6 +20,31 @@ func TestDataSourceTaskDefinition(t *testing.T) {
 			),
 		)
 	}
+
+	t.Run("UnexpectedTaskType", dataSourceTaskTypeFail)
+
+}
+
+func dataSourceTaskTypeFail(t *testing.T) {
+	task := gocd.Task{
+		Attributes: gocd.TaskAttributes{},
+	}
+
+	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"build_file": {Type: schema.TypeString, Required: true},
+		"target":     {Type: schema.TypeString, Required: true},
+	}}).Data(&terraform.InstanceState{
+		Attributes: map[string]string{
+			"build_file": "mock-build-file",
+			"target":     "mock-target",
+		},
+	})
+
+	dataSourceGocdTaskBuildExec(&task, rd)
+
+	assert.Equal(t, "mock-build-file", task.Attributes.BuildFile)
+	assert.Equal(t, "mock-target", task.Attributes.Target)
+
 }
 
 func DataSourceTaskDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
