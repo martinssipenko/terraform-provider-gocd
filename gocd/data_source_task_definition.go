@@ -262,8 +262,10 @@ func dataSourceGocdTaskBuildExec(t *gocd.Task, d *schema.ResourceData) {
 		t.Attributes.Command = cmd.(string)
 	}
 
-	if args := decodeConfigStringList(d.Get("arguments").([]interface{})); len(args) > 0 {
-		t.Attributes.Arguments = args
+	if argRaw, ok := d.GetOk("arguments"); ok {
+		if args := decodeConfigStringList(argRaw.([]interface{})); len(args) > 0 {
+			t.Attributes.Arguments = args
+		}
 	}
 
 	if wd, ok := d.GetOk("working_directory"); ok {
