@@ -6,19 +6,20 @@ import (
 	"testing"
 )
 
-func TestDataSourceJobDefinition(t *testing.T) {
+func testDataSourceJobDefinition(t *testing.T) {
 	for i := 0; i <= 1; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_job_definition.%d", i),
-			DataSourceJobDefinition(t, i,
+			dataSourceJobDefinition(t, i,
 				fmt.Sprintf("data_source_job_definition.%d.rsc.tf", i),
 				fmt.Sprintf("data_source_job_definition.%d.rsp.json", i),
 			),
 		)
 	}
+
 }
 
-func DataSourceJobDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
+func dataSourceJobDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
 	return func(t *testing.T) {
 		config := testFile(configPath)
 		expected := testFile(expectedPath)
