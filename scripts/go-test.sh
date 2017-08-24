@@ -1,6 +1,6 @@
 #!/usr/bin/env bash -x -e
 
-ROOT_DIR=$(pwd)/../
+ROOT_DIR=$(pwd)/
 COVERAGE_PATH=${ROOT_DIR}/coverage.txt
 
 echo "" > ${COVERAGE_PATH}
