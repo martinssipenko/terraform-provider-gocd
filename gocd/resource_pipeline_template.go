@@ -60,11 +60,7 @@ func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) er
 
 	stages := extractStages(d)
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Create(context.Background(), name, stages)
-	if err != nil {
-		return err
-	}
-
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, err)
 }
 
 func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) error {
@@ -82,7 +78,7 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, nil)
 
 }
 
@@ -95,11 +91,7 @@ func resourcePipelineTemplateUpdate(d *schema.ResourceData, meta interface{}) er
 	version := d.Get("version")
 	stages := extractStages(d)
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Update(context.Background(), name, version.(string), stages)
-	if err != nil {
-		return err
-	}
-
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, err)
 
 }
 
@@ -124,7 +116,12 @@ func extractStages(d *schema.ResourceData) []*gocd.Stage {
 	return stages
 }
 
-func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate) error {
+func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate, err error) error {
+
+	if err != nil {
+		return err
+	}
+
 	d.SetId(p.Name)
 
 	stages := []string{}
