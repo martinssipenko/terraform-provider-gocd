@@ -47,12 +47,10 @@ deploy:
   # deploy to break.
   - provider: script
     script: make deploy_on_tag
-    skip_cleanup: true
     on:
       tags: true
       condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
   - provider: script
-    skip_cleanup: true
     script: make deploy_on_develop
     on:
       branch: develop
