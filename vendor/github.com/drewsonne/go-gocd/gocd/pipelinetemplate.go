@@ -80,6 +80,8 @@ func (pts *PipelineTemplatesService) Get(ctx context.Context, name string) (*Pip
 		APIVersion:   apiV3,
 		ResponseBody: &pt,
 	})
+	pt.Version = resp.HTTP.Header.Get("Etag")
+	pt.Version = strings.Replace(pt.Version, "\"", "", -1)
 	return &pt, resp, err
 }
 
@@ -132,6 +134,9 @@ func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, ve
 		APIVersion:   apiV3,
 		RequestBody:  pt,
 		ResponseBody: &ptr,
+		Headers: map[string]string{
+			"If-Match": version,
+		},
 	})
 
 	return ptr, resp, err
