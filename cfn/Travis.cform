@@ -47,8 +47,11 @@ Resources:
             Effect: "Allow"
             Action:
              - "s3:PutObject"
-             - "s3:ListObjects"
-            Resource: !Sub "${ArtifactBucket.Arn}/*"
+             - "s3:ListBucket"
+             - "s3:GetObject"
+            Resource:
+              - !Sub "${ArtifactBucket.Arn}/*"
+              - !Sub "${ArtifactBucket.Arn}"
 
 
 Outputs:
