@@ -20,9 +20,7 @@ before_install:
 
 TESTARGS ?= -race -coverprofile=profile.out -covermode=atomic
 
-script: fmtcheck
-	chmod -R 777 ./godata/server
-	make testacc
+script: testacc
 
 teardown_docker:
 	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
@@ -69,7 +67,7 @@ test: fmtcheck before_install
 
 testacc: provision-test-gocd fmtcheck
 	bash scripts/wait-for-test-server.sh
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 bash -x ./scripts/go-test.sh
 
 vet:
 	@echo "go vet ."
