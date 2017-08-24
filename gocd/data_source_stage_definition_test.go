@@ -2,15 +2,24 @@ package gocd
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
+	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestDataSourceGocdStageTemplateRead(t *testing.T) {
-	t.Run("success", testDataSourceGocdStageTemplateReadSuccess)
-	t.Run("fail", testDataSourceGocdStageTemplateReadFail)
+func testDataSourceGocdStageTemplateRead(t *testing.T) {
+	t.Run("Success", testDataSourceGocdStageTemplateReadSuccess)
+	t.Run("Fail", testDataSourceGocdStageTemplateReadFail)
+	for i := 0; i <= 0; i++ {
+		t.Run(
+			fmt.Sprintf("gocd_stage_definition.%d", i),
+			dataSourceStageDefinition(t, i,
+				fmt.Sprintf("data_source_stage_definition.%d.rsc.tf", i),
+				fmt.Sprintf("data_source_stage_definition.%d.rsp.json", i),
+			),
+		)
+	}
 }
 func testDataSourceGocdStageTemplateReadFail(t *testing.T) {
 	s := dataSourceGocdStageTemplate().Schema
@@ -44,23 +53,11 @@ func testDataSourceGocdStageTemplateReadSuccess(t *testing.T) {
 
 }
 
-func TestDataSourceStageTemplate(t *testing.T) {
-	for i := 0; i <= 0; i++ {
-		t.Run(
-			fmt.Sprintf("gocd_stage_definition.%d", i),
-			DataSourceStageDefinition(t, i,
-				fmt.Sprintf("data_source_stage_definition.%d.rsc.tf", i),
-				fmt.Sprintf("data_source_stage_definition.%d.rsp.json", i),
-			),
-		)
-	}
-}
-
-func DataSourceStageDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
+func dataSourceStageDefinition(t *testing.T, index int, configPath string, expectedPath string) func(t *testing.T) {
 	return func(t *testing.T) {
 		config := testFile(configPath)
 		expected := testFile(expectedPath)
-		resource.Test(t, resource.TestCase{
+		r.UnitTest(t, r.TestCase{
 			PreCheck:  func() { testAccPreCheck(t) },
 			Providers: testGocdProviders,
 			Steps: testStepComparisonCheck(&TestStepJSONComparison{

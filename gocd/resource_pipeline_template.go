@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/pkg/errors"
 )
 
 func resourcePipelineTemplate() *schema.Resource {
@@ -13,6 +14,7 @@ func resourcePipelineTemplate() *schema.Resource {
 		Read:   resourcePipelineTemplateRead,
 		Update: resourcePipelineTemplateUpdate,
 		Delete: resourcePipelineTemplateDelete,
+		Exists: resourcePipelineTemplateExists,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				d.Set("name", d.Id())
@@ -41,8 +43,19 @@ func resourcePipelineTemplate() *schema.Resource {
 	}
 }
 
-func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {
+func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	} else {
+		return false, errors.New("`name` can not be empty")
+	}
+	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
+	exists := (pt.Name == name) && (err == nil)
+	return exists, err
+}
 
+func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) error {
 	var name string
 	if ptname, hasName := d.GetOk("name"); hasName {
 		name = ptname.(string)
@@ -50,11 +63,7 @@ func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) er
 
 	stages := extractStages(d)
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Create(context.Background(), name, stages)
-	if err != nil {
-		return err
-	}
-
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, err)
 }
 
 func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) error {
@@ -63,12 +72,16 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 		name = ptname.(string)
 	}
 
-	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
+	pt, resp, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
 	if err != nil {
+		if resp.HTTP.StatusCode == 404 {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, nil)
 
 }
 
@@ -81,11 +94,7 @@ func resourcePipelineTemplateUpdate(d *schema.ResourceData, meta interface{}) er
 	version := d.Get("version")
 	stages := extractStages(d)
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Update(context.Background(), name, version.(string), stages)
-	if err != nil {
-		return err
-	}
-
-	return readPipelineTemplate(d, pt)
+	return readPipelineTemplate(d, pt, err)
 
 }
 
@@ -97,7 +106,6 @@ func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
-	//d.SetId("")
 	return nil
 }
 
@@ -111,7 +119,12 @@ func extractStages(d *schema.ResourceData) []*gocd.Stage {
 	return stages
 }
 
-func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate) error {
+func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate, err error) error {
+
+	if err != nil {
+		return err
+	}
+
 	d.SetId(p.Name)
 
 	stages := []string{}
