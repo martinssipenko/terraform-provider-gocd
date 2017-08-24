@@ -143,7 +143,7 @@ func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) 
 
 // Extract attributes for Pluggable Task
 func dataSourceGocdPluggabeTemplate(t *gocd.Task, d *schema.ResourceData) error {
-	t.Attributes.PluginConfiguration = &gocd.PluginConfiguration{}
+	t.Attributes.PluginConfiguration = &gocd.TaskPluginConfiguration{}
 	if pid, ok := d.GetOk("plugin_id"); ok {
 		t.Attributes.PluginConfiguration.ID = pid.(string)
 	} else {
@@ -262,8 +262,10 @@ func dataSourceGocdTaskBuildExec(t *gocd.Task, d *schema.ResourceData) {
 		t.Attributes.Command = cmd.(string)
 	}
 
-	if args := decodeConfigStringList(d.Get("arguments").([]interface{})); len(args) > 0 {
-		t.Attributes.Arguments = args
+	if argRaw, ok := d.GetOk("arguments"); ok {
+		if args := decodeConfigStringList(argRaw.([]interface{})); len(args) > 0 {
+			t.Attributes.Arguments = args
+		}
 	}
 
 	if wd, ok := d.GetOk("working_directory"); ok {
