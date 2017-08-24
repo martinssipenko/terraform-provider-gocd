@@ -10,17 +10,12 @@ import (
 
 func resourcePipelineTemplate() *schema.Resource {
 	return &schema.Resource{
-		Create: resourcePipelineTemplateCreate,
-		Read:   resourcePipelineTemplateRead,
-		Update: resourcePipelineTemplateUpdate,
-		Delete: resourcePipelineTemplateDelete,
-		Exists: resourcePipelineTemplateExists,
-		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				d.Set("name", d.Id())
-				return []*schema.ResourceData{d}, nil
-			},
-		},
+		Create:   resourcePipelineTemplateCreate,
+		Read:     resourcePipelineTemplateRead,
+		Update:   resourcePipelineTemplateUpdate,
+		Delete:   resourcePipelineTemplateDelete,
+		Exists:   resourcePipelineTemplateExists,
+		Importer: resourcePipelineTemplateStateImport(),
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -41,6 +36,16 @@ func resourcePipelineTemplate() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourcePipelineTemplateStateImport() *schema.ResourceImporter {
+	return &schema.ResourceImporter{
+		State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+			d.Set("name", d.Id())
+			return []*schema.ResourceData{d}, nil
+		},
+	}
+
 }
 
 func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {

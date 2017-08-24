@@ -15,11 +15,10 @@ func testResourcePipelineTemplate(t *testing.T) {
 	t.Run("Basic", testResourcePipelineTemplateBasic)
 	t.Run("ImportBasic", testResourcePipelineTemplateImportBasic)
 	t.Run("Exists", testResourcePipelineTemplateExists)
-	t.Run("PipelineReadHelper", testResourcePipelineTemplateReadHelper)
+	t.Run("PipelineTemplateReadHelper", testResourcePipelineTemplateReadHelper)
 }
 
 func testResourcePipelineTemplateReadHelper(t *testing.T) {
-
 	t.Run("MissingName", testResourcePipelineTemplateReadHelperMissingName)
 	t.Run("JSONFail", testResourcePipelineTemplateReadHelperJSONFail)
 }

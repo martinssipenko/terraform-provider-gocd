@@ -21,6 +21,7 @@ func Provider() terraform.ResourceProvider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_pipeline_template": resourcePipelineTemplate(),
+			"gocd_pipeline":          resourcePipeline(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {
