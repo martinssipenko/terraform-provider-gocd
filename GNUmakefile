@@ -27,11 +27,14 @@ script: fmtcheck
 teardown_docker:
 	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
 	docker-compose down
+
+after_failure: cleanup
+
+after_success: report_coverage cleanup
+
+cleanup: teardown_docker upload_logs
 	git reset --hard
-
-after_failure: teardown_docker upload_logs
-
-after_success: report_coverage teardown_docker upload_logs
+	git clean -f
 
 deploy_on_tag:
 	gem install --no-ri --no-rdoc fpm
