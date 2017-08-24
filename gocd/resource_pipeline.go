@@ -1,6 +1,11 @@
 package gocd
 
-import "github.com/hashicorp/terraform/helper/schema"
+import (
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/drewsonne/go-gocd/gocd"
+	"context"
+	"errors"
+)
 
 func resourcePipeline() *schema.Resource {
 	return &schema.Resource{
@@ -63,13 +68,23 @@ func resourcePipelineDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	return false, nil
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	} else {
+		return false, errors.New("`name` can not be empty")
+	}
+
+	p, _, err := meta.(*gocd.Client).Pipelines.Get(context.Background(), name, 0)
+	exists := (p.Name == name) && (err == nil)
+	return exists, err
 }
 
 func resourcePipelineStateImport() *schema.ResourceImporter {
 	return &schema.ResourceImporter{
 		State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-			return nil, nil
+			d.Set("name", d.Id())
+			return []*schema.ResourceData{d}, nil
 		},
 	}
 }

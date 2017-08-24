@@ -25,19 +25,19 @@ func testResourcePipelineBasic(t *testing.T) {
 			{
 				Config: testFile("resource_pipeline.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckPipelineTemplateExists("gocd_pipeline.test-pipeline"),
-					testCheckPipelineTemplateName(
-						"gocd_pipeline.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate1StageCount("gocd_pipeline.test-pipeline"),
+					testCheckResourceExists("gocd_pipeline.test-pipeline"),
+					testCheckResourceName(
+						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
+					//testCheckPipeline1StageCount("gocd_pipeline.test-pipeline"),
 				),
 			},
 			{
 				Config: testFile("resource_pipeline.1.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckPipelineTemplateExists("gocd_pipeline.test-pipeline"),
-					testCheckPipelineTemplateName(
-						"gocd_pipeline.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate2StageCount("gocd_pipeline.test-pipeline"),
+					testCheckResourceExists("gocd_pipeline.test-pipeline"),
+					testCheckResourceName(
+						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
+					//testCheckPipeline2StageCount("gocd_pipeline.test-pipeline"),
 				),
 			},
 		},
