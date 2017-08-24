@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/pkg/errors"
 )
 
 func resourcePipelineTemplate() *schema.Resource {
@@ -46,6 +47,8 @@ func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (b
 	var name string
 	if ptname, hasName := d.GetOk("name"); hasName {
 		name = ptname.(string)
+	} else {
+		return false, errors.New("`name` can not be empty")
 	}
 	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
 	exists := (pt.Name == name) && (err == nil)
