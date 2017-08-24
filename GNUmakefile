@@ -48,7 +48,7 @@ upload_logs:
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
-		aws --debug s3 sync ./godata/server/ s3://$(ARTIFACTS_BUCKET)/drewsonne/terraform-provider-gocd/$(TRAVIS_BUILD_ID)/godata/
+		aws s3 sync ./godata/server/ s3://$(ARTIFACTS_BUCKET)/drewsonne/terraform-provider-gocd/$(TRAVIS_BUILD_ID)/godata/
 
 report_coverage:
 	bash <(curl -s https://codecov.io/bash)
