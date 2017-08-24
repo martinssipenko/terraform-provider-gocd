@@ -1,11 +1,11 @@
 package gocd
 
 import (
-	"testing"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func testResourcePipeline(t *testing.T) {
