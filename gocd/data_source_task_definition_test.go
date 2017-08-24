@@ -2,12 +2,12 @@ package gocd
 
 import (
 	"fmt"
-	r "github.com/hashicorp/terraform/helper/resource"
-	"testing"
 	"github.com/drewsonne/go-gocd/gocd"
+	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestDataSourceTaskDefinition(t *testing.T) {
