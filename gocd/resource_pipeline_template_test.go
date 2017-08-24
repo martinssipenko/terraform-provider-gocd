@@ -5,11 +5,34 @@ import (
 	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"testing"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/stretchr/testify/assert"
+	"github.com/pkg/errors"
 )
 
 func TestResourcePipelineTemplate(t *testing.T) {
 	t.Run("Basic", testResourcePipelineTemplateBasic)
 	t.Run("ImportBasic", testResourcePipelineTemplateImportBasic)
+	t.Run("Exists", testResourcePipelineTemplateExists)
+	t.Run("PipelineReadHelper", testResourcePipelineTemplateReadHelper)
+}
+
+func testResourcePipelineTemplateReadHelper(t *testing.T) {
+	rd := (&schema.Resource{Schema: map[string]*schema.Schema{}}).Data(&terraform.InstanceState{})
+	e := errors.New("mock-error")
+	err := readPipelineTemplate(rd, nil, e)
+
+	assert.EqualError(t, err, "mock-error")
+}
+
+func testResourcePipelineTemplateExists(t *testing.T) {
+	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"name": {Type: schema.TypeString, Required: true},
+	}}).Data(&terraform.InstanceState{})
+
+	exists, err := resourcePipelineTemplateExists(rd, nil)
+	assert.False(t, exists)
+	assert.EqualError(t, err, "`name` can not be empty")
 }
 
 func testResourcePipelineTemplateBasic(t *testing.T) {
