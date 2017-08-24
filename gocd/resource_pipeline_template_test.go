@@ -33,7 +33,7 @@ func testResourcePipelineTemplateBasic(t *testing.T) {
 				Check: r.ComposeTestCheckFunc(
 					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline"),
 					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template1-terraform"),
+						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
 					testCheckPipelineTemplate2StageCount("gocd_pipeline_template.test-pipeline"),
 				),
 			},
