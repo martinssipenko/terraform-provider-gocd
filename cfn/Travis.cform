@@ -12,6 +12,20 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: Roll Travis Logs
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            NoncurrentVersionTransitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 60
+            Transitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 120
   TravisUser:
     Type: AWS::IAM::User
     Properties:
