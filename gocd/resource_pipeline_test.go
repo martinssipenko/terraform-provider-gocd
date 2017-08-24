@@ -20,24 +20,24 @@ func testResourcePipelineBasic(t *testing.T) {
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
-		CheckDestroy: testGocdPipelineTemplateDestroy,
+		CheckDestroy: testGocdPipelineDestroy,
 		Steps: []r.TestStep{
 			{
-				Config: testFile("resource_pipeline_template.0.rsc.tf"),
+				Config: testFile("resource_pipeline.0.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline"),
+					testCheckPipelineTemplateExists("gocd_pipeline.test-pipeline"),
 					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate1StageCount("gocd_pipeline_template.test-pipeline"),
+						"gocd_pipeline.test-pipeline", "template0-terraform"),
+					testCheckPipelineTemplate1StageCount("gocd_pipeline.test-pipeline"),
 				),
 			},
 			{
-				Config: testFile("resource_pipeline_template.1.rsc.tf"),
+				Config: testFile("resource_pipeline.1.rsc.tf"),
 				Check: r.ComposeTestCheckFunc(
-					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline"),
+					testCheckPipelineTemplateExists("gocd_pipeline.test-pipeline"),
 					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate2StageCount("gocd_pipeline_template.test-pipeline"),
+						"gocd_pipeline.test-pipeline", "template0-terraform"),
+					testCheckPipelineTemplate2StageCount("gocd_pipeline.test-pipeline"),
 				),
 			},
 		},
