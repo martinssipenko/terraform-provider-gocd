@@ -5,10 +5,12 @@ SHELL:=/bin/bash
 
 # For local testing, run `docker-compose up -d`
 SERVER ?=http://127.0.0.1:8153/go/
+TESTARGS ?= -race -coverprofile=profile.out -covermode=atomic
+
 export GOCD_URL=$(SERVER)
 export GOCD_SKIP_SSL_CHECK=1
 
-
+## Travis targets
 travis: before_install script after_success deploy_on_develop
 
 before_install:
@@ -18,19 +20,11 @@ before_install:
 	go get -u github.com/goreleaser/goreleaser
 	go get github.com/sergi/go-diff/diffmatchpatch
 
-TESTARGS ?= -race -coverprofile=profile.out -covermode=atomic
-
 script: testacc
-
-teardown_docker:
-	docker-compose exec gocd-server "/bin/bash" "-x" "/shutdown.sh"
-	docker-compose down
 
 after_failure: cleanup
 
 after_success: report_coverage cleanup
-
-cleanup: teardown_docker upload_logs
 
 deploy_on_tag:
 	gem install --no-ri --no-rdoc fpm
@@ -41,6 +35,13 @@ deploy_on_develop:
 	gem install --no-ri --no-rdoc fpm
 	go get
 	goreleaser --snapshot
+
+
+## General Targets
+teardown_docker:
+	docker-compose down
+
+cleanup: teardown_docker upload_logs
 
 upload_logs:
 	pip install awscli --upgrade --user
@@ -58,14 +59,12 @@ default: build
 build: fmtcheck
 	go install
 
-test: fmtcheck before_install
-	go test -v -i $(TEST) || exit 1
-	echo $(TEST) | \
-		xargs -t -n4 go test $(TESTARGS) -v -timeout=30s -parallel=4
+test: fmtcheck
+	bash -x ./scripts/go-test.sh
 
-testacc: provision-test-gocd fmtcheck
+testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
-	TF_ACC=1 bash -x ./scripts/go-test.sh
+	TF_ACC=1 make test
 
 vet:
 	@echo "go vet ."
