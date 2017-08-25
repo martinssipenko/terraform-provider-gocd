@@ -15,9 +15,9 @@ travis: before_install script after_success deploy_on_develop
 
 before_install:
 	go get -t -v ./...
-	go get -u github.com/golang/lint/golint
-	go get -u github.com/kardianos/govendor
-	go get -u github.com/goreleaser/goreleaser
+	go get github.com/golang/lint/golint
+	go get github.com/kardianos/govendor
+	go get github.com/goreleaser/goreleaser
 	go get github.com/sergi/go-diff/diffmatchpatch
 
 script: testacc
@@ -44,7 +44,7 @@ teardown_docker:
 cleanup: teardown_docker upload_logs
 
 upload_logs:
-	pip install awscli --upgrade --user
+	pip install awscli
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
