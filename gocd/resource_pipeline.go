@@ -93,10 +93,51 @@ func resourcePipeline() *schema.Resource {
 							Optional: true,
 						},
 						"attributes": {
-							Type:     schema.TypeMap,
+							Type:     schema.TypeList,
+							MaxItems: 1,
 							Required: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"branch": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"destination": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"url": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"auto_update": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+									"filter": {
+										Type:     schema.TypeList,
+										Optional: true,
+										//Elem: &schema.Schema{
+										//	Type: schema.TypeString,
+										//},
+										MaxItems: 1,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"ignore": {
+													Type:     schema.TypeList,
+													Required: true,
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+											},
+										},
+									},
+								},
 							},
 						},
 					},
@@ -152,9 +193,73 @@ func resourcePipelineStateImport() *schema.ResourceImporter {
 }
 
 func extractPipeline(d *schema.ResourceData) *gocd.Pipeline {
-	return nil
+	p := gocd.Pipeline{}
+
+	if template, hasTemplate := d.GetOk("template"); hasTemplate {
+		p.Template = template.(string)
+	}
+
+	rawMaterials := d.Get("materials")
+	if materials := rawMaterials.([]interface{}); len(materials) > 0 {
+		p.Materials = extractPipelineMaterials(materials)
+	}
+
+	return &p
+}
+
+func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
+	ms := []gocd.Material{}
+	for _, rawMaterial := range rawMaterials {
+		mat := rawMaterial.(map[string]interface{})
+		m := gocd.Material{}
+
+		if mType, ok := mat["type"]; ok {
+			m.Type = mType.(string)
+		}
+
+		if mAttributes, ok := mat["attributes"]; ok {
+
+			attr := gocd.MaterialAttributes{}
+
+			rawAttr := mAttributes.([]interface{})[0].(map[string]interface{})
+			for attrKey, attrValue := range rawAttr {
+				switch attrKey {
+				case "name":
+					attr.Name = attrValue.(string)
+				case "url":
+					attr.URL = attrValue.(string)
+				case "branch":
+					attr.Branch = attrValue.(string)
+				case "destination":
+					attr.Destination = attrValue.(string)
+				case "auto_update":
+					attr.AutoUpdate = attrValue.(bool)
+				case "filter":
+					attr.Filter = extractPipelineMaterialFilter(attrValue)
+				}
+			}
+
+			m.Attributes = attr
+		}
+
+	}
+	return ms
+}
+
+func extractPipelineMaterialFilter(attr interface{}) gocd.MaterialFilter {
+	filterI := attr.([]interface{})[0].(map[string]interface{})
+	filters := filterI["ignore"].([]interface{})
+	mf := gocd.MaterialFilter{
+		Ignore: decodeConfigStringList(filters),
+	}
+	return mf
 }
 
 func readPipeline(d *schema.ResourceData, p *gocd.PipelineInstance, err error) error {
-	return nil
+	if err != nil {
+		return err
+	}
+
+	d.SetId(p.Name)
+	d.Set("Version",p.)
 }
