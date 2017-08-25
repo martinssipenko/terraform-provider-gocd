@@ -36,15 +36,20 @@ type Material struct {
 
 // MaterialAttributes describes a material type
 type MaterialAttributes struct {
-	URL             string      `json:"url"`
-	Destination     string      `json:"destination,omitempty"`
-	Filter          interface{} `json:"filter,omitempty"`
-	InvertFilter    bool        `json:"invert_filter"`
-	Name            string      `json:"name,omitempty"`
-	AutoUpdate      bool        `json:"auto_update,omitempty"`
-	Branch          string      `json:"branch,omitempty"`
-	SubmoduleFolder string      `json:"submodule_folder,omitempty"`
-	ShallowClone    bool        `json:"shallow_clone,omitempty"`
+	URL             string         `json:"url"`
+	Destination     string         `json:"destination,omitempty"`
+	Filter          MaterialFilter `json:"filter,omitempty"`
+	InvertFilter    bool           `json:"invert_filter"`
+	Name            string         `json:"name,omitempty"`
+	AutoUpdate      bool           `json:"auto_update,omitempty"`
+	Branch          string         `json:"branch,omitempty"`
+	SubmoduleFolder string         `json:"submodule_folder,omitempty"`
+	ShallowClone    bool           `json:"shallow_clone,omitempty"`
+}
+
+// MaterialFilter describes which globs to ignore
+type MaterialFilter struct {
+	Ignore []string `json:"ignore"`
 }
 
 // PipelineHistory describes the history of runs for a pipeline
@@ -126,8 +131,8 @@ func (pgs *PipelinesService) ReleaseLock(ctx context.Context, name string) (bool
 }
 
 // Create a pipeline
-func (pgs *PipelinesService) Create(ctx context.Context, p *Pipeline, group string) (*PipelineInstance, *APIResponse, error) {
-	pt := PipelineInstance{}
+func (pgs *PipelinesService) Create(ctx context.Context, p *Pipeline, group string) (*Pipeline, *APIResponse, error) {
+	pt := Pipeline{}
 	_, resp, err := pgs.client.postAction(ctx, &APIClientRequest{
 		Path:       "admin/pipelines",
 		APIVersion: apiV4,
