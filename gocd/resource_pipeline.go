@@ -1,10 +1,10 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/drewsonne/go-gocd/gocd"
 	"context"
 	"errors"
+	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourcePipeline() *schema.Resource {
@@ -47,12 +47,78 @@ func resourcePipeline() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"parameters": {
+				Type:     schema.TypeMap,
+				Elem:     schema.TypeString,
+				Optional: true,
+			},
+			"environment_variables": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"encrypted_value"},
+							Optional: true,
+						},
+						"encrypted_value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"value"},
+							Optional: true,
+						},
+						"secure": {
+							Type:     schema.TypeBool,
+							Default:  false,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"materials": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"attributes": {
+							Type:     schema.TypeMap,
+							Required: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
 
 func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	var name, group string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	}
+
+	if ptgroup, hasGroup := d.GetOk("group"); hasGroup {
+		group = ptgroup.(string)
+	}
+
+	p := extractPipeline(d)
+	pt, _, err := meta.(*gocd.Client).Pipelines.Create(context.Background(), p, group)
+	return readPipeline(d, pt, err)
 }
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
@@ -87,4 +153,12 @@ func resourcePipelineStateImport() *schema.ResourceImporter {
 			return []*schema.ResourceData{d}, nil
 		},
 	}
+}
+
+func extractPipeline(d *schema.ResourceData) *gocd.Pipeline {
+	return nil
+}
+
+func readPipeline(d *schema.ResourceData, p *gocd.PipelineInstance, err error) error {
+	return nil
 }

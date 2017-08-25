@@ -1,9 +1,9 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/terraform"
 	"fmt"
 	r "github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func testCheckResourceExists(resource string) r.TestCheckFunc {
