@@ -12,9 +12,17 @@ addons:
     packages:
     - rpm
 
-cache: pip
+cache:
+  pip: true
+  directories:
+    - $GOPATH/src/github.com/golang/lint
+    - $GOPATH/src/github.com/kardianos/govendor
+    - $GOPATH/src/github.com/goreleaser/goreleaser
+    - $GOPATH/src/github.com/sergi/go-diff
+
 
 before_install:
+  - pip install awscli
   - make before_install
 
 install:
