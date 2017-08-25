@@ -15,10 +15,10 @@ travis: before_install script after_success deploy_on_develop
 
 before_install:
 	go get -t -v ./...
-	go get github.com/golang/lint/golint
-	go get github.com/kardianos/govendor
-	go get github.com/goreleaser/goreleaser
-	go get github.com/sergi/go-diff/diffmatchpatch
+	go get -u github.com/golang/lint/golint
+	go get -u github.com/kardianos/govendor
+	go get -u github.com/goreleaser/goreleaser
+	go get -u github.com/sergi/go-diff/diffmatchpatch
 
 script: testacc
 
