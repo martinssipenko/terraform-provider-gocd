@@ -2,6 +2,17 @@ resource "gocd_pipeline" "test-pipeline" {
   name = "pipeline0-terraform"
   label_template = "build-$${COUNT}"
   template = "${gocd_pipeline_template.test-pipeline.id}"
+  materials = [
+    {
+      type = "git"
+      attributes = {
+        name = "gocd-github"
+        url = "git@github.com:gocd/gocd"
+        branch = "feature/my-addition"
+        destination = "gocd-dir"
+        auto_update = true
+      }
+    }]
 }
 
 
