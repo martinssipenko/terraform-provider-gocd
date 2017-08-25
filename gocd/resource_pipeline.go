@@ -107,11 +107,7 @@ func resourcePipeline() *schema.Resource {
 }
 
 func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) error {
-	var name, group string
-	if ptname, hasName := d.GetOk("name"); hasName {
-		name = ptname.(string)
-	}
-
+	var group string
 	if ptgroup, hasGroup := d.GetOk("group"); hasGroup {
 		group = ptgroup.(string)
 	}
