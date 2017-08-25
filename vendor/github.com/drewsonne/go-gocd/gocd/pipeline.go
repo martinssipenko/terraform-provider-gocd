@@ -8,6 +8,12 @@ import (
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
 type PipelinesService service
 
+// PipelineRequest describes a pipeline request object
+type PipelineRequest struct {
+	Group    string    `json:"group"`
+	Pipeline *Pipeline `json:"pipeline"`
+}
+
 // Pipeline describes a pipeline object
 type Pipeline struct {
 	Name                  string     `json:"name"`
@@ -17,25 +23,28 @@ type Pipeline struct {
 	Materials             []Material `json:"materials,omitempty"`
 	Label                 string     `json:"label,omitempty"`
 	Stages                []Stage    `json:"stages"`
-	Version               string
+	Version               string     `json:"version,omitempty"`
 }
 
 // Material describes an artifact dependency for a pipeline object.
 type Material struct {
-	Type        string `json:"type"`
-	Fingerprint string `json:"fingerprint,omitempty"`
-	Description string `json:"description,omitempty"`
-	Attributes  struct {
-		URL             string      `json:"url"`
-		Destination     string      `json:"destination,omitempty"`
-		Filter          interface{} `json:"filter,omitempty"`
-		InvertFilter    bool        `json:"invert_filter,omitempty"`
-		Name            string      `json:"name,omitempty"`
-		AutoUpdate      bool        `json:"auto_update,omitempty"`
-		Branch          string      `json:"branch,omitempty"`
-		SubmoduleFolder string      `json:"submodule_folder,omitempty"`
-		ShallowClone    bool        `json:"shallow_clone,omitempty"`
-	} `json:"attributes"`
+	Type        string             `json:"type"`
+	Fingerprint string             `json:"fingerprint,omitempty"`
+	Description string             `json:"description,omitempty"`
+	Attributes  MaterialAttributes `json:"attributes"`
+}
+
+// MaterialAttributes describes a material type
+type MaterialAttributes struct {
+	URL             string      `json:"url"`
+	Destination     string      `json:"destination,omitempty"`
+	Filter          interface{} `json:"filter,omitempty"`
+	InvertFilter    bool        `json:"invert_filter"`
+	Name            string      `json:"name,omitempty"`
+	AutoUpdate      bool        `json:"auto_update,omitempty"`
+	Branch          string      `json:"branch,omitempty"`
+	SubmoduleFolder string      `json:"submodule_folder,omitempty"`
+	ShallowClone    bool        `json:"shallow_clone,omitempty"`
 }
 
 // PipelineHistory describes the history of runs for a pipeline
@@ -116,9 +125,25 @@ func (pgs *PipelinesService) ReleaseLock(ctx context.Context, name string) (bool
 	return pgs.pipelineAction(ctx, name, "releaseLock")
 }
 
+// Create a pipeline
+func (pgs *PipelinesService) Create(ctx context.Context, p *Pipeline, group string) (*PipelineInstance, *APIResponse, error) {
+	pt := PipelineInstance{}
+	_, resp, err := pgs.client.postAction(ctx, &APIClientRequest{
+		Path:       "admin/pipelines",
+		APIVersion: apiV4,
+		RequestBody: PipelineRequest{
+			Group:    group,
+			Pipeline: p,
+		},
+		ResponseBody: &pt,
+	})
+
+	return &pt, resp, err
+}
+
 // Get returns a list of pipeline instanves describing the pipeline history.
 func (pgs *PipelinesService) Get(ctx context.Context, name string, offset int) (*PipelineInstance, *APIResponse, error) {
-	stub := pgs.buildPaginatedStub("pipelines/%s/instance", name, offset)
+	stub := pgs.buildPaginatedStub("admin/pipelines/%s/instance", name, offset)
 
 	pt := PipelineInstance{}
 	_, resp, err := pgs.client.getAction(ctx, &APIClientRequest{
