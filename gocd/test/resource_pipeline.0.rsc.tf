@@ -4,14 +4,21 @@ resource "gocd_pipeline" "test-pipeline" {
   materials = [
     {
       type = "git"
-      attributes = {
+      attributes {
         name = "gocd-src"
         url = "git@github.com:gocd/gocd"
         branch = "feature/my-addition"
         destination = "gocd-dir"
         auto_update = true
+        filter {
+          ignore = [
+            "one",
+            "two"
+          ]
+        }
       }
-    }]
+    }
+  ]
 }
 
 

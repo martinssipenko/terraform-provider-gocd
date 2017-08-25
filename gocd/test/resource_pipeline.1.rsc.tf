@@ -5,7 +5,7 @@ resource "gocd_pipeline" "test-pipeline" {
   materials = [
     {
       type = "git"
-      attributes = {
+      attributes {
         name = "gocd-github"
         url = "git@github.com:gocd/gocd"
         branch = "feature/my-addition"
