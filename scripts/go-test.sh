@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -x -e
+#!/usr/bin/env bash -e
 
 ROOT_DIR=$(pwd)/
 COVERAGE_PATH=${ROOT_DIR}/coverage.txt
