@@ -29,3 +29,5 @@ brew:
     owner: drewsonne
     name: homebrew-devops
   homepage: https://github.com/drewsonne/terraform-provider-gocd
+  test: |
+    system "#{bin}/terraform-provider-gocd; [[ $? -eq 1 ]]"
