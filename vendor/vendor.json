@@ -213,11 +213,17 @@
 			"revisionTime": "2017-08-28T21:41:01Z"
 		},
 		{
-			"checksumSHA1": "/5cvgU+J4l7EhMXTK76KaCAfOuU=",
+			"checksumSHA1": "0y5phFHOrFHf/2w+q/E4FZHQXVI=",
 			"origin": "github.com/hashicorp/terraform/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "a1d06eb97378d097d4175c3284ea026937618477",
-			"revisionTime": "2017-08-28T21:41:01Z"
+			"revision": "a476722483882dd40b8111f0eb64e1d7f43f56e4",
+			"revisionTime": "2017-08-29T19:49:58Z"
+		},
+		{
+			"checksumSHA1": "a2yC46a1qsJomgY6rb+FkTFiqmE=",
+			"path": "github.com/davecgh/go-spew/spew/testdata",
+			"revision": "a476722483882dd40b8111f0eb64e1d7f43f56e4",
+			"revisionTime": "2017-08-29T19:49:58Z"
 		},
 		{
 			"checksumSHA1": "ahHKblAvFWf5HMEanjmNjdVIAwU=",
@@ -601,6 +607,12 @@
 			"revisionTime": "2017-05-05T04:36:39Z"
 		},
 		{
+			"checksumSHA1": "RZOdTSZN/PgcTqko5LzIAzw+UT4=",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"revisionTime": "2016-01-10T10:55:54Z"
+		},
+		{
 			"checksumSHA1": "6OEUkwOM0qgI6YxR+BDEn6YMvpU=",
 			"origin": "github.com/hashicorp/terraform/vendor/github.com/posener/complete",
 			"path": "github.com/posener/complete",
@@ -634,6 +646,18 @@
 			"path": "github.com/satori/go.uuid",
 			"revision": "a1d06eb97378d097d4175c3284ea026937618477",
 			"revisionTime": "2017-08-28T21:41:01Z"
+		},
+		{
+			"checksumSHA1": "m7jW9/geqk1flilV96ghdtmyups=",
+			"path": "github.com/sergi/go-diff/diffmatchpatch",
+			"revision": "feef008d51ad2b3778f85d387ccf91735543008d",
+			"revisionTime": "2017-04-09T07:17:39Z"
+		},
+		{
+			"checksumSHA1": "Y9SmG2U/qez70e6PIe03dts063Y=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "890a5c3458b43e6104ff5da8dfa139d013d77544",
+			"revisionTime": "2017-07-05T02:17:15Z"
 		},
 		{
 			"checksumSHA1": "qgMa75aMGbkFY0jIqqqgVnCUoNA=",
