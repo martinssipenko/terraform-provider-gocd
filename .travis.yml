@@ -2,7 +2,6 @@
 
 language: go
 go:
-  - 1.8.x
   - 1.9.x
 
 services:
@@ -15,7 +14,6 @@ addons:
 
 matrix:
   allow_failures:
-    - go: 1.9.x
     - go: release
     - go: tip
   fast_finish: true
