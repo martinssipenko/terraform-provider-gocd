@@ -28,7 +28,4 @@ brew:
   github:
     owner: drewsonne
     name: homebrew-devops
-#  folder: Formula
-  homepage: https://github.com/drewsonne/gocdsdk
-  test: |
-    system "#{bin}/gocd --version"
+  homepage: https://github.com/drewsonne/terraform-provider-gocd
