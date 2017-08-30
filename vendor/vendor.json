@@ -519,7 +519,7 @@
 			"revisionTime": "2017-08-28T21:41:01Z"
 		},
 		{
-			"checksumSHA1": "RHU9Vj+MZBbb0N/ZXD8g3ZlkYrk=",
+			"checksumSHA1": "EHHrYLqEpTXzJMmZYMMFTGWDbaE=",
 			"path": "github.com/hashicorp/terraform/plugin/discovery",
 			"revision": "a1d06eb97378d097d4175c3284ea026937618477",
 			"revisionTime": "2017-08-28T21:41:01Z"
