@@ -2,7 +2,7 @@
 
 language: go
 go:
-  - 1.8.x
+  - 1.9.x
 
 services:
   - docker
@@ -11,6 +11,13 @@ addons:
   apt:
     packages:
     - rpm
+
+matrix:
+  allow_failures:
+    - go: release
+    - go: tip
+  fast_finish: true
+
 
 cache: pip
 
