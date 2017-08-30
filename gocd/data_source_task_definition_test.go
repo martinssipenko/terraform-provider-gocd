@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestDataSourceTaskDefinition(t *testing.T) {
+func testDataSourceTaskDefinition(t *testing.T) {
 	for i := 0; i <= 5; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_task_definition.%d", i),
