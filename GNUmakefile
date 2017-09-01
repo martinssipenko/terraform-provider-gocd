@@ -37,10 +37,10 @@ deploy_on_develop:
 
 
 ## General Targets
-teardown_docker:
+teardown-test-gocd:
 	docker-compose down
 
-cleanup: teardown_docker upload_logs
+cleanup: teardown-test-gocd upload_logs
 
 upload_logs:
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
