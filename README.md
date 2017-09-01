@@ -1,4 +1,4 @@
-# terraform-provider-gocd 0.0.7
+# terraform-provider-gocd 0.0.12
 
 [![GoDoc](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd)
 [![Build Status](https://travis-ci.org/drewsonne/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/drewsonne/terraform-provider-gocd)
@@ -6,8 +6,16 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/drewsonne/terraform-provider-gocd)](https://goreportcard.com/report/github.com/drewsonne/terraform-provider-gocd)
 
 ## Terraform provider
-
 Terraform provider for GoCD Server
+
+## Installation
+
+    $ brew tap drewsonne/tap
+    $ brew install terraform-provider-gocd
+    $ tf-install-provider gocd
+    
+__NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
+the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
 
 ### Building the Provider
 
