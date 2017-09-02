@@ -1,5 +1,3 @@
-# Needed for docker-compose
-
 language: go
 go:
   - 1.9.x
@@ -22,7 +20,8 @@ matrix:
   fast_finish: true
 
 
-cache: pip
+cache:
+  pip: true
 
 before_install:
   - make before_install
@@ -39,9 +38,6 @@ script:
   - make vendor-status
   - make vet
   - make script
-
-matrix:
-  fast_finish: true
 
 after_failure:
   - make after_failure
