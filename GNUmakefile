@@ -58,7 +58,7 @@ build: fmtcheck
 	go install
 
 test: fmtcheck
-	bash -x ./scripts/go-test.sh
+	bash ./scripts/go-test.sh
 
 testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
