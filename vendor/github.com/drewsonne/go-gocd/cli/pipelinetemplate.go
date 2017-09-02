@@ -115,7 +115,12 @@ func UpdatePipelineTemplateAction(c *cli.Context) error {
 		stages = append(stages, &st)
 	}
 
-	pt, r, err := cliAgent(c).PipelineTemplates.Update(context.Background(), c.String("template-name"), c.String("template-version"), stages)
+	ptr := gocd.PipelineTemplate{
+		Version: c.String("template-version"),
+		Stages:  stages,
+	}
+
+	pt, r, err := cliAgent(c).PipelineTemplates.Update(context.Background(), c.String("template-name"), &ptr)
 	return handleOutput(pt, r, "UpdatePipelineTemplate", err)
 }
 

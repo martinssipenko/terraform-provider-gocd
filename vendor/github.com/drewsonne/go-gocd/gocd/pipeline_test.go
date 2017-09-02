@@ -35,6 +35,12 @@ func testPipelineStageContainer(t *testing.T) {
 
 	assert.Equal(t, "mock-name", i.GetName())
 	assert.Len(t, i.GetStages(), 2)
+
+	i.AddStage(&Stage{})
+	assert.Len(t, i.GetStages(), 3)
+
+	i.SetStages([]*Stage{})
+	assert.Len(t, i.GetStages(), 0)
 }
 
 func testPipelineServicePaginationStub(t *testing.T) {

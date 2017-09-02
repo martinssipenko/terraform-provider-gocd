@@ -15,7 +15,7 @@ CLI tool to interace with GoCD Server.
 
 ##### Homebrew
 
-    $ brew tap drewsonne/devops
+    $ brew tap drewsonne/tap
     $ brew install go-gocd
 
 ##### Manual

@@ -2,8 +2,8 @@ package cli
 
 import (
 	"github.com/drewsonne/go-gocd/gocd"
-	"github.com/segmentio/go-prompt"
 	"github.com/urfave/cli"
+	"gopkg.in/AlecAivazis/survey.v1"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -47,13 +47,40 @@ func configureAction(c *cli.Context) error {
 // Build a default template
 func generateConfigFile() (string, error) {
 	cfg := gocd.Configuration{}
-	cfg.Server = prompt.StringRequired("GoCD Server (should contain '/go/' suffix)")
-	if u := prompt.String("Client Username"); u != "" {
-		cfg.Username = u
+
+	qs := []*survey.Question{
+		{
+			Name:     "gocd_server",
+			Prompt:   &survey.Input{Message: "GoCD Server (should contain '/go/' suffix)"},
+			Validate: survey.Required,
+		},
+		{
+			Name:   "username",
+			Prompt: &survey.Input{Message: "Client Username"},
+		},
+		{
+			Name:   "password",
+			Prompt: &survey.Password{Message: "Client Password"},
+		},
+		{
+			Name:   "ssl_check",
+			Prompt: &survey.Confirm{Message: "Validate SSL Certiicate?"},
+		},
 	}
-	if p := prompt.PasswordMasked("Client Password"); p != "" {
-		cfg.Password = p
-	}
+
+	a := struct {
+		GoCDServer string `survey:"gocd_server"`
+		Username   string
+		Password   string
+		SslCheck   bool `survey:"ssl_check"`
+	}{}
+
+	survey.Ask(qs, &a)
+
+	cfg.Server = a.GoCDServer
+	cfg.Username = a.Username
+	cfg.Password = a.Password
+	cfg.SslCheck = a.SslCheck
 
 	s, err := yaml.Marshal(cfg)
 	if err != nil {

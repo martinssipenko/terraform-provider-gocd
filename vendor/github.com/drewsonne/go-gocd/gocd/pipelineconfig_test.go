@@ -85,8 +85,7 @@ func testPipelineConfigUpdate(t *testing.T) {
 	p := Pipeline{
 		Version: "test-version",
 	}
-	pcs, _, err := client.PipelineConfigs.Update(context.Background(),
-		"test-name", &p)
+	pcs, _, err := client.PipelineConfigs.Update(context.Background(), "test-name", &p)
 	if err != nil {
 		t.Error(t, err)
 	}

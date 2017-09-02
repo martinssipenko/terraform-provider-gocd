@@ -72,6 +72,16 @@ func (pt *PipelineTemplate) GetName() string {
 	return pt.Name
 }
 
+// SetStages overwrites any existing stages
+func (pt *PipelineTemplate) SetStages(stages []*Stage) {
+	pt.Stages = stages
+}
+
+// AddStage appends a stage to this pipeline
+func (pt *PipelineTemplate) AddStage(stage *Stage) {
+	pt.Stages = append(pt.Stages, stage)
+}
+
 // RemoveLinks gets the PipelineTemplate ready to be submitted to the GoCD API.
 func (pt *PipelineTemplate) RemoveLinks() {
 	pt.Links = nil
@@ -132,10 +142,10 @@ func (pts *PipelineTemplatesService) Create(ctx context.Context, name string, st
 }
 
 // Update an PipelineTemplate object in the GoCD API.
-func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, version string, st []*Stage) (*PipelineTemplate, *APIResponse, error) {
+func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, template *PipelineTemplate) (*PipelineTemplate, *APIResponse, error) {
 	pt := &PipelineTemplateRequest{
 		Name:   name,
-		Stages: st,
+		Stages: template.Stages,
 	}
 	ptr := &PipelineTemplate{}
 
@@ -145,7 +155,7 @@ func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, ve
 		RequestBody:  pt,
 		ResponseBody: &ptr,
 		Headers: map[string]string{
-			"If-Match": fmt.Sprintf("\"%s\"", version),
+			"If-Match": fmt.Sprintf("\"%s\"", template.Version),
 		},
 	})
 

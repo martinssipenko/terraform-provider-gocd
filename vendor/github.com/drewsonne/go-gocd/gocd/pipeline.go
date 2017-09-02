@@ -9,6 +9,8 @@ import (
 type StageContainer interface {
 	GetStages() []*Stage
 	GetName() string
+	SetStages(stages []*Stage)
+	AddStage(stage *Stage)
 }
 
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
@@ -40,6 +42,16 @@ func (p *Pipeline) GetStages() []*Stage {
 // GetName of the pipeline
 func (p *Pipeline) GetName() string {
 	return p.Name
+}
+
+// SetStages overwrites any existing stages
+func (p *Pipeline) SetStages(stages []*Stage) {
+	p.Stages = stages
+}
+
+// AddStage appends a stage to this pipeline
+func (p *Pipeline) AddStage(stage *Stage) {
+	p.Stages = append(p.Stages, stage)
 }
 
 // Material describes an artifact dependency for a pipeline object.
