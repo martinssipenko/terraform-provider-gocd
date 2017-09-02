@@ -1,11 +1,12 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/drewsonne/go-gocd/gocd"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"context"
+	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 const STAGE_TYPE_PIPELINE = "pipeline"
@@ -134,7 +135,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 		existingPt.Stages = cleanPlaceHolderStage(existingPt.Stages)
 		existingPt.Stages = append(existingPt.Stages, &doc)
 
-		pt, _, err := client.PipelineTemplates.Update(ctx, pipelineTemplate, existingPt.Version, existingPt.Stages)
+		pt, _, err := client.PipelineTemplates.Update(ctx, pipelineTemplate, existingPt)
 		if err != nil {
 			return err
 		}
@@ -231,6 +232,16 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
+	stageExists := false
+	for _, stage := range updated.GetStages() {
+		if stage.Name == stageName {
+			stageExists = true
+		}
+	}
+
+	if stageExists {
+		return fmt.Errorf("Could not delete stage `%s`", stageName)
+	}
 
 	return nil
 }
@@ -305,4 +316,26 @@ func stagePlaceHolder() *gocd.Stage {
 			{Name: PLACEHOLDER_NAME},
 		},
 	}
+}
+
+func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.Stage) error {
+	doc.Approval.Type = "manual"
+	doc.Approval.Authorization = &gocd.Authorization{}
+	if users := data.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
+		doc.Approval.Authorization.Users = decodeConfigStringList(users)
+	} else if roles := data.Get("authorization_roles").(*schema.Set).List(); len(roles) > 0 {
+		doc.Approval.Authorization.Roles = decodeConfigStringList(roles)
+	}
+	return nil
+}
+
+func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
+	for _, rawjob := range jobs {
+		job := gocd.Job{}
+		if err := json.Unmarshal([]byte(rawjob), &job); err != nil {
+			return err
+		}
+		doc.Jobs = append(doc.Jobs, &job)
+	}
+	return nil
 }
