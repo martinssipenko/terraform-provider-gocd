@@ -62,6 +62,16 @@ type PipelineTemplate struct {
 	Stages   []*Stage                  `json:"stages,omitempty"`
 }
 
+// GetStages from the pipeline template
+func (pt *PipelineTemplate) GetStages() []*Stage {
+	return pt.Stages
+}
+
+// GetName of the pipeline template
+func (pt *PipelineTemplate) GetName() string {
+	return pt.Name
+}
+
 // RemoveLinks gets the PipelineTemplate ready to be submitted to the GoCD API.
 func (pt *PipelineTemplate) RemoveLinks() {
 	pt.Links = nil
