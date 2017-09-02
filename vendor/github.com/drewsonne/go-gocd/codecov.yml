@@ -1,8 +1,0 @@
-ignore:
-  - gocd/gen_*.go
-  - gen_*.go
-
-coverage:
-  precision: 2
-  round: down
-  range: "90...100"
