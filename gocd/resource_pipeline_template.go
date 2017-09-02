@@ -2,7 +2,6 @@ package gocd
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/pkg/errors"
@@ -109,15 +108,15 @@ func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) er
 	return nil
 }
 
-func extractStages(d *schema.ResourceData) []*gocd.Stage {
-	stages := []*gocd.Stage{}
-	for _, rawstage := range d.Get("stages").([]interface{}) {
-		stage := gocd.Stage{}
-		json.Unmarshal([]byte(rawstage.(string)), &stage)
-		stages = append(stages, &stage)
-	}
-	return stages
-}
+//func extractStages(d *schema.ResourceData) []*gocd.Stage {
+//	stages := []*gocd.Stage{}
+//	for _, rawstage := range d.Get("stages").([]interface{}) {
+//		stage := gocd.Stage{}
+//		json.Unmarshal([]byte(rawstage.(string)), &stage)
+//		stages = append(stages, &stage)
+//	}
+//	return stages
+//}
 
 func readPipelineTemplate(d *schema.ResourceData, p *gocd.PipelineTemplate, err error) error {
 
