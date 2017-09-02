@@ -109,10 +109,6 @@ schedule for those features can be found in the project for this github reposito
 This library's structure was initially inspired by [https://github.com/google/go-github](https://github.com/google/go-github).
 There may still be some vestigial code and structures from this library which will be removed in future revisions and 
 before v1.0.0 of this library.
-
-## To Do ##
-
- - Allow installation via homebrew.
  
 ## License ##
 

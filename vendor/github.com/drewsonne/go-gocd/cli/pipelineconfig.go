@@ -71,31 +71,26 @@ func CreatePipelineConfigAction(c *cli.Context) error {
 func UpdatePipelineConfigAction(c *cli.Context) error {
 	name := c.String("name")
 	if name == "" {
-		return handleOutput(nil, nil, "CreatePipelineConfig", errors.New("'--name' is missing"))
+		return handleOutput(nil, nil, "UpdatePipelineConfig", errors.New("'--name' is missing"))
 	}
 
 	version := c.String("pipeline-version")
 	if version == "" {
-		return handleOutput(nil, nil, "CreatePipelineConfig", errors.New("'--pipeline-version' is missing"))
-	}
-
-	group := c.String("group")
-	if group == "" {
-		return handleOutput(nil, nil, "CreatePipelineConfig", errors.New("'--group' is missing"))
+		return handleOutput(nil, nil, "UpdatePipelineConfig", errors.New("'--pipeline-version' is missing"))
 	}
 
 	pipeline := c.String("pipeline")
 	pipelineFile := c.String("pipeline-file")
 	if pipeline == "" && pipelineFile == "" {
 		return handeErrOutput(
-			"CreatePipelineConfig",
+			"UpdatePipelineConfig",
 			errors.New("One of '--pipeline-file' or '--pipeline' must be specified"),
 		)
 	}
 
 	if pipeline != "" && pipelineFile != "" {
 		return handeErrOutput(
-			"CreatePipelineConfig",
+			"UpdatePipelineConfig",
 			errors.New("Only one of '--pipeline-file' or '--pipeline' can be specified"),
 		)
 	}
@@ -105,7 +100,7 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 	if pipelineFile != "" {
 		pf, err = ioutil.ReadFile(pipelineFile)
 		if err != nil {
-			return handeErrOutput("CreatePipelineConfig", err)
+			return handeErrOutput("UpdatePipelineConfig", err)
 		}
 	} else {
 		pf = []byte(pipeline)
@@ -115,10 +110,10 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 	}
 	err = json.Unmarshal(pf, &p)
 	if err != nil {
-		return handeErrOutput("CreatePipelineConfig", err)
+		return handeErrOutput("UpdatePipelineConfig", err)
 	}
 
-	pc, r, err := cliAgent(c).PipelineConfigs.Update(context.Background(), group, name, p)
+	pc, r, err := cliAgent(c).PipelineConfigs.Update(context.Background(), name, p)
 	if err != nil {
 		return handeErrOutput("CreatePipelineConfig", err)
 	}
@@ -164,7 +159,6 @@ func UpdatePipelineConfigCommand() *cli.Command {
 		Action:   UpdatePipelineConfigAction,
 		Category: "Pipeline Configs",
 		Flags: []cli.Flag{
-			cli.StringFlag{Name: "group"},
 			cli.StringFlag{Name: "name"},
 			cli.StringFlag{Name: "pipeline-version"},
 			cli.StringFlag{Name: "pipeline"},

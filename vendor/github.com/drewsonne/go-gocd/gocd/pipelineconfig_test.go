@@ -15,6 +15,14 @@ func TestPipelineConfig(t *testing.T) {
 	t.Run("Create", testPipelineConfigCreate)
 	t.Run("Update", testPipelineConfigUpdate)
 	t.Run("Delete", testPipelineConfigDelete)
+	t.Run("Get", testPipelineConfigGet)
+}
+
+func testPipelineConfigGet(t *testing.T) {
+	p, resp, err := client.PipelineConfigs.Get(context.Background(), "mock-pipeline")
+	assert.Nil(t, p)
+	assert.Nil(t, resp)
+	assert.EqualError(t, err, "Not Implemented")
 }
 
 func testPipelineConfigDelete(t *testing.T) {
@@ -68,7 +76,7 @@ func testPipelineConfigUpdate(t *testing.T) {
 		}
 		assert.Equal(
 			t,
-			"{\n  \"group\": \"test-group\",\n  \"pipeline\": {\n    \"name\": \"\",\n    \"stages\": null,\n    \"version\": \"test-version\"\n  }\n}\n",
+			"{\n  \"pipeline\": {\n    \"name\": \"\",\n    \"stages\": null,\n    \"version\": \"test-version\"\n  }\n}\n",
 			string(b))
 		j, _ := ioutil.ReadFile("test/resources/pipelineconfig.0.json")
 		fmt.Fprint(w, string(j))
@@ -78,7 +86,7 @@ func testPipelineConfigUpdate(t *testing.T) {
 		Version: "test-version",
 	}
 	pcs, _, err := client.PipelineConfigs.Update(context.Background(),
-		"test-group", "test-name", &p)
+		"test-name", &p)
 	if err != nil {
 		t.Error(t, err)
 	}

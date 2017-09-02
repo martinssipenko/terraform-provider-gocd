@@ -40,7 +40,7 @@ func GetPipelineAction(c *cli.Context) error {
 	if c.String("name") == "" {
 		return handleOutput(nil, nil, "GetPipeline", errors.New("'--name' is missing"))
 	}
-	pgs, r, err := cliAgent(c).Pipelines.Get(context.Background(), c.String("name"), -1)
+	pgs, r, err := cliAgent(c).Pipelines.GetInstance(context.Background(), c.String("name"), -1)
 	if err != nil {
 		return handleOutput(nil, r, "GetPipeline", err)
 	}

@@ -20,6 +20,19 @@ func TestPipelineTemplate(t *testing.T) {
 	t.Run("RemoveLinks", tesPipelineTemplateRemoveLinks)
 	t.Run("Pipelines", testPipelineTemplatePipelines)
 	t.Run("Update", testPipelineTemplateUpdate)
+	t.Run("StageContainerI", testPipelineTemplateStageContainer)
+}
+
+func testPipelineTemplateStageContainer(t *testing.T) {
+
+	pt := &PipelineTemplate{
+		Name:   "mock-name",
+		Stages: []*Stage{{}, {}},
+	}
+	i := StageContainer(pt)
+
+	assert.Equal(t, "mock-name", i.GetName())
+	assert.Len(t, i.GetStages(), 2)
 }
 
 // TestPipelineTemplateCreate is a seperate test to avoid overlapping mock HandleFunc's.
