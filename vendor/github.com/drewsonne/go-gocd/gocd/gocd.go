@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 )
 
 const (
@@ -58,7 +59,8 @@ type APIRequest struct {
 
 // Client struct which acts as an interface to the GoCD Server. Exposes resource service handlers.
 type Client struct {
-	client *http.Client
+	clientMu sync.Mutex // clientMu protects the client during multi-threaded calls
+	client   *http.Client
 
 	BaseURL  *url.URL
 	Username string
@@ -158,6 +160,16 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 	c.Plugins = (*PluginsService)(&c.common)
 
 	return c
+}
+
+// Lock the client until release
+func (c *Client) Lock() {
+	c.clientMu.Lock()
+}
+
+// Unlock the client after a lock action
+func (c *Client) Unlock() {
+	c.clientMu.Unlock()
 }
 
 // NewRequest creates an HTTP requests to the GoCD API endpoints.
