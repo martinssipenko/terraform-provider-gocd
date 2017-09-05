@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"regexp"
 )
 
 const STAGE_TYPE_PIPELINE = "pipeline"
@@ -27,10 +28,7 @@ func resourcePipelineStage() *schema.Resource {
 		Delete: resourcePipelineStageDelete,
 		Exists: resourcePipelineStageExists,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				d.Set("name", d.Id())
-				return []*schema.ResourceData{d}, nil
-			},
+			State: resourcePipelineStageImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -86,8 +84,34 @@ func resourcePipelineStage() *schema.Resource {
 	}
 }
 
+func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
+	if err != nil {
+		return nil, err
+	}
+
+	d.Set("name", name)
+
+	if pType == STAGE_TYPE_PIPELINE {
+		d.Set("pipeline", pipeline)
+	} else if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
+		d.Set("pipeline_template", pipeline)
+	} else {
+		return nil, fmt.Errorf("Unexpected pipeline type `%s`", pType)
+	}
+
+	if err := resourcePipelineStageRead(d, meta); err != nil {
+		return nil, err
+	}
+
+	return []*schema.ResourceData{d}, nil
+}
+
 func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	stage, err := retrieveStage(d, meta)
+
+	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
+
+	stage, err := retrieveStage(pType, name, pipeline, d, meta)
 	if err != nil {
 		return false, err
 	}
@@ -160,7 +184,8 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
-	stage, err := retrieveStage(d, meta)
+	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
+	stage, err := retrieveStage(pType, name, pipeline, d, meta)
 	if err != nil {
 		return err
 	}
@@ -172,8 +197,42 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("environment_variables", stage.EnvironmentVariables)
 	d.Set("resources", stage.Resources)
 
-	//d.Set("approval",stage.Approval)
-	//d.Set("jobs",stage.Jobs)
+	if appr := stage.Approval; appr != nil {
+		if appr.Type == "manual" {
+			d.Set("manual_approval", true)
+		} else if appr.Type == "success_approval" {
+			d.Set("success_approval", true)
+		}
+		if auth := stage.Approval.Authorization; auth != nil {
+			if users := auth.Users; users != nil {
+				d.Set("authorization_users", users)
+			}
+			if roles := auth.Roles; roles != nil {
+				d.Set("authorization_roles", roles)
+			}
+		}
+	}
+
+	if jobs := stage.Jobs; len(jobs) > 0 {
+		stringJobs := []string{}
+		for _, job := range jobs {
+			s, err := job.JSONString()
+			if err != nil {
+				return err
+			}
+			stringJobs = append(stringJobs, s)
+		}
+
+		d.Set("jobs", stringJobs)
+	}
+
+	if pType == STAGE_TYPE_PIPELINE {
+		d.Set("pipeline", pipeline)
+	} else if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
+		d.Set("pipeline_template", pipeline)
+	} else {
+		return fmt.Errorf("Unexpected pipeline type `%s`", pType)
+	}
 
 	return nil
 }
@@ -198,6 +257,11 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
 	var existing gocd.StageContainer
+
+	// Make delete operation atomic
+	client.Lock()
+	defer client.Unlock()
+
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
 		existing, _, err = client.PipelineTemplates.Get(ctx, name)
 	} else if pType == STAGE_TYPE_PIPELINE {
@@ -228,6 +292,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 	} else if pType == STAGE_TYPE_PIPELINE {
 		updated, _, err = client.PipelineConfigs.Update(ctx, existing.GetName(), existing.(*gocd.Pipeline))
 	}
+
 	if err != nil {
 		return err
 	}
@@ -246,38 +311,25 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 	return nil
 }
 
-func retrieveStage(d *schema.ResourceData, meta interface{}) (*gocd.Stage, error) {
-	var stageName string
-	if name, hasName := d.GetOk("name"); hasName {
-		stageName = name.(string)
-	} else {
-		return nil, errors.New("Missing `name`")
-	}
+func retrieveStage(pType string, stageName string, pipeline string, d *schema.ResourceData, meta interface{}) (*gocd.Stage, error) {
 
 	var stages []*gocd.Stage
 	var existing gocd.StageContainer
-	var idFormat string
-
-	name, pType, err := pipelineNameType(d)
-	if err != nil {
-		return nil, err
-	}
+	var err error
 
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
 
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		existing, _, err = client.PipelineTemplates.Get(ctx, name)
-		idFormat = "template/%s/%s"
+		existing, _, err = client.PipelineTemplates.Get(ctx, pipeline)
 	} else if pType == STAGE_TYPE_PIPELINE {
-		existing, _, err = client.PipelineConfigs.Get(ctx, name)
-		idFormat = "pipeline/%s/%s"
+		existing, _, err = client.PipelineConfigs.Get(ctx, pipeline)
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	d.SetId(fmt.Sprintf(idFormat, existing.GetName(), stageName))
+	d.SetId(fmt.Sprintf("%s/%s/%s", pType, existing.GetName(), stageName))
 	stages = cleanPlaceHolderStage(existing.GetStages())
 
 	for _, stage := range stages {
@@ -338,4 +390,20 @@ func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
 		doc.Jobs = append(doc.Jobs, &job)
 	}
 	return nil
+}
+
+func parseGoCDPipelineStageId(d *schema.ResourceData) (pType string, pipeline string, stage string, err error) {
+	r, err := regexp.Compile(`^(template|pipeline)/([^/]+)/([^/]+)$`)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	id := d.Id()
+	matches := r.FindAllStringSubmatch(id, -1)
+
+	if len(matches) != 1 {
+		return "", "", "", fmt.Errorf("Could not parse the provided id `%s`", id)
+	}
+
+	return matches[0][1], matches[0][2], matches[0][3], nil
 }
