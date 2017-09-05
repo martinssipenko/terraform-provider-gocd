@@ -1,13 +1,13 @@
 package gocd
 
 import (
+	"context"
 	"fmt"
+	"github.com/drewsonne/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 	"strings"
 	"testing"
-	"github.com/hashicorp/terraform/terraform"
-	"github.com/drewsonne/go-gocd/gocd"
-	"context"
 )
 
 //func testResourcePipelineStageImportBasic(t *testing.T) {
