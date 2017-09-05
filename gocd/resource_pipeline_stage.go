@@ -92,12 +92,8 @@ func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*s
 
 	d.Set("name", name)
 
-	if pType == STAGE_TYPE_PIPELINE {
-		d.Set("pipeline", pipeline)
-	} else if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		d.Set("pipeline_template", pipeline)
-	} else {
-		return nil, fmt.Errorf("Unexpected pipeline type `%s`", pType)
+	if err := resourcePipelineStageSetPTypeName(d, pType, pipeline); err != nil {
+		return nil, err
 	}
 
 	if err := resourcePipelineStageRead(d, meta); err != nil {
@@ -226,12 +222,8 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 		d.Set("jobs", stringJobs)
 	}
 
-	if pType == STAGE_TYPE_PIPELINE {
-		d.Set("pipeline", pipeline)
-	} else if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		d.Set("pipeline_template", pipeline)
-	} else {
-		return fmt.Errorf("Unexpected pipeline type `%s`", pType)
+	if err := resourcePipelineStageSetPTypeName(d, pType, pipeline); err != nil {
+		return err
 	}
 
 	return nil
