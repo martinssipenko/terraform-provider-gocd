@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 )
 
@@ -157,6 +158,17 @@ type JobScheduleEnvVar struct {
 type JobScheduleLink struct {
 	Rel  string `xml:"rel,attr"`
 	HRef string `xml:"href,attr"`
+}
+
+// JSONString returns a string of this stage as a JSON object.
+func (j *Job) JSONString() (string, error) {
+	err := j.Validate()
+	if err != nil {
+		return "", err
+	}
+
+	bdy, err := json.MarshalIndent(j, "", "  ")
+	return string(bdy), err
 }
 
 // Validate a job structure has non-nil values on correct attributes

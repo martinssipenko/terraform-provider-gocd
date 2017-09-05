@@ -67,6 +67,16 @@ func (pt *PipelineTemplate) GetStages() []*Stage {
 	return pt.Stages
 }
 
+// GetStage from the pipeline template
+func (pt *PipelineTemplate) GetStage(stageName string) *Stage {
+	for _, stage := range pt.Stages {
+		if stage.Name == stageName {
+			return stage
+		}
+	}
+	return nil
+}
+
 // GetName of the pipeline template
 func (pt *PipelineTemplate) GetName() string {
 	return pt.Name

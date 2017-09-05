@@ -28,7 +28,7 @@ func testPipelineStageContainer(t *testing.T) {
 
 	p := &Pipeline{
 		Name:   "mock-name",
-		Stages: []*Stage{{}, {}},
+		Stages: []*Stage{{Name: "1"}, {Name: "2"}},
 	}
 
 	i := StageContainer(p)
@@ -36,8 +36,14 @@ func testPipelineStageContainer(t *testing.T) {
 	assert.Equal(t, "mock-name", i.GetName())
 	assert.Len(t, i.GetStages(), 2)
 
-	i.AddStage(&Stage{})
+	i.AddStage(&Stage{Name: "3"})
 	assert.Len(t, i.GetStages(), 3)
+
+	s1 := i.GetStage("1")
+	assert.Equal(t, s1.Name, "1")
+
+	sn := i.GetStage("hello")
+	assert.Nil(t, sn)
 
 	i.SetStages([]*Stage{})
 	assert.Len(t, i.GetStages(), 0)

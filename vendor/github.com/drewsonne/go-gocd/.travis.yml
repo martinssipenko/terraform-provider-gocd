@@ -13,19 +13,9 @@ addons:
 
 matrix:
   allow_failures:
-    - go: 1.9.x
     - go: release
     - go: tip
   fast_finish: true
-
-#cache:
-#  directories:
-#    - $GOPATH/src
-#    - $GOPATH/pkg
-
-jobs:
-  include:
-    - stage:
 
 before_install:
   - make before_install
@@ -44,10 +34,10 @@ deploy:
     script: make deploy_on_tag
     on:
       tags: true
-      condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
+      condition: $TRAVIS_GO_VERSION =~ ^1\.9(\.[0-9]+)?$
   - provider: script
     skip_cleanup: true
     script: make deploy_on_develop
     on:
       branch: develop
-      condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
+      condition: $TRAVIS_GO_VERSION =~ ^1\.9(\.[0-9]+)?$

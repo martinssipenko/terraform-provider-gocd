@@ -7,8 +7,9 @@ import (
 
 // StageContainer describes structs which contain stages
 type StageContainer interface {
-	GetStages() []*Stage
 	GetName() string
+	GetStages() []*Stage
+	GetStage(string) *Stage
 	SetStages(stages []*Stage)
 	AddStage(stage *Stage)
 }
@@ -37,6 +38,16 @@ type Pipeline struct {
 // GetStages from the pipeline
 func (p *Pipeline) GetStages() []*Stage {
 	return p.Stages
+}
+
+// GetStage from the pipeline template
+func (p *Pipeline) GetStage(stageName string) *Stage {
+	for _, stage := range p.Stages {
+		if stage.Name == stageName {
+			return stage
+		}
+	}
+	return nil
 }
 
 // GetName of the pipeline
