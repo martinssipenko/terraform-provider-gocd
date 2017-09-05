@@ -10,8 +10,7 @@ import (
 	"testing"
 )
 
-//func testResourcePipelineStageImportBasic(t *testing.T) {
-func testResourceStage(t *testing.T) {
+func testResourcePipelineStageImportBasic(t *testing.T) {
 	suffix := randomString(10)
 	rscId := "test-" + suffix
 	resourceName := "gocd_pipeline_stage." + rscId
