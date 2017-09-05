@@ -9,9 +9,10 @@ import (
 	"testing"
 )
 
-func testResourceStage(t *testing.T) {
-	t.Run("Basic", testResourceStageBasic)
-}
+//func testResourceStage(t *testing.T) {
+//	t.Run("Basic", testResourceStageBasic)
+//	t.Run("Import", testResourcePipelineStageImportBasic)
+//}
 
 func testResourceStageBasic(t *testing.T) {
 	r.Test(t, r.TestCase{

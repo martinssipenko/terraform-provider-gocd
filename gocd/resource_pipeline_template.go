@@ -16,10 +16,7 @@ func resourcePipelineTemplate() *schema.Resource {
 		Delete: resourcePipelineTemplateDelete,
 		Exists: resourcePipelineTemplateExists,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				d.Set("name", d.Id())
-				return []*schema.ResourceData{d}, nil
-			},
+			State: resourcePipelineTemplateImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -33,6 +30,11 @@ func resourcePipelineTemplate() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourcePipelineTemplateImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	d.Set("name", d.Id())
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
