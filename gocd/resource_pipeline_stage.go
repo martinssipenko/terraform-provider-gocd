@@ -85,8 +85,10 @@ func resourcePipelineStage() *schema.Resource {
 }
 
 func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
-	if err != nil {
+	var pType, pipeline, name string
+	var err error
+
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d); err != nil {
 		return nil, err
 	}
 
@@ -104,8 +106,10 @@ func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*s
 }
 
 func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
-	if err != nil {
+	var pType, pipeline, name string
+	var err error
+
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d); err != nil {
 		return false, err
 	}
 
@@ -118,6 +122,13 @@ func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool
 }
 
 func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error {
+	var existing *gocd.StageContainer
+	var updated *gocd.StageContainer
+
+	var pipelineName, pType string
+
+	var err error
+
 	doc := gocd.Stage{Approval: &gocd.Approval{}}
 
 	if name, hasName := d.GetOk("name"); hasName {
@@ -140,30 +151,26 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	client := meta.(*gocd.Client)
-	ctx := context.Background()
 	client.Lock()
 	defer client.Unlock()
 
-	pipelineName, pType, err := pipelineNameType(d)
-	if err != nil {
+	if pipelineName, pType, err = pipelineNameType(d); err != nil {
 		return err
 	}
 
-	var existing *gocd.StageContainer
-	var updated gocd.StageContainer
-	existing, err = getStageContainer(pType, pipelineName, meta)
+	existing, err = getStageContainer(pType, pipelineName, client)
 	if err != nil {
 		return err
 	}
 
 	(*existing).SetStages(cleanPlaceHolderStage((*existing).GetStages()))
 	(*existing).AddStage(&doc)
-	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		updated, _, err = client.PipelineTemplates.Update(ctx, pipelineName, (*existing).(*gocd.PipelineTemplate))
-	} else if pType == STAGE_TYPE_PIPELINE {
-		updated, _, err = client.PipelineConfigs.Update(ctx, pipelineName, (*existing).(*gocd.Pipeline))
+
+	if updated, err = updateStageContainer(pType, existing, client); err != nil {
+		return err
 	}
-	d.SetId(fmt.Sprintf("%s/%s/%s", pType, updated.GetName(), doc.Name))
+
+	d.SetId(fmt.Sprintf("%s/%s/%s", pType, (*updated).GetName(), doc.Name))
 
 	return err
 }
@@ -223,34 +230,30 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error {
-	var stageName string
-	if name, hasName := d.GetOk("name"); hasName {
-		stageName = name.(string)
-	} else {
-		return errors.New("Missing `name`")
-	}
+	var updated *gocd.StageContainer
+	var existing *gocd.StageContainer
+	var pipeline, pType string
+	var err error
 
-	pipeline, pType, err := pipelineNameType(d)
-	if err != nil {
+	if pipeline, pType, err = pipelineNameType(d); err != nil {
 		return err
 	}
 
 	client := meta.(*gocd.Client)
-	ctx := context.Background()
-	var existing *gocd.StageContainer
 
 	// Make delete operation atomic
 	client.Lock()
 	defer client.Unlock()
 
-	existing, err = getStageContainer(pType, pipeline, meta)
-	if err != nil {
+	// Retrieve Pipeline object so we have the latest version
+	if existing, err = getStageContainer(pType, pipeline, client); err != nil {
 		return err
 	}
 
 	stages := cleanPlaceHolderStage((*existing).GetStages())
 
 	cleanedStages := []*gocd.Stage{}
+	stageName := d.Get("name").(string)
 	for _, stage := range stages {
 		if stage.Name != stageName {
 			cleanedStages = append(cleanedStages, stage)
@@ -263,48 +266,32 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 
 	(*existing).SetStages(cleanedStages)
 
-	var updated gocd.StageContainer
-	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		updated, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
-	} else if pType == STAGE_TYPE_PIPELINE {
-		updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
-	}
-
-	if err != nil {
+	// Perform stage update
+	if updated, err = updateStageContainer(pType, existing, meta); err != nil {
 		return err
 	}
 
-	stageExists := false
-	for _, stage := range updated.GetStages() {
-		if stage.Name == stageName {
-			stageExists = true
-		}
-	}
-
-	if stageExists {
-		return fmt.Errorf("Could not delete stage `%s`", stageName)
+	if stage := (*updated).GetStage(stageName); stage != nil {
+		return fmt.Errorf("Could not delete stage `%s`. Does not exist.", stageName)
 	}
 
 	return nil
 }
 
 func retrieveStage(pType string, stageName string, pipeline string, d *schema.ResourceData, meta interface{}) (*gocd.Stage, error) {
-
-	var stages []*gocd.Stage
+	var existing *gocd.StageContainer
 	var err error
 
-	existing, err := getStageContainer(pType, pipeline, meta)
-	if err != nil {
+	client := meta.(*gocd.Client)
+
+	if existing, err = getStageContainer(pType, pipeline, client); err != nil {
 		return nil, err
 	}
 
 	d.SetId(fmt.Sprintf("%s/%s/%s", pType, (*existing).GetName(), stageName))
-	stages = cleanPlaceHolderStage((*existing).GetStages())
 
-	for _, stage := range stages {
-		if stage.Name == stageName {
-			return stage, nil
-		}
+	if stage := (*existing).GetStage(stageName); stage != nil {
+		return stage, nil
 	}
 
 	return nil, nil
@@ -319,10 +306,22 @@ func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string
 	return "", "", errors.New("Could not find `pipeline` nor `pipeline_template`")
 }
 
-func getStageContainer(pType string, pipelineName string, meta interface{}) (*gocd.StageContainer, error) {
-	var existing gocd.StageContainer
+func updateStageContainer(pType string, existing *gocd.StageContainer, meta interface{}) (*gocd.StageContainer, error) {
+	var updated gocd.StageContainer
 	var err error
 	client := meta.(*gocd.Client)
+	ctx := context.Background()
+	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
+		updated, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
+	} else if pType == STAGE_TYPE_PIPELINE {
+		updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
+	}
+	return &updated, err
+}
+
+func getStageContainer(pType string, pipelineName string, client *gocd.Client) (*gocd.StageContainer, error) {
+	var existing gocd.StageContainer
+	var err error
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
 		existing, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
@@ -376,15 +375,15 @@ func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
 }
 
 func parseGoCDPipelineStageId(d *schema.ResourceData) (pType string, pipeline string, stage string, err error) {
-	r, err := regexp.Compile(`^(template|pipeline)/([^/]+)/([^/]+)$`)
-	if err != nil {
+	var r *regexp.Regexp
+	var matches [][]string
+
+	if r, err = regexp.Compile(`^(template|pipeline)/([^/]+)/([^/]+)$`); err != nil {
 		return "", "", "", err
 	}
 
 	id := d.Id()
-	matches := r.FindAllStringSubmatch(id, -1)
-
-	if len(matches) != 1 {
+	if matches = r.FindAllStringSubmatch(id, -1); len(matches) != 1 {
 		return "", "", "", fmt.Errorf("Could not parse the provided id `%s`", id)
 	}
 
