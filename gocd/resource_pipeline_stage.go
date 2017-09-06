@@ -125,7 +125,6 @@ func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool
 func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error {
 	var existing *gocd.StageContainer
 	var updated *gocd.StageContainer
-	var pipelineName, pType string
 	var err error
 
 	doc := gocd.Stage{
@@ -150,9 +149,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	client.Lock()
 	defer client.Unlock()
 
-	if pipelineName, pType, err = pipelineNameType(d); err != nil {
-		return err
-	}
+	pipelineName, pType := pipelineNameType(d)
 
 	if existing, err = getStageContainer(pType, pipelineName, client); err != nil {
 		return err
@@ -229,12 +226,9 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error
 func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error {
 	var updated *gocd.StageContainer
 	var existing *gocd.StageContainer
-	var pipeline, pType string
 	var err error
 
-	if pipeline, pType, err = pipelineNameType(d); err != nil {
-		return err
-	}
+	pipeline, pType := pipelineNameType(d)
 
 	client := meta.(*gocd.Client)
 
@@ -292,13 +286,11 @@ func retrieveStage(pType string, stageName string, pipeline string, d *schema.Re
 	return nil, nil
 }
 
-func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string, err error) {
+func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string) {
 	if pipelineTemplateI, hasPipelineTemplate := d.GetOk("pipeline_template"); hasPipelineTemplate {
-		return pipelineTemplateI.(string), STAGE_TYPE_PIPELINE_TEMPLATE, nil
-	} else if pipelineI, hasPipeline := d.GetOk("pipeline"); hasPipeline {
-		return pipelineI.(string), STAGE_TYPE_PIPELINE, nil
+		return pipelineTemplateI.(string), STAGE_TYPE_PIPELINE_TEMPLATE
 	}
-	return "", "", errors.New("Could not find `pipeline` nor `pipeline_template`")
+	return d.Get("pipeline").(string), STAGE_TYPE_PIPELINE
 }
 
 func updateStageContainer(pType string, existing *gocd.StageContainer, client *gocd.Client) (*gocd.StageContainer, error) {
