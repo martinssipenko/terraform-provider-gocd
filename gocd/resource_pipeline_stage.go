@@ -70,11 +70,11 @@ func resourcePipelineStage() *schema.Resource {
 				Optional: true,
 				Elem:     stringArg,
 			},
-			"pipeline": {
-				Type:          schema.TypeString,
-				ConflictsWith: []string{"pipeline_template"},
-				Optional:      true,
-			},
+			//"pipeline": {
+			//	Type:          schema.TypeString,
+			//	ConflictsWith: []string{"pipeline_template"},
+			//	Optional:      true,
+			//},
 			"pipeline_template": {
 				Type:          schema.TypeString,
 				ConflictsWith: []string{"pipeline"},
@@ -287,10 +287,10 @@ func retrieveStage(pType string, stageName string, pipeline string, d *schema.Re
 }
 
 func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string) {
-	if pipelineTemplateI, hasPipelineTemplate := d.GetOk("pipeline_template"); hasPipelineTemplate {
-		return pipelineTemplateI.(string), STAGE_TYPE_PIPELINE_TEMPLATE
-	}
-	return d.Get("pipeline").(string), STAGE_TYPE_PIPELINE
+	//if pipelineI, hasPipeline := d.GetOk("pipeline"); hasPipeline {
+	//	return pipelineI.(string), STAGE_TYPE_PIPELINE
+	//}
+	return d.Get("pipeline_template").(string), STAGE_TYPE_PIPELINE_TEMPLATE
 }
 
 func updateStageContainer(pType string, existing *gocd.StageContainer, client *gocd.Client) (*gocd.StageContainer, error) {
@@ -299,9 +299,10 @@ func updateStageContainer(pType string, existing *gocd.StageContainer, client *g
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
 		updated, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
-	} else if pType == STAGE_TYPE_PIPELINE {
-		updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
 	}
+	//else if pType == STAGE_TYPE_PIPELINE {
+	//	updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
+	//}
 	return &updated, err
 }
 
@@ -311,9 +312,10 @@ func getStageContainer(pType string, pipelineName string, client *gocd.Client) (
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
 		existing, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
-	} else if pType == STAGE_TYPE_PIPELINE {
-		existing, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
 	}
+	//else if pType == STAGE_TYPE_PIPELINE {
+	//	existing, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
+	//}
 
 	return &existing, err
 
