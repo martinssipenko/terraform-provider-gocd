@@ -128,8 +128,10 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	var pipelineName, pType string
 	var err error
 
-	doc := gocd.Stage{Approval: &gocd.Approval{}}
-	doc.Name = d.Get("name").(string)
+	doc := gocd.Stage{
+		Name:     d.Get("name").(string),
+		Approval: &gocd.Approval{},
+	}
 
 	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
 		dataSourceStageParseManuallApproval(d, &doc)
