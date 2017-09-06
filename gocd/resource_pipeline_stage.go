@@ -219,8 +219,8 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error {
-	return errors.New("Not implemented.")
+func resourcePipelineStageUpdate(_ *schema.ResourceData, _ interface{}) error {
+	return errors.New("not implemented")
 }
 
 func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error {
@@ -263,7 +263,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if stage := (*updated).GetStage(stageName); stage != nil {
-		return fmt.Errorf("Could not delete stage `%s`. Does not exist.", stageName)
+		return fmt.Errorf("could not delete stage `%s` as it does not exist", stageName)
 	}
 
 	return nil
@@ -371,5 +371,5 @@ func parseGoCDPipelineStageId(d *schema.ResourceData) (pType string, pipeline st
 		return matches[0][1], matches[0][2], matches[0][3], nil
 	}
 
-	return "", "", "", fmt.Errorf("Could not parse the provided id `%s`", id)
+	return "", "", "", fmt.Errorf("could not parse the provided id `%s`", id)
 }
