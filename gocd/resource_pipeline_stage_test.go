@@ -5,13 +5,73 @@ import (
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func testResourceStage(t *testing.T) {
 	t.Run("Basic", testResourceStageBasic)
 	t.Run("Import", testResourcePipelineStageImportBasic)
+	t.Run("PTypeName", testResourcePipelineStagePtypeName)
+}
+
+func testResourcePipelineStagePtypeName(t *testing.T) {
+	t.Run("Template", testResourcePipelineStagePtypeNameTemplate)
+	t.Run("Pipeline", testResourcePipelineStagePtypeNamePipeline)
+	t.Run("Fail", testResourcePipelineStagePtypeNameFail)
+}
+
+func testResourcePipelineStagePtypeNameFail(t *testing.T) {
+	ds := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"pipeline":          {Type: schema.TypeString, Optional: true},
+		"pipeline_template": {Type: schema.TypeString, Optional: true},
+	}}).Data(&terraform.InstanceState{})
+	err := resourcePipelineStageSetPTypeName(ds, "unknown-type", "test-pipeline")
+	assert.EqualError(t, err, "Unexpected pipeline type `unknown-type`")
+
+	p, pOk := ds.GetOk("pipeline_template")
+	assert.False(t, pOk)
+	assert.Empty(t, p)
+
+	pt, ptOk := ds.GetOk("pipeline")
+	assert.False(t, ptOk)
+	assert.Empty(t, pt)
+}
+
+func testResourcePipelineStagePtypeNamePipeline(t *testing.T) {
+	ds := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"pipeline":          {Type: schema.TypeString, Optional: true},
+		"pipeline_template": {Type: schema.TypeString, Optional: true},
+	}}).Data(&terraform.InstanceState{})
+	err := resourcePipelineStageSetPTypeName(ds, STAGE_TYPE_PIPELINE, "test-pipeline")
+	assert.Nil(t, err)
+
+	p, pOk := ds.GetOk("pipeline_template")
+	assert.False(t, pOk)
+	assert.Empty(t, p)
+
+	pt, ptOk := ds.GetOk("pipeline")
+	assert.True(t, ptOk)
+	assert.Equal(t, pt, "test-pipeline")
+}
+
+func testResourcePipelineStagePtypeNameTemplate(t *testing.T) {
+	ds := (&schema.Resource{Schema: map[string]*schema.Schema{
+		"pipeline":          {Type: schema.TypeString, Optional: true},
+		"pipeline_template": {Type: schema.TypeString, Optional: true},
+	}}).Data(&terraform.InstanceState{})
+	err := resourcePipelineStageSetPTypeName(ds, STAGE_TYPE_PIPELINE_TEMPLATE, "test-pipeline-template")
+	assert.Nil(t, err)
+
+	p, pOk := ds.GetOk("pipeline")
+	assert.False(t, pOk)
+	assert.Empty(t, p)
+
+	pt, ptOk := ds.GetOk("pipeline_template")
+	assert.True(t, ptOk)
+	assert.Equal(t, pt, "test-pipeline-template")
 }
 
 func testResourceStageBasic(t *testing.T) {

@@ -105,7 +105,6 @@ func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*s
 
 func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
-
 	if err != nil {
 		return false, err
 	}
@@ -347,7 +346,6 @@ func cleanPlaceHolderStage(stages []*gocd.Stage) []*gocd.Stage {
 
 func stagePlaceHolder() *gocd.Stage {
 	return &gocd.Stage{
-
 		Name: PLACEHOLDER_NAME,
 		Jobs: []*gocd.Job{
 			{Name: PLACEHOLDER_NAME},
