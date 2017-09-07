@@ -76,9 +76,9 @@ func resourcePipelineStage() *schema.Resource {
 			//	Optional:      true,
 			//},
 			"pipeline_template": {
-				Type:          schema.TypeString,
-				ConflictsWith: []string{"pipeline"},
-				Optional:      true,
+				Type: schema.TypeString,
+				//ConflictsWith: []string{"pipeline"},
+				Optional: true,
 			},
 		},
 	}
@@ -88,7 +88,7 @@ func resourcePipelineStageImport(d *schema.ResourceData, meta interface{}) ([]*s
 	var pType, pipeline, name string
 	var err error
 
-	if pType, pipeline, name, err = parseGoCDPipelineStageId(d); err != nil {
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d.Id()); err != nil {
 		return nil, err
 	}
 
@@ -109,7 +109,7 @@ func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool
 	var pType, pipeline, name string
 	var err error
 
-	if pType, pipeline, name, err = parseGoCDPipelineStageId(d); err != nil {
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d.Id()); err != nil {
 		return false, err
 	}
 
@@ -171,7 +171,7 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	var stage *gocd.Stage
 
 	client := meta.(*gocd.Client)
-	pType, pipeline, name, err := parseGoCDPipelineStageId(d)
+	pType, pipeline, name, err := parseGoCDPipelineStageId(d.Id())
 	if stage, err = retrieveStage(pType, name, pipeline, d, client); err != nil {
 		return err
 	}
@@ -362,13 +362,10 @@ func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
 	return nil
 }
 
-func parseGoCDPipelineStageId(d *schema.ResourceData) (pType string, pipeline string, stage string, err error) {
+func parseGoCDPipelineStageId(id string) (pType string, pipeline string, stage string, err error) {
 	var r *regexp.Regexp
-	if r, err = regexp.Compile(`^(template|pipeline)/([^/]+)/([^/]+)$`); err != nil {
-		return "", "", "", err
-	}
+	r, _ = regexp.Compile(`^(template|pipeline)/([^/]+)/([^/]+)$`)
 
-	id := d.Id()
 	if matches := r.FindAllStringSubmatch(id, -1); len(matches) == 1 {
 		return matches[0][1], matches[0][2], matches[0][3], nil
 	}

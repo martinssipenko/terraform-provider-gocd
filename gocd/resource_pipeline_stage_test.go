@@ -15,6 +15,13 @@ func testResourceStage(t *testing.T) {
 	t.Run("Basic", testResourceStageBasic)
 	t.Run("Import", testResourcePipelineStageImportBasic)
 	t.Run("PTypeName", testResourcePipelineStagePtypeName)
+	t.Run("Helpers", testResourcePipelineStageHelpers)
+	t.Run("Update", testResourcePipelineStageUpdate)
+}
+
+func testResourcePipelineStageUpdate(t *testing.T) {
+	err := resourcePipelineStageUpdate(nil, nil)
+	assert.EqualError(t, err, "not implemented")
 }
 
 func testResourcePipelineStagePtypeName(t *testing.T) {
