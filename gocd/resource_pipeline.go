@@ -172,9 +172,11 @@ func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, err
 		return false, errors.New("`name` can not be empty")
 	}
 
-	p, _, err := meta.(*gocd.Client).PipelineConfigs.Get(context.Background(), name)
-	exists := (p.Name == name) && (err == nil)
-	return exists, err
+	if p, _, err := meta.(*gocd.Client).PipelineConfigs.Get(context.Background(), name); err != nil {
+		return false, err
+	} else {
+		return (p.Name == name), nil
+	}
 }
 
 func resourcePipelineStateImport() *schema.ResourceImporter {
@@ -192,6 +194,8 @@ func extractPipeline(d *schema.ResourceData) *gocd.Pipeline {
 	if template, hasTemplate := d.GetOk("template"); hasTemplate {
 		p.Template = template.(string)
 	}
+
+	p.Name = d.Get("name").(string)
 
 	rawMaterials := d.Get("materials")
 	if materials := rawMaterials.([]interface{}); len(materials) > 0 {
@@ -235,6 +239,7 @@ func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
 
 			m.Attributes = attr
 		}
+		ms = append(ms, m)
 
 	}
 	return ms
