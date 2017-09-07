@@ -29,15 +29,6 @@ func resourcePipeline() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"stages": {
-				Type:          schema.TypeList,
-				Optional:      true,
-				ConflictsWith: []string{"template"},
-				Elem: &schema.Schema{
-					Type:             schema.TypeString,
-					DiffSuppressFunc: supressJSONDiffs,
-				},
-			},
 			"template": {
 				Type:          schema.TypeString,
 				Optional:      true,
@@ -261,5 +252,6 @@ func readPipeline(d *schema.ResourceData, p *gocd.PipelineInstance, err error) e
 	}
 
 	d.SetId(p.Name)
-	d.Set("Version",p.)
+	//d.Set("Version",p.)
+	return nil
 }

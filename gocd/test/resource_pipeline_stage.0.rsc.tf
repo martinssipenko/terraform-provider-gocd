@@ -6,7 +6,7 @@ data "gocd_task_definition" "test" {
   arguments = [
     "-debug",
     "version"]
-  working_directory = "/tmp/"
+  working_directory = "tmp/"
 }
 
 data "gocd_job_definition" "test" {
@@ -15,12 +15,17 @@ data "gocd_job_definition" "test" {
     "${data.gocd_task_definition.test.json}"]
 }
 
-data "gocd_stage_definition" "test" {
-  name = "stage_name"
+resource "gocd_pipeline_stage" "test-stage" {
+  name = "test-stage"
   jobs = [
     "${data.gocd_job_definition.test.json}"]
   manual_approval = true
   authorization_roles = [
     "one",
     "two"]
+  pipeline_template = "${gocd_pipeline_template.test-pipeline.id}"
+}
+
+resource "gocd_pipeline_template" "test-pipeline" {
+  name = "test-pipeline-template"
 }

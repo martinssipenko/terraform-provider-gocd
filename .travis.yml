@@ -1,8 +1,9 @@
-# Needed for docker-compose
-
 language: go
 go:
-  - 1.8.x
+  - 1.9.x
+  - release
+  - tip
+
 
 services:
   - docker
@@ -12,17 +13,17 @@ addons:
     packages:
     - rpm
 
+matrix:
+  allow_failures:
+    - go: release
+    - go: tip
+  fast_finish: true
+
+
 cache:
   pip: true
-  directories:
-    - $GOPATH/src/github.com/golang/lint
-    - $GOPATH/src/github.com/kardianos/govendor
-    - $GOPATH/src/github.com/goreleaser/goreleaser
-    - $GOPATH/src/github.com/sergi/go-diff
-
 
 before_install:
-  - pip install awscli
   - make before_install
 
 install:
@@ -38,9 +39,6 @@ script:
   - make vet
   - make script
 
-matrix:
-  fast_finish: true
-
 after_failure:
   - make after_failure
 
@@ -55,7 +53,7 @@ deploy:
     script: make deploy_on_tag
     on:
       tags: true
-      condition: $TRAVIS_GO_VERSION =~ ^1\.8\.[0-9]+$
+      condition: $TRAVIS_GO_VERSION =~ ^1\.9(\.[0-9]+)?$
   - provider: script
     script: make deploy_on_develop
     on:

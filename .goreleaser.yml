@@ -5,12 +5,17 @@ project_name: terraform-provider-gocd
 
 builds:
   - binary: terraform-provider-gocd
+    env:
+      - CGO_ENABLED=0
     goos:
       - windows
       - darwin
       - linux
     goarch:
       - amd64
+    ignore:
+      - goos: darwin
+        goarch: 386
 
 archive:
   name_template: "terraform-provider-gocd-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
@@ -24,10 +29,10 @@ archive:
     - README.md
     - CHANGELOG.md
 
-#brew:
-#  github:
-#    owner: drewsonne
-#    name: homebrew-devops
-#  homepage: https://github.com/drewsonne/terraform-provider-gocd
-#  test: |
-#    system "#{bin}/gocd --version"
+brew:
+  github:
+    owner: drewsonne
+    name: homebrew-devops
+  homepage: https://github.com/drewsonne/terraform-provider-gocd
+  test: |
+    system "#{bin}/terraform-provider-gocd; [[ $? -eq 1 ]]"
