@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
-	"github.com/hashicorp/terraform/helper/resource"
+	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"strings"
 	"testing"
@@ -14,11 +14,11 @@ func testResourcePipelineTemplateImportBasic(t *testing.T) {
 	suffix := randomString(10)
 	resourceName := fmt.Sprintf("gocd_pipeline_template.test-%s", suffix)
 
-	resource.Test(t, resource.TestCase{
+	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
 		CheckDestroy: testGocdPipelineTemplateDestroy,
-		Steps: []resource.TestStep{
+		Steps: []r.TestStep{
 			{
 				Config: testGocdPipelineTemplateConfig(suffix),
 			},
