@@ -16,9 +16,8 @@ travis: before_install script after_success deploy_on_develop
 before_install:
 	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
-	go get -u github.com/kardianos/govendor
 	go get -u github.com/goreleaser/goreleaser
-	go get -u github.com/sergi/go-diff/diffmatchpatch
+	pip install awscli --upgrade --user
 
 script: testacc
 
@@ -38,13 +37,12 @@ deploy_on_develop:
 
 
 ## General Targets
-teardown_docker:
+teardown-test-gocd:
 	docker-compose down
 
-cleanup: teardown_docker upload_logs
+cleanup: teardown-test-gocd upload_logs
 
 upload_logs:
-	pip install awscli
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
@@ -60,7 +58,7 @@ build: fmtcheck
 	go install
 
 test: fmtcheck
-	bash -x ./scripts/go-test.sh
+	bash ./scripts/go-test.sh
 
 testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
@@ -83,9 +81,6 @@ fmtcheck:
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
-vendor-status:
-	@govendor status
 
 test-compile:
 	@if [ "$(TEST)" = "./..." ]; then \

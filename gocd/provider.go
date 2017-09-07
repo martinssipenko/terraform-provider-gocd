@@ -7,21 +7,26 @@ import (
 	"os"
 )
 
+func Provider() terraform.ResourceProvider {
+	return SchemaProvider()
+}
+
 // SchemaProvider describing the required configs to interact with GoCD server. Environment variables can also be set:
 //   baseurl        - GOCD_URL
 //   username       - GOCD_USERNAME
 //   password       - GOCD_PASSWORD
 //   skip_ssl_check - GOCD_SKIP_SSL_CHECK
-func Provider() terraform.ResourceProvider {
+func SchemaProvider() *schema.Provider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"gocd_stage_definition": dataSourceGocdStageTemplate(),
-			"gocd_job_definition":   dataSourceGocdJobTemplate(),
-			"gocd_task_definition":  dataSourceGocdTaskDefinition(),
+			//"gocd_stage_definition": dataSourceGocdStageTemplate(),
+			"gocd_job_definition":  dataSourceGocdJobTemplate(),
+			"gocd_task_definition": dataSourceGocdTaskDefinition(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_pipeline_template": resourcePipelineTemplate(),
 			"gocd_pipeline":          resourcePipeline(),
+			"gocd_pipeline_stage":    resourcePipelineStage(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {
