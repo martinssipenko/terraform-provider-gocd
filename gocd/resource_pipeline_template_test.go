@@ -2,7 +2,6 @@ package gocd
 
 import (
 	"fmt"
-	"github.com/drewsonne/go-gocd/gocd"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -21,27 +20,6 @@ func testResourcePipelineTemplate(t *testing.T) {
 func testResourcePipelineTemplateReadHelper(t *testing.T) {
 
 	t.Run("MissingName", testResourcePipelineTemplateReadHelperMissingName)
-	t.Run("JSONFail", testResourcePipelineTemplateReadHelperJSONFail)
-}
-
-func testResourcePipelineTemplateReadHelperJSONFail(t *testing.T) {
-	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
-		"name": {Type: schema.TypeString, Required: true},
-	}}).Data(&terraform.InstanceState{
-		Attributes: map[string]string{"name": "mock-name"},
-	})
-
-	p := gocd.PipelineTemplate{
-		Name: "mock-name",
-		Stages: []*gocd.Stage{
-			{Name: ""},
-		},
-	}
-
-	err := readPipelineTemplate(rd, &p, nil)
-
-	assert.EqualError(t, err, "`gocd.Stage.Name` is empty")
-
 }
 
 func testResourcePipelineTemplateReadHelperMissingName(t *testing.T) {
@@ -76,39 +54,11 @@ func testResourcePipelineTemplateBasic(t *testing.T) {
 					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline"),
 					testCheckPipelineTemplateName(
 						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate1StageCount("gocd_pipeline_template.test-pipeline"),
-				),
-			},
-			{
-				Config: testFile("resource_pipeline_template.1.rsc.tf"),
-				Check: r.ComposeTestCheckFunc(
-					testCheckPipelineTemplateExists("gocd_pipeline_template.test-pipeline"),
-					testCheckPipelineTemplateName(
-						"gocd_pipeline_template.test-pipeline", "template0-terraform"),
-					testCheckPipelineTemplate2StageCount("gocd_pipeline_template.test-pipeline"),
 				),
 			},
 		},
 	})
 
-}
-
-func testCheckPipelineTemplate1StageCount(resource string) r.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if rs := s.RootModule().Resources[resource].Primary; rs.Attributes["stages.#"] != "1" {
-			return fmt.Errorf("Expected 1 stage. Found '%s'", rs.Attributes["stages.#"])
-		}
-		return nil
-	}
-}
-
-func testCheckPipelineTemplate2StageCount(resource string) r.TestCheckFunc {
-	return func(s *terraform.State) error {
-		if rs := s.RootModule().Resources[resource].Primary; rs.Attributes["stages.#"] != "2" {
-			return fmt.Errorf("Expected 2 stages. Found '%s'", rs.Attributes["stages.#"])
-		}
-		return nil
-	}
 }
 
 func testCheckPipelineTemplateName(resource string, id string) r.TestCheckFunc {

@@ -20,6 +20,31 @@ func TestPipelineTemplate(t *testing.T) {
 	t.Run("RemoveLinks", tesPipelineTemplateRemoveLinks)
 	t.Run("Pipelines", testPipelineTemplatePipelines)
 	t.Run("Update", testPipelineTemplateUpdate)
+	t.Run("StageContainerI", testPipelineTemplateStageContainer)
+}
+
+func testPipelineTemplateStageContainer(t *testing.T) {
+
+	pt := &PipelineTemplate{
+		Name:   "mock-name",
+		Stages: []*Stage{{Name: "1"}, {Name: "2"}},
+	}
+	i := StageContainer(pt)
+
+	assert.Equal(t, "mock-name", i.GetName())
+	assert.Len(t, i.GetStages(), 2)
+
+	i.AddStage(&Stage{Name: "3"})
+	assert.Len(t, i.GetStages(), 3)
+
+	s1 := i.GetStage("1")
+	assert.Equal(t, s1.Name, "1")
+
+	sn := i.GetStage("hello")
+	assert.Nil(t, sn)
+
+	i.SetStages([]*Stage{})
+	assert.Len(t, i.GetStages(), 0)
 }
 
 // TestPipelineTemplateCreate is a seperate test to avoid overlapping mock HandleFunc's.
@@ -52,16 +77,17 @@ func TestPipelineTemplateCreate(t *testing.T) {
 func testPipelineTemplateUpdate(t *testing.T) {
 	mux.HandleFunc("/api/admin/templates/test-config", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.Method, "PUT", "Unexpected HTTP method")
-		//j, _ := ioutil.ReadAll(r.Body)
-		//assert.Equal(t, "", string(j))
 		j, _ := ioutil.ReadFile("test/resources/pipelinetemplate.1.json")
 		fmt.Fprint(w, string(j))
 	})
 
 	pt, _, err := client.PipelineTemplates.Update(context.Background(),
 		"test-config",
-		"test-version",
-		[]*Stage{{}},
+		&PipelineTemplate{
+			Stages: []*Stage{
+				{},
+			},
+		},
 	)
 	if err != nil {
 		t.Error(err)

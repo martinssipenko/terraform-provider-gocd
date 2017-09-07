@@ -17,6 +17,27 @@ func TestTaskValidate(t *testing.T) {
 	t.Run("Fail", taskValidateFail)
 	t.Run("SuccessExec", taskValidateSuccessExec)
 	t.Run("SuccessAnt", taskValidateSuccessAnt)
+	t.Run("JSONString", testJobJSONString)
+	t.Run("JSONStringFail", testJobJSONStringFail)
+}
+
+func testJobJSONStringFail(t *testing.T) {
+	jb := Job{}
+	_, err := jb.JSONString()
+	assert.EqualError(t, err, "`gocd.Jobs.Name` is empty")
+}
+
+func testJobJSONString(t *testing.T) {
+	jb := Job{Name: "test-job"}
+
+	j, err := jb.JSONString()
+	if err != nil {
+		assert.Nil(t, err)
+	}
+	assert.Equal(
+		t, `{
+  "name": "test-job"
+}`, j)
 }
 
 func taskTaskValidateListScheduled(t *testing.T) {

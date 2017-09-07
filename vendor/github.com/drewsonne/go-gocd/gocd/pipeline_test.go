@@ -21,6 +21,32 @@ func TestPipelineService(t *testing.T) {
 	t.Run("Unpause", testPipelineServiceUnpause)
 	t.Run("ReleaseLock", testPipelineServiceReleaseLock)
 	t.Run("PaginationStub", testPipelineServicePaginationStub)
+	t.Run("StageContainer", testPipelineStageContainer)
+}
+
+func testPipelineStageContainer(t *testing.T) {
+
+	p := &Pipeline{
+		Name:   "mock-name",
+		Stages: []*Stage{{Name: "1"}, {Name: "2"}},
+	}
+
+	i := StageContainer(p)
+
+	assert.Equal(t, "mock-name", i.GetName())
+	assert.Len(t, i.GetStages(), 2)
+
+	i.AddStage(&Stage{Name: "3"})
+	assert.Len(t, i.GetStages(), 3)
+
+	s1 := i.GetStage("1")
+	assert.Equal(t, s1.Name, "1")
+
+	sn := i.GetStage("hello")
+	assert.Nil(t, sn)
+
+	i.SetStages([]*Stage{})
+	assert.Len(t, i.GetStages(), 0)
 }
 
 func testPipelineServicePaginationStub(t *testing.T) {
@@ -80,7 +106,7 @@ func testPipelineServiceCreate(t *testing.T) {
 				},
 			},
 		},
-		Stages: []Stage{
+		Stages: []*Stage{
 			{
 				Name:           "defaultStage",
 				FetchMaterials: true,
@@ -129,7 +155,7 @@ func testPipelineServiceGet(t *testing.T) {
 		fmt.Fprint(w, string(j))
 	})
 
-	p, _, err := client.Pipelines.Get(context.Background(), "test-pipeline", 0)
+	p, _, err := client.Pipelines.GetInstance(context.Background(), "test-pipeline", 0)
 	if err != nil {
 		t.Error(err)
 	}

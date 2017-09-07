@@ -37,10 +37,10 @@ deploy_on_develop:
 
 
 ## General Targets
-teardown_docker:
+teardown-test-gocd:
 	docker-compose down
 
-cleanup: teardown_docker upload_logs
+cleanup: teardown-test-gocd upload_logs
 
 upload_logs:
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
@@ -58,7 +58,7 @@ build: fmtcheck
 	go install
 
 test: fmtcheck
-	bash -x ./scripts/go-test.sh
+	bash ./scripts/go-test.sh
 
 testacc: provision-test-gocd
 	bash scripts/wait-for-test-server.sh
@@ -81,9 +81,6 @@ fmtcheck:
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
-vendor-status:
-	@govendor status
 
 test-compile:
 	@if [ "$(TEST)" = "./..." ]; then \

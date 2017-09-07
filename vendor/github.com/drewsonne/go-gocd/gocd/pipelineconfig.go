@@ -3,6 +3,7 @@ package gocd
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -14,28 +15,34 @@ type PipelineConfig struct{}
 
 // PipelineConfigRequest describes a request object for creating or updating pipelines
 type PipelineConfigRequest struct {
-	Group    string    `json:"group"`
+	Group    string    `json:"group,omitempty"`
 	Pipeline *Pipeline `json:"pipeline"`
 }
 
+// Get a single PipelineTemplate object in the GoCD API.
+func (pcs *PipelineConfigsService) Get(ctx context.Context, name string) (*Pipeline, *APIResponse, error) {
+	return nil, nil, errors.New("Not Implemented")
+}
+
 // Update a pipeline configuration
-func (pcs *PipelineConfigsService) Update(ctx context.Context, group string, name string, p *Pipeline) (*Pipeline, *APIResponse, error) {
+func (pcs *PipelineConfigsService) Update(ctx context.Context, name string, p *Pipeline) (*Pipeline, *APIResponse, error) {
 
 	pt := &PipelineConfigRequest{
-		Group:    group,
 		Pipeline: p,
 	}
+	pr := Pipeline{}
 
-	req, err := pcs.client.NewRequest("PUT", "admin/pipelines/"+name, pt, apiV4)
-	if err != nil {
-		return nil, nil, err
-	}
+	_, resp, err := pcs.client.putAction(ctx, &APIClientRequest{
+		Path:         "admin/pipelines/" + name,
+		APIVersion:   apiV4,
+		RequestBody:  pt,
+		ResponseBody: &pr,
+		Headers: map[string]string{
+			"If-Match": fmt.Sprintf("\"%s\"", p.Version),
+		},
+	})
 
-	req.HTTP.Header.Set("If-Match", fmt.Sprintf("\"%s\"", p.Version))
-
-	pc := Pipeline{}
-	resp, err := pcs.client.Do(ctx, req, &pc, responseTypeJSON)
-	return &pc, resp, err
+	return &pr, resp, err
 
 }
 
