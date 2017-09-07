@@ -21,6 +21,10 @@ func resourcePipeline() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
+			"group": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"label_template": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -30,9 +34,8 @@ func resourcePipeline() *schema.Resource {
 				Optional: true,
 			},
 			"template": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				ConflictsWith: []string{"stages"},
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"version": {
 				Type:     schema.TypeString,
@@ -169,7 +172,7 @@ func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, err
 		return false, errors.New("`name` can not be empty")
 	}
 
-	p, _, err := meta.(*gocd.Client).Pipelines.Get(context.Background(), name, 0)
+	p, _, err := meta.(*gocd.Client).PipelineConfigs.Get(context.Background(), name)
 	exists := (p.Name == name) && (err == nil)
 	return exists, err
 }
@@ -237,16 +240,16 @@ func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
 	return ms
 }
 
-func extractPipelineMaterialFilter(attr interface{}) gocd.MaterialFilter {
+func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
 	filterI := attr.([]interface{})[0].(map[string]interface{})
 	filters := filterI["ignore"].([]interface{})
 	mf := gocd.MaterialFilter{
 		Ignore: decodeConfigStringList(filters),
 	}
-	return mf
+	return &mf
 }
 
-func readPipeline(d *schema.ResourceData, p *gocd.PipelineInstance, err error) error {
+func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	if err != nil {
 		return err
 	}
