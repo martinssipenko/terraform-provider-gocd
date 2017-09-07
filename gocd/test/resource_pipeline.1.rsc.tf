@@ -19,17 +19,17 @@ resource "gocd_pipeline" "test-pipeline" {
 
 resource "gocd_pipeline_template" "test-pipeline" {
   name = "template0-terraform"
-  stages = [
-    <<STAGE
-{
-  "name": "test-stage",
-  "fetch_materials": false,
-  "clean_working_directory": false,
-  "never_cleanup_artifacts": false,
-  "approval": {
-    "type": "success"
-  },
-  "jobs": [
+}
+
+resource "gocd_pipeline_stage" "test-stage" {
+  name = "test-stage"
+  fetch_materials = false
+  clean_working_directory = false
+  never_cleanup_artifacts = false
+  approval_success = true
+  pipeline_template = "${gocd_pipeline_stage.test-stage.name}"
+  jobs = [
+    <<JOB
     {
       "name": "job1",
       "tasks": [
@@ -44,8 +44,6 @@ resource "gocd_pipeline_template" "test-pipeline" {
         }
       ]
     }
-  ]
-}
-STAGE
+JOB
   ]
 }
