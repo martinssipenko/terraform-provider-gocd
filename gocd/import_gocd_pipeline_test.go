@@ -41,7 +41,7 @@ func testGocdPipelineDestroy(s *terraform.State) error {
 			continue
 		}
 
-		_, _, err := gocdclient.Pipelines.Get(context.Background(), rs.Primary.ID, 0)
+		_, _, err := gocdclient.PipelineConfigs.Get(context.Background(), rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("still exists")
 		}

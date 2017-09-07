@@ -1,5 +1,6 @@
 resource "gocd_pipeline" "test-pipeline" {
   name = "pipeline0-terraform"
+  group = "testing"
   label_template = "build-$${COUNT}"
   template = "${gocd_pipeline_template.test-pipeline.id}"
   materials = [
