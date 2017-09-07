@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-05T20:33:07.713941355+01:00
+updated: 2017-09-07T20:26:09.166981446+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -8,7 +8,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: 531baf6dd0fd6f7b56f4509c21957c3139caa402
+  version: 58370dfb7321eb567f09391c955860bad0a747da
   subpackages:
   - aws
   - aws/awserr
@@ -66,7 +66,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/go-getter
-  version: 3942d2144701a4db0d627d835c01f0adddeb77ef
+  version: 80eb888f740e980f6585273d48582c74b3a34f88
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-hclog
@@ -99,7 +99,7 @@ imports:
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/terraform
-  version: 1511d447e78d8106787875265f96d3a3a03005d5
+  version: 10df48ef40aa7fdddb8a13af79a8df9028788f01
   subpackages:
   - config
   - config/module
@@ -122,7 +122,7 @@ imports:
 - name: github.com/mattn/go-isatty
   version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
 - name: github.com/mitchellh/cli
-  version: 0ce7cd515f64496ee660ab19f6bbf373945d3af0
+  version: 7a1a617034de956eee640dfa5a7407ccc8c8d7e6
 - name: github.com/mitchellh/copystructure
   version: d23ffcb85de31694d6ccaa23ccb4a03e55c1303f
 - name: github.com/mitchellh/go-homedir
@@ -191,7 +191,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 4bbe223b12805ab25acbb9d2cadfab2ec9d04bb6
+  version: 067cb1fcbf74396966d96d4727b43ca880e9581a
   subpackages:
   - balancer
   - codes
