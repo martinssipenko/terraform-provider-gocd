@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+// StageContainer describes structs which contain stages
+type StageContainer interface {
+	GetName() string
+	GetStages() []*Stage
+	GetStage(string) *Stage
+	SetStages(stages []*Stage)
+	AddStage(stage *Stage)
+}
+
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
 type PipelinesService service
 
@@ -22,8 +31,38 @@ type Pipeline struct {
 	Template              string     `json:"template,omitempty"`
 	Materials             []Material `json:"materials,omitempty"`
 	Label                 string     `json:"label,omitempty"`
-	Stages                []Stage    `json:"stages"`
+	Stages                []*Stage   `json:"stages"`
 	Version               string     `json:"version,omitempty"`
+}
+
+// GetStages from the pipeline
+func (p *Pipeline) GetStages() []*Stage {
+	return p.Stages
+}
+
+// GetStage from the pipeline template
+func (p *Pipeline) GetStage(stageName string) *Stage {
+	for _, stage := range p.Stages {
+		if stage.Name == stageName {
+			return stage
+		}
+	}
+	return nil
+}
+
+// GetName of the pipeline
+func (p *Pipeline) GetName() string {
+	return p.Name
+}
+
+// SetStages overwrites any existing stages
+func (p *Pipeline) SetStages(stages []*Stage) {
+	p.Stages = stages
+}
+
+// AddStage appends a stage to this pipeline
+func (p *Pipeline) AddStage(stage *Stage) {
+	p.Stages = append(p.Stages, stage)
 }
 
 // Material describes an artifact dependency for a pipeline object.
@@ -36,15 +75,15 @@ type Material struct {
 
 // MaterialAttributes describes a material type
 type MaterialAttributes struct {
-	URL             string         `json:"url"`
-	Destination     string         `json:"destination,omitempty"`
-	Filter          MaterialFilter `json:"filter,omitempty"`
-	InvertFilter    bool           `json:"invert_filter"`
-	Name            string         `json:"name,omitempty"`
-	AutoUpdate      bool           `json:"auto_update,omitempty"`
-	Branch          string         `json:"branch,omitempty"`
-	SubmoduleFolder string         `json:"submodule_folder,omitempty"`
-	ShallowClone    bool           `json:"shallow_clone,omitempty"`
+	URL             string          `json:"url"`
+	Destination     string          `json:"destination,omitempty"`
+	Filter          *MaterialFilter `json:"filter,omitempty"`
+	InvertFilter    bool            `json:"invert_filter"`
+	Name            string          `json:"name,omitempty"`
+	AutoUpdate      bool            `json:"auto_update,omitempty"`
+	Branch          string          `json:"branch,omitempty"`
+	SubmoduleFolder string          `json:"submodule_folder,omitempty"`
+	ShallowClone    bool            `json:"shallow_clone,omitempty"`
 }
 
 // MaterialFilter describes which globs to ignore
@@ -64,7 +103,7 @@ type PipelineInstance struct {
 	Name         string     `json:"name"`
 	NaturalOrder int        `json:"natural_order"`
 	Comment      string     `json:"comment"`
-	Stages       []Stage    `json:"stages"`
+	Stages       []*Stage   `json:"stages"`
 }
 
 // BuildCause describes the triggers which caused the build to start.
@@ -146,8 +185,8 @@ func (pgs *PipelinesService) Create(ctx context.Context, p *Pipeline, group stri
 	return &pt, resp, err
 }
 
-// Get returns a list of pipeline instanves describing the pipeline history.
-func (pgs *PipelinesService) Get(ctx context.Context, name string, offset int) (*PipelineInstance, *APIResponse, error) {
+// GetInstance of a pipeline run.
+func (pgs *PipelinesService) GetInstance(ctx context.Context, name string, offset int) (*PipelineInstance, *APIResponse, error) {
 	stub := pgs.buildPaginatedStub("admin/pipelines/%s/instance", name, offset)
 
 	pt := PipelineInstance{}
