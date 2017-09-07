@@ -62,7 +62,7 @@ func dataSourceStageDefinition(t *testing.T, index int, configPath string, expec
 			Providers: testGocdProviders,
 			Steps: testStepComparisonCheck(&TestStepJSONComparison{
 				Index:        index,
-				ID:           "data.gocd_stage_definition.test",
+				ID:           "gocd_pipeline_stage.test",
 				Config:       config,
 				ExpectedJSON: expected,
 			}),

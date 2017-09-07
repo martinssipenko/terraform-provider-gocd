@@ -29,10 +29,13 @@ Either build the provider with `go build` or download it from the gihub reposito
 
 Spin up the test gocd server, with endpoint at http://127.0.0.1:8153/go/
 
-    $ make provision-test-gocd
+    $ make provision-test-gocd && sh ./scripts/wait-for-test-server.sh
 
 Then initialise and apply the configuration.
 
     $ terraform init
     $ terraform apply
 
+When you're finished, run:
+
+    $ make teardown-test-gocd
