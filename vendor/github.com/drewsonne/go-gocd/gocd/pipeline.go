@@ -3,16 +3,8 @@ package gocd
 import (
 	"context"
 	"fmt"
+	"net/url"
 )
-
-// StageContainer describes structs which contain stages
-type StageContainer interface {
-	GetName() string
-	GetStages() []*Stage
-	GetStage(string) *Stage
-	SetStages(stages []*Stage)
-	AddStage(stage *Stage)
-}
 
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
 type PipelinesService service
@@ -25,44 +17,23 @@ type PipelineRequest struct {
 
 // Pipeline describes a pipeline object
 type Pipeline struct {
-	Name                  string     `json:"name"`
-	LabelTemplate         string     `json:"label_template,omitempty"`
-	EnablePipelineLocking bool       `json:"enable_pipeline_locking,omitempty"`
-	Template              string     `json:"template,omitempty"`
-	Materials             []Material `json:"materials,omitempty"`
-	Label                 string     `json:"label,omitempty"`
-	Stages                []*Stage   `json:"stages"`
-	Version               string     `json:"version,omitempty"`
+	Links                 *PipelineLinks `json:"_links,omitempty"`
+	Name                  string         `json:"name"`
+	LabelTemplate         string         `json:"label_template,omitempty"`
+	EnablePipelineLocking bool           `json:"enable_pipeline_locking,omitempty"`
+	Template              string         `json:"template,omitempty"`
+	Materials             []Material     `json:"materials,omitempty"`
+	Label                 string         `json:"label,omitempty"`
+	Stages                []*Stage       `json:"stages"`
+	Version               string         `json:"version,omitempty"`
 }
 
-// GetStages from the pipeline
-func (p *Pipeline) GetStages() []*Stage {
-	return p.Stages
-}
-
-// GetStage from the pipeline template
-func (p *Pipeline) GetStage(stageName string) *Stage {
-	for _, stage := range p.Stages {
-		if stage.Name == stageName {
-			return stage
-		}
-	}
-	return nil
-}
-
-// GetName of the pipeline
-func (p *Pipeline) GetName() string {
-	return p.Name
-}
-
-// SetStages overwrites any existing stages
-func (p *Pipeline) SetStages(stages []*Stage) {
-	p.Stages = stages
-}
-
-// AddStage appends a stage to this pipeline
-func (p *Pipeline) AddStage(stage *Stage) {
-	p.Stages = append(p.Stages, stage)
+// PipelineLinks describes the HAL _link resource for the api response object for a collection of pipeline objects.
+//go:generate gocd-response-links-generator -type=PipelineLinks
+type PipelineLinks struct {
+	Self *url.URL `json:"self"`
+	Doc  *url.URL `json:"doc"`
+	Find *url.URL `json:"find"`
 }
 
 // Material describes an artifact dependency for a pipeline object.

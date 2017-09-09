@@ -24,11 +24,8 @@ and place the binary in your `$PATH`.
 
 #### Quickstart
 
-    $ export GOCD_PASSWORD=mypassword
-    $ gocd \
-        -server https://goserver:8154/go \
-        -username admin \
-        list-agents
+    $ gocd configure
+    $ gocd list-agents
 
 #### Configuration
 The library can either be configured using environment variables, cli flags, or a yaml config file.
