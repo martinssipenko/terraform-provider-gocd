@@ -1,3 +1,30 @@
+Release v1.10.41 (2017-09-08)
+===
+
+### Service Client Updates
+* `service/logs`: Updates service API and documentation
+  * Adds support for the PutResourcePolicy, DescribeResourcePolicy and DeleteResourcePolicy APIs.
+
+Release v1.10.40 (2017-09-07)
+===
+
+### Service Client Updates
+* `service/application-autoscaling`: Updates service documentation
+* `service/ec2`: Updates service API and documentation
+  * With Tagging support, you can add Key and Value metadata to search, filter and organize your NAT Gateways according to your organization's needs.
+* `service/elasticloadbalancingv2`: Updates service API and documentation
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/lex-models`: Updates service API and documentation
+* `service/route53`: Updates service API and documentation
+  * You can configure Amazon Route 53 to log information about the DNS queries that Amazon Route 53 receives for your domains and subdomains. When you configure query logging, Amazon Route 53 starts to send logs to CloudWatch Logs. You can use various tools, including the AWS console, to access the query logs.
+
+Release v1.10.39 (2017-09-06)
+===
+
+### Service Client Updates
+* `service/budgets`: Updates service API and documentation
+  * Add an optional "thresholdType" to notifications to support percentage or absolute value thresholds.
+
 Release v1.10.38 (2017-09-05)
 ===
 

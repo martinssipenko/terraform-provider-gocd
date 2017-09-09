@@ -78,6 +78,7 @@ type Client struct {
 	Configuration     *ConfigurationService
 	Encryption        *EncryptionService
 	Plugins           *PluginsService
+	Environments      *EnvironmentsService
 
 	common service
 	cookie string
@@ -158,6 +159,7 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 	c.Configuration = (*ConfigurationService)(&c.common)
 	c.Encryption = (*EncryptionService)(&c.common)
 	c.Plugins = (*PluginsService)(&c.common)
+	c.Environments = (*EnvironmentsService)(&c.common)
 
 	return c
 }

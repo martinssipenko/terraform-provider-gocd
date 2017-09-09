@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-05T20:33:07.713941355+01:00
+updated: 2017-09-09T20:40:02.878068899+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -8,7 +8,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: 531baf6dd0fd6f7b56f4509c21957c3139caa402
+  version: 12b6a0f7b3e676d459a9480e75df7efe576cfcb2
   subpackages:
   - aws
   - aws/awserr
@@ -48,7 +48,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 77a809981937a8ae894538a692bfaddf3dac3342
+  version: dd816c2b76f2bda40a056a916b8d5c03d698d1bc
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -66,7 +66,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/go-getter
-  version: 3942d2144701a4db0d627d835c01f0adddeb77ef
+  version: 80eb888f740e980f6585273d48582c74b3a34f88
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-hclog
@@ -99,7 +99,7 @@ imports:
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/terraform
-  version: 1511d447e78d8106787875265f96d3a3a03005d5
+  version: 10df48ef40aa7fdddb8a13af79a8df9028788f01
   subpackages:
   - config
   - config/module
@@ -122,7 +122,7 @@ imports:
 - name: github.com/mattn/go-isatty
   version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
 - name: github.com/mitchellh/cli
-  version: 0ce7cd515f64496ee660ab19f6bbf373945d3af0
+  version: 65fcae5817c8600da98ada9d7edf26dd1a84837b
 - name: github.com/mitchellh/copystructure
   version: d23ffcb85de31694d6ccaa23ccb4a03e55c1303f
 - name: github.com/mitchellh/go-homedir
@@ -138,7 +138,7 @@ imports:
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/posener/complete
-  version: 9f41f7636a724791a3b8b1d35e84caa1124f0d3c
+  version: 88e59760adaddb8276c9b15511302890690e2dae
   subpackages:
   - cmd
   - cmd/install
@@ -191,7 +191,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 4bbe223b12805ab25acbb9d2cadfab2ec9d04bb6
+  version: 3214f767e5a22021f792f7c4625a6380ce1eb2b2
   subpackages:
   - balancer
   - codes

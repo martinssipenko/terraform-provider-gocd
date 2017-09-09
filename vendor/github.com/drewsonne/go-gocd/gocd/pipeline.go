@@ -3,16 +3,8 @@ package gocd
 import (
 	"context"
 	"fmt"
+	"net/url"
 )
-
-// StageContainer describes structs which contain stages
-type StageContainer interface {
-	GetName() string
-	GetStages() []*Stage
-	GetStage(string) *Stage
-	SetStages(stages []*Stage)
-	AddStage(stage *Stage)
-}
 
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
 type PipelinesService service
@@ -25,44 +17,35 @@ type PipelineRequest struct {
 
 // Pipeline describes a pipeline object
 type Pipeline struct {
-	Name                  string     `json:"name"`
-	LabelTemplate         string     `json:"label_template,omitempty"`
-	EnablePipelineLocking bool       `json:"enable_pipeline_locking,omitempty"`
-	Template              string     `json:"template,omitempty"`
-	Materials             []Material `json:"materials,omitempty"`
-	Label                 string     `json:"label,omitempty"`
-	Stages                []*Stage   `json:"stages"`
-	Version               string     `json:"version,omitempty"`
+	Group                 string                 `json:"group"`
+	Links                 *PipelineLinks         `json:"_links,omitempty"`
+	Name                  string                 `json:"name"`
+	LabelTemplate         string                 `json:"label_template,omitempty"`
+	EnablePipelineLocking bool                   `json:"enable_pipeline_locking,omitempty"`
+	Template              string                 `json:"template,omitempty"`
+	Origin                *PipelineConfigOrigin  `json:"origin,omitempty"`
+	Parameters            []string               `json:"parameters"`
+	EnvironmentVariables  []*EnvironmentVariable `json:"environment_variables"`
+	Materials             []Material             `json:"materials,omitempty"`
+	Label                 string                 `json:"label,omitempty"`
+	Stages                []*Stage               `json:"stages"`
+	Version               string                 `json:"version,omitempty"`
+	//TrackingTool          string                 `json:"tracking_tool"`
+	//Timer                 string                 `json:"timer"`
 }
 
-// GetStages from the pipeline
-func (p *Pipeline) GetStages() []*Stage {
-	return p.Stages
+// PipelineConfigOrigin describes where a pipeline config is being loaded from
+type PipelineConfigOrigin struct {
+	Type string `json:"type"`
+	File string `json:"file"`
 }
 
-// GetStage from the pipeline template
-func (p *Pipeline) GetStage(stageName string) *Stage {
-	for _, stage := range p.Stages {
-		if stage.Name == stageName {
-			return stage
-		}
-	}
-	return nil
-}
-
-// GetName of the pipeline
-func (p *Pipeline) GetName() string {
-	return p.Name
-}
-
-// SetStages overwrites any existing stages
-func (p *Pipeline) SetStages(stages []*Stage) {
-	p.Stages = stages
-}
-
-// AddStage appends a stage to this pipeline
-func (p *Pipeline) AddStage(stage *Stage) {
-	p.Stages = append(p.Stages, stage)
+// PipelineLinks describes the HAL _link resource for the api response object for a collection of pipeline objects.
+//go:generate gocd-response-links-generator -type=PipelineLinks
+type PipelineLinks struct {
+	Self *url.URL `json:"self"`
+	Doc  *url.URL `json:"doc"`
+	Find *url.URL `json:"find"`
 }
 
 // Material describes an artifact dependency for a pipeline object.
@@ -167,22 +150,6 @@ func (pgs *PipelinesService) Unpause(ctx context.Context, name string) (bool, *A
 // ReleaseLock frees a pipeline to handle new build events
 func (pgs *PipelinesService) ReleaseLock(ctx context.Context, name string) (bool, *APIResponse, error) {
 	return pgs.pipelineAction(ctx, name, "releaseLock")
-}
-
-// Create a pipeline
-func (pgs *PipelinesService) Create(ctx context.Context, p *Pipeline, group string) (*Pipeline, *APIResponse, error) {
-	pt := Pipeline{}
-	_, resp, err := pgs.client.postAction(ctx, &APIClientRequest{
-		Path:       "admin/pipelines",
-		APIVersion: apiV4,
-		RequestBody: PipelineRequest{
-			Group:    group,
-			Pipeline: p,
-		},
-		ResponseBody: &pt,
-	})
-
-	return &pt, resp, err
 }
 
 // GetInstance of a pipeline run.

@@ -2,8 +2,6 @@ package gocd
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 )
 
 const (
@@ -36,7 +34,7 @@ type Job struct {
 	EnvironmentVariables []*EnvironmentVariable `json:"environment_variables,omitempty"`
 	Properties           []*JobProperty         `json:"properties,omitempty"`
 	Resources            []string               `json:"resources,omitempty"`
-	Tasks                []Task                 `json:"tasks,omitempty"`
+	Tasks                []*Task                `json:"tasks,omitempty"`
 	Tabs                 []string               `json:"tabs,omitempty"`
 	Artifacts            []string               `json:"artifacts,omitempty"`
 }
@@ -79,20 +77,6 @@ type PluginConfigurationKVPair struct {
 type Task struct {
 	Type       string         `json:"type"`
 	Attributes TaskAttributes `json:"attributes"`
-}
-
-// Validate each of the possible task types.
-func (t *Task) Validate() error {
-	switch t.Type {
-	case "":
-		return errors.New("Missing `gocd.TaskAttribute` type")
-	case "exec":
-		return t.Attributes.ValidateExec()
-	case "ant":
-		return t.Attributes.ValidateAnt()
-	default:
-		return errors.New("Unexpected `gocd.Task.Attribute` types")
-	}
 }
 
 // TaskAttributes describes all the properties for a Task.
@@ -158,25 +142,6 @@ type JobScheduleEnvVar struct {
 type JobScheduleLink struct {
 	Rel  string `xml:"rel,attr"`
 	HRef string `xml:"href,attr"`
-}
-
-// JSONString returns a string of this stage as a JSON object.
-func (j *Job) JSONString() (string, error) {
-	err := j.Validate()
-	if err != nil {
-		return "", err
-	}
-
-	bdy, err := json.MarshalIndent(j, "", "  ")
-	return string(bdy), err
-}
-
-// Validate a job structure has non-nil values on correct attributes
-func (j *Job) Validate() error {
-	if j.Name == "" {
-		return errors.New("`gocd.Jobs.Name` is empty")
-	}
-	return nil
 }
 
 // ListScheduled lists Pipeline groups
