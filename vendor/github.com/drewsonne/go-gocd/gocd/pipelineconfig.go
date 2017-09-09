@@ -3,15 +3,11 @@ package gocd
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"strings"
 )
 
 // PipelineConfigsService describes the HAL _link resource for the api response object for a pipelineconfig
 type PipelineConfigsService service
-
-// PipelineConfig describes the configuration for a pipeline
-type PipelineConfig struct{}
 
 // PipelineConfigRequest describes a request object for creating or updating pipelines
 type PipelineConfigRequest struct {
@@ -21,7 +17,17 @@ type PipelineConfigRequest struct {
 
 // Get a single PipelineTemplate object in the GoCD API.
 func (pcs *PipelineConfigsService) Get(ctx context.Context, name string) (*Pipeline, *APIResponse, error) {
-	return nil, nil, errors.New("Not Implemented")
+	p := Pipeline{}
+	_, resp, err := pcs.client.getAction(ctx, &APIClientRequest{
+		Path:         "admin/pipelines/" + name,
+		APIVersion:   apiV4,
+		ResponseBody: &p,
+	})
+	if err == nil {
+		p.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
+	}
+
+	return &p, resp, err
 }
 
 // Update a pipeline configuration

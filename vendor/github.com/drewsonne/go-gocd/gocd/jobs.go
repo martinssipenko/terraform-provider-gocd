@@ -34,7 +34,7 @@ type Job struct {
 	EnvironmentVariables []*EnvironmentVariable `json:"environment_variables,omitempty"`
 	Properties           []*JobProperty         `json:"properties,omitempty"`
 	Resources            []string               `json:"resources,omitempty"`
-	Tasks                []Task                 `json:"tasks,omitempty"`
+	Tasks                []*Task                `json:"tasks,omitempty"`
 	Tabs                 []string               `json:"tabs,omitempty"`
 	Artifacts            []string               `json:"artifacts,omitempty"`
 }

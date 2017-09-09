@@ -25,9 +25,9 @@ func testPipelineGroupsServiceFilter(t *testing.T) {
 	})
 	pgs, _, err := client.PipelineGroups.List(context.Background(), "filter-group")
 	assert.Nil(t, err)
-	assert.Len(t, pgs, 1)
+	assert.Len(t, (*pgs), 1)
 
-	pg := pgs[0]
+	pg := (*pgs)[0]
 	assert.Equal(t, "filter-group", pg.Name)
 
 }
@@ -44,9 +44,9 @@ func testPipelineGroupsServiceList(t *testing.T) {
 	pgs, _, err := client.PipelineGroups.List(context.Background(), "")
 
 	assert.Nil(t, err)
-	assert.Len(t, pgs, 1)
+	assert.Len(t, (*pgs), 1)
 
-	pg := pgs[0]
+	pg := (*pgs)[0]
 	assert.Equal(t, pg.Name, "first")
 
 	assert.Len(t, pg.Pipelines, 1)

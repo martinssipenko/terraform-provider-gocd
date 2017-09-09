@@ -103,6 +103,9 @@ func (pts *PipelineTemplatesService) Create(ctx context.Context, name string, st
 		RequestBody:  pt,
 		ResponseBody: &ptr,
 	})
+	if err != nil {
+		return nil, nil, err
+	}
 
 	etag := resp.HTTP.Header.Get("Etag")
 	ptr.Version = strings.Replace(etag, "\"", "", -1)
