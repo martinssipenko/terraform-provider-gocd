@@ -132,14 +132,14 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 
 func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) error {
 
-	tasks := []gocd.Task{}
+	tasks := []*gocd.Task{}
 	for _, rawTask := range d.Get("tasks").([]interface{}) {
 		task := gocd.Task{}
 		err := json.Unmarshal([]byte(rawTask.(string)), &task)
 		if err != nil {
 			return err
 		}
-		tasks = append(tasks, task)
+		tasks = append(tasks, &task)
 	}
 
 	j := gocd.Job{
@@ -161,7 +161,6 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 
 	if props, ok := d.Get("properties").([]interface{}); ok && len(props) > 0 {
 		j.Properties = dataSourceGocdJobPropertiesRead(props)
-
 	}
 
 	if resources := d.Get("resources").(*schema.Set).List(); len(resources) > 0 {

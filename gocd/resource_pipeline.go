@@ -77,7 +77,7 @@ func resourcePipeline() *schema.Resource {
 					},
 				},
 			},
-			"materials": {
+			"materials": &schema.Schema{
 				Type:     schema.TypeList,
 				Required: true,
 				Elem: &schema.Resource{
@@ -146,22 +146,65 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) error {
 	if ptgroup, hasGroup := d.GetOk("group"); hasGroup {
 		group = ptgroup.(string)
 	}
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
 
 	p := extractPipeline(d)
-	pt, _, err := meta.(*gocd.Client).Pipelines.Create(context.Background(), p, group)
-	return readPipeline(d, pt, err)
+	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
+	return readPipeline(d, pc, err)
 }
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
+	var name string
+	if pname, hasName := d.GetOk("name"); hasName {
+		name = pname.(string)
+	}
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	ctx := context.Background()
+	pc, _, err := client.PipelineConfigs.Get(ctx, name)
+	if err := readPipeline(d, pc, err); err != nil {
+		return err
+	}
+
+	pgs, _, err := client.PipelineGroups.List(ctx, "")
+	d.Set("group", pgs.GetGroupByPipelineName(name).Name)
 	return nil
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	var name string
+	if pname, hasName := d.GetOk("name"); hasName {
+		name = pname.(string)
+	}
+
+	p := extractPipeline(d)
+
+	client := meta.(*gocd.Client)
+	ctx := context.Background()
+	client.Lock()
+	defer client.Unlock()
+
+	existing, _, err := client.PipelineConfigs.Get(ctx, name)
+	p.Version = existing.Version
+	pc, _, err := client.PipelineConfigs.Update(ctx, name, p)
+	return readPipeline(d, pc, err)
 }
 
 func resourcePipelineDelete(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	var name string
+	if pname, hasName := d.GetOk("name"); hasName {
+		name = pname.(string)
+	}
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	_, _, err := client.PipelineConfigs.Delete(context.Background(), name)
+	return err
 }
 
 func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, error) {
@@ -172,7 +215,10 @@ func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, err
 		return false, errors.New("`name` can not be empty")
 	}
 
-	if p, _, err := meta.(*gocd.Client).PipelineConfigs.Get(context.Background(), name); err != nil {
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+	if p, _, err := client.PipelineConfigs.Get(context.Background(), name); err != nil {
 		return false, err
 	} else {
 		return (p.Name == name), nil
@@ -245,13 +291,46 @@ func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
 	return ms
 }
 
-func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
-	filterI := attr.([]interface{})[0].(map[string]interface{})
-	filters := filterI["ignore"].([]interface{})
-	mf := gocd.MaterialFilter{
-		Ignore: decodeConfigStringList(filters),
+func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) error {
+	materialImports := make([]interface{}, len(materials))
+	for i, m := range materials {
+		materialMap := make(map[string]interface{})
+		materialMap["type"] = m.Type
+
+		filter := make([]map[string]interface{}, 1)
+		if m.Attributes.Filter != nil {
+			filter[0] = map[string]interface{}{
+				"ignore": m.Attributes.Filter.Ignore,
+			}
+		}
+
+		materialMap["attributes"] = []map[string]interface{}{{
+			"url":         m.Attributes.URL,
+			"auto_update": m.Attributes.AutoUpdate,
+			"branch":      m.Attributes.Branch,
+			"destination": m.Attributes.Destination,
+			"name":        m.Attributes.Name,
+			"filter":      filter,
+		}}
+		materialImports[i] = materialMap
 	}
-	return &mf
+	if err := d.Set("materials", materialImports); err != nil {
+		return err
+	}
+	return nil
+}
+
+func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
+	filterI := attr.([]interface{})
+	var mf *gocd.MaterialFilter
+	if len(filterI) > 0 {
+		filtersI := filterI[0].(map[string]interface{})
+		filters := filtersI["ignore"].([]interface{})
+		mf = &gocd.MaterialFilter{
+			Ignore: decodeConfigStringList(filters),
+		}
+	}
+	return mf
 }
 
 func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
@@ -260,6 +339,9 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	}
 
 	d.SetId(p.Name)
-	//d.Set("Version",p.)
-	return nil
+	d.Set("template", p.Template)
+
+	err = readPipelineMaterials(d, p.Materials)
+
+	return err
 }

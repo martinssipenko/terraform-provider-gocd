@@ -44,7 +44,11 @@ func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (b
 	} else {
 		return false, errors.New("`name` can not be empty")
 	}
-	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name)
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	pt, _, err := client.PipelineTemplates.Get(context.Background(), name)
 	exists := (pt.Name == name) && (err == nil)
 	return exists, err
 }
@@ -62,7 +66,11 @@ func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) er
 	placeholderStages := []*gocd.Stage{
 		stagePlaceHolder(),
 	}
-	pt, _, err := meta.(*gocd.Client).PipelineTemplates.Create(context.Background(), name, placeholderStages)
+	client :=meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	pt, _, err := client.PipelineTemplates.Create(context.Background(), name, placeholderStages)
 	return readPipelineTemplate(d, pt, err)
 }
 
@@ -75,7 +83,11 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 	var pt *gocd.PipelineTemplate
 	var resp *gocd.APIResponse
 	var err error
-	if pt, resp, err = meta.(*gocd.Client).PipelineTemplates.Get(context.Background(), name); err != nil {
+	client :=meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+
+	if pt, resp, err = client.PipelineTemplates.Get(context.Background(), name); err != nil {
 		if resp.HTTP.StatusCode == 404 {
 			d.SetId("")
 			return nil
@@ -89,7 +101,11 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) error {
 	if ptname, hasName := d.GetOk("name"); hasName {
-		if _, _, err := meta.(*gocd.Client).PipelineTemplates.Delete(context.Background(), ptname.(string)); err != nil {
+		client :=meta.(*gocd.Client)
+		client.Lock()
+		defer client.Unlock()
+
+		if _, _, err := client.PipelineTemplates.Delete(context.Background(), ptname.(string)); err != nil {
 			return err
 		}
 	}

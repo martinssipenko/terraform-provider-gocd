@@ -41,8 +41,7 @@ func testGocdPipelineDestroy(s *terraform.State) error {
 			continue
 		}
 
-		_, _, err := gocdclient.PipelineConfigs.Get(context.Background(), rs.Primary.ID)
-		if err == nil {
+		if _, _, err := gocdclient.PipelineConfigs.Get(context.Background(), rs.Primary.ID); err == nil {
 			return fmt.Errorf("still exists")
 		}
 	}
@@ -52,7 +51,7 @@ func testGocdPipelineDestroy(s *terraform.State) error {
 
 func testGocdPipelineConfig(suffix string) string {
 	return strings.Replace(
-		testFile("resource_pipeline.0.rsc.tf"),
+		testFile("resource_pipeline.2.rsc.tf"),
 		"test-pipeline",
 		"test-"+suffix,
 		-1,
