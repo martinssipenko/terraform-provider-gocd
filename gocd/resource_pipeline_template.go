@@ -66,7 +66,7 @@ func resourcePipelineTemplateCreate(d *schema.ResourceData, meta interface{}) er
 	placeholderStages := []*gocd.Stage{
 		stagePlaceHolder(),
 	}
-	client :=meta.(*gocd.Client)
+	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
@@ -83,7 +83,7 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 	var pt *gocd.PipelineTemplate
 	var resp *gocd.APIResponse
 	var err error
-	client :=meta.(*gocd.Client)
+	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
@@ -101,7 +101,7 @@ func resourcePipelineTemplateRead(d *schema.ResourceData, meta interface{}) erro
 
 func resourcePipelineTemplateDelete(d *schema.ResourceData, meta interface{}) error {
 	if ptname, hasName := d.GetOk("name"); hasName {
-		client :=meta.(*gocd.Client)
+		client := meta.(*gocd.Client)
 		client.Lock()
 		defer client.Unlock()
 
