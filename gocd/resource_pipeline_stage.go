@@ -128,22 +128,10 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	var err error
 
 	doc := gocd.Stage{
-		Name:     d.Get("name").(string),
 		Approval: &gocd.Approval{},
 	}
 
-	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
-		dataSourceStageParseManuallApproval(d, &doc)
-	} else if d.Get("success_approval").(bool) {
-		doc.Approval.Type = "success"
-		doc.Approval.Authorization = nil
-	}
-
-	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {
-		if jobs := decodeConfigStringList(rJobs.([]interface{})); len(jobs) > 0 {
-			dataSourceStageParseJobs(jobs, &doc)
-		}
-	}
+	ingestStageConfig(d, &doc)
 
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -221,8 +209,32 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourcePipelineStageUpdate(_ *schema.ResourceData, _ interface{}) error {
-	return errors.New("not implemented")
+func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error {
+	var pType, pipeline, name string
+	var stage *gocd.Stage
+	var err error
+
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d.Id()); err != nil {
+		return err
+	}
+	client := meta.(*gocd.Client)
+
+	if stage, err = retrieveStage(pType, name, pipeline, client); stage == nil {
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("Could not find stage `%s` in pipeline/template `%s`", name, pipeline)
+	}
+
+	ingestStageConfig(d, stage)
+
+	// Make update operation atomic
+	client.Lock()
+	defer client.Unlock()
+
+	// Retrieve Pipeline object so we have the latest version
+
+	return errors.New("update not implemented")
 }
 
 func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error {
@@ -371,4 +383,21 @@ func parseGoCDPipelineStageId(id string) (pType string, pipeline string, stage s
 	}
 
 	return "", "", "", fmt.Errorf("could not parse the provided id `%s`", id)
+}
+
+func ingestStageConfig(d *schema.ResourceData, stage *gocd.Stage) {
+	stage.Name = d.Get("name").(string)
+	if manualApproval, ok := d.GetOk("manual_approval"); ok && manualApproval.(bool) {
+		dataSourceStageParseManuallApproval(d, stage)
+	} else if d.Get("success_approval").(bool) {
+		stage.Approval.Type = "success"
+		stage.Approval.Authorization = nil
+	}
+
+	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {
+		if jobs := decodeConfigStringList(rJobs.([]interface{})); len(jobs) > 0 {
+			dataSourceStageParseJobs(jobs, stage)
+		}
+	}
+
 }
