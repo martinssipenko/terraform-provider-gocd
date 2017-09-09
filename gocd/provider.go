@@ -25,6 +25,7 @@ func SchemaProvider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_pipeline_template": resourcePipelineTemplate(),
+			"gocd_pipeline":          resourcePipeline(),
 			"gocd_pipeline_stage":    resourcePipelineStage(),
 		},
 		Schema: map[string]*schema.Schema{
