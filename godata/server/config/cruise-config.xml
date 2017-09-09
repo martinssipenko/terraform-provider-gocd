@@ -1,31 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="95">
   <server artifactsdir="artifacts" agentAutoRegisterKey="terraform-testing" webhookSecret="terraform-testing" commandRepositoryLocation="default" serverId="terraform-testing" />
-  <pipelines group="testing">
-    <pipeline name="pipeline0-terraform" template="template0-terraform">
-      <materials>
-        <git url="git@github.com:gocd/gocd" branch="feature/my-addition" dest="gocd-dir" materialName="gocd-src">
-          <filter>
-            <ignore pattern="one" />
-            <ignore pattern="two" />
-          </filter>
-        </git>
-      </materials>
-    </pipeline>
-  </pipelines>
-  <templates>
-    <pipeline name="template0-terraform">
-      <stage name="test-stage" fetchMaterials="false">
-        <jobs>
-          <job name="job1">
-            <tasks>
-              <exec command="terraform">
-                <runif status="passed" />
-              </exec>
-            </tasks>
-          </job>
-        </jobs>
-      </stage>
-    </pipeline>
-  </templates>
 </cruise>
