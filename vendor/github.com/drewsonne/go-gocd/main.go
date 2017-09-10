@@ -4,6 +4,7 @@ package main
 
 import (
 	gocli "github.com/drewsonne/go-gocd/cli"
+	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/urfave/cli"
 	"os"
 	"sort"
@@ -58,10 +59,10 @@ func main() {
 	}
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{Name: "server", EnvVar: gocli.EnvVarServer},
-		cli.StringFlag{Name: "username", EnvVar: gocli.EnvVarUsername},
-		cli.StringFlag{Name: "password", EnvVar: gocli.EnvVarPassword},
-		cli.BoolFlag{Name: "ssl_check", EnvVar: gocli.EnvVarSkipSsl},
+		cli.StringFlag{Name: "server", EnvVar: gocd.EnvVarServer},
+		cli.StringFlag{Name: "username", EnvVar: gocd.EnvVarUsername},
+		cli.StringFlag{Name: "password", EnvVar: gocd.EnvVarPassword},
+		cli.BoolFlag{Name: "ssl_check", EnvVar: gocd.EnvVarSkipSsl},
 	}
 
 	sort.Sort(cli.CommandsByName(app.Commands))

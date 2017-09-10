@@ -7,10 +7,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+// NewCliClient
 func cliAgent(c *cli.Context) *gocd.Client {
-
-	cfg, err := loadConfig()
-	if err != nil {
+	var cfg *gocd.Configuration
+	var err error
+	if cfg, err = gocd.LoadConfig(); err != nil {
 		panic(err)
 	}
 
