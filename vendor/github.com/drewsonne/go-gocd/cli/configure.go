@@ -6,9 +6,6 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
-	"os/user"
-	"strings"
 )
 
 // List of command name and descriptions
@@ -17,27 +14,15 @@ const (
 	ConfigureCommandUsage = "Generate configuration file ~/.gocd.conf"
 )
 
-// ConfigDirectoryPath is the location where the authentication information is stored
-const ConfigDirectoryPath = "~/.gocd.conf"
-
-// Environment variables for configuration.
-const (
-	EnvVarServer   = "GOCD_SERVER"
-	EnvVarUsername = "GOCD_USERNAME"
-	EnvVarPassword = "GOCD_PASSWORD"
-	EnvVarSkipSsl  = "GOCD_SKIP_SSL_CHECK"
-)
-
-//
 func configureAction(c *cli.Context) error {
-
-	s, err := generateConfigFile()
-	if err != nil {
+	var s string
+	var err error
+	if s, err = generateConfigFile(); err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(configFilePath(), []byte(s), 0644)
-	if err != nil {
+	if err = ioutil.WriteFile(gocd.ConfigFilePath(),
+		[]byte(s), 0644); err != nil {
 		return err
 	}
 
@@ -88,43 +73,6 @@ func generateConfigFile() (string, error) {
 	}
 
 	return string(s), nil
-}
-
-func configFilePath() string {
-	// @TODO Make it work for windows. Maybe...
-	usr, _ := user.Current()
-	return strings.Replace(ConfigDirectoryPath, "~", usr.HomeDir, 1)
-}
-
-func loadConfig() (*gocd.Configuration, error) {
-	cfg := &gocd.Configuration{}
-
-	p := configFilePath()
-	if _, err := os.Stat(p); !os.IsNotExist(err) {
-		s, err := ioutil.ReadFile(configFilePath())
-		if err != nil {
-			return nil, err
-		}
-
-		err = yaml.Unmarshal(s, &cfg)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if server := os.Getenv(EnvVarServer); server != "" {
-		cfg.Server = server
-	}
-
-	if username := os.Getenv(EnvVarUsername); username != "" {
-		cfg.Username = username
-	}
-
-	if password := os.Getenv(EnvVarPassword); password != "" {
-		cfg.Password = password
-	}
-
-	return cfg, nil
 }
 
 // ConfigureCommand handles the interaction between the cli flags and the action handler for configure

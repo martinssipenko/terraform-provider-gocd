@@ -45,15 +45,12 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				},
 			},
 			"elastic_profile_id": {
-				Type:          schema.TypeSet,
+				Type:          schema.TypeString,
 				Optional:      true,
 				ConflictsWith: []string{"resources"},
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
-			"tab": {
-				Type:     schema.TypeMap,
+			"tabs": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -68,8 +65,8 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 					},
 				},
 			},
-			"artifact": {
-				Type:     schema.TypeMap,
+			"artifacts": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -83,7 +80,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 						},
 						"destination": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 					},
 				},
@@ -106,20 +103,6 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 							Required: true,
 						},
 					},
-				},
-			},
-			"tabs": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"artifacts": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
 				},
 			},
 			"json": {
@@ -169,15 +152,26 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		}
 	}
 
-	if resources := d.Get("tabs").(*schema.Set).List(); len(resources) > 0 {
-		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
-			j.Tabs = rscs
+	if resources := d.Get("tabs").([]interface{}); len(resources) > 0 {
+		j.Tabs = []*gocd.Tab{}
+		for _, rawTab := range resources {
+			tabMap := rawTab.(map[string]interface{})
+			j.Tabs = append(j.Tabs, &gocd.Tab{
+				Name: tabMap["name"].(string),
+				Path: tabMap["path"].(string),
+			})
 		}
 	}
 
-	if resources := d.Get("artifacts").(*schema.Set).List(); len(resources) > 0 {
-		if rscs := decodeConfigStringList(resources); len(rscs) > 0 {
-			j.Artifacts = rscs
+	if resources := d.Get("artifacts").([]interface{}); len(resources) > 0 {
+		j.Artifacts = []*gocd.Artifact{}
+		for _, rawArtifact := range resources {
+			artifactMap := rawArtifact.(map[string]interface{})
+			j.Artifacts = append(j.Artifacts, &gocd.Artifact{
+				Type:        artifactMap["type"].(string),
+				Source:      artifactMap["source"].(string),
+				Destination: artifactMap["destination"].(string),
+			})
 		}
 	}
 

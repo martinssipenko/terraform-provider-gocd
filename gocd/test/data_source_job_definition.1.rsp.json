@@ -47,9 +47,16 @@
     }
   ],
   "tabs": [
-    "report1.html"
+    {
+      "name": "Report",
+      "path": "report1.html"
+    }
   ],
   "artifacts": [
-    "web.war"
+    {
+      "type": "build",
+      "source": "web.war",
+      "destination": ""
+    }
   ]
 }
