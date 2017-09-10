@@ -45,14 +45,11 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				},
 			},
 			"elastic_profile_id": {
-				Type:          schema.TypeSet,
+				Type:          schema.TypeString,
 				Optional:      true,
 				ConflictsWith: []string{"resources"},
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
-			"tab": {
+			"tabs": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem: &schema.Resource{
@@ -68,7 +65,7 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 					},
 				},
 			},
-			"artifact": {
+			"artifacts": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem: &schema.Resource{
@@ -106,20 +103,6 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 							Required: true,
 						},
 					},
-				},
-			},
-			"tabs": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"artifacts": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
 				},
 			},
 			"json": {
