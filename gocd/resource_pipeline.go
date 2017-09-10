@@ -151,6 +151,11 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) error {
 	defer client.Unlock()
 
 	p := extractPipeline(d)
+	if p.Stages == nil || len(p.Stages) == 0 {
+		p.Stages = []*gocd.Stage{
+			stagePlaceHolder(),
+		}
+	}
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
 	return readPipeline(d, pc, err)
 }
