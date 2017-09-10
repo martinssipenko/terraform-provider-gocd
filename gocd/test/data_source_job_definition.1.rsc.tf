@@ -33,9 +33,15 @@ data "gocd_job_definition" "test" {
   tasks = [
     "${data.gocd_task_definition.test.json}"]
   tabs = [
-    "report1.html"]
+    {
+      name = "Report"
+      path = "report1.html"
+    }]
   artifacts = [
-    "web.war"]
+    {
+      type = "build",
+      source = "web.war"
+    }]
   properties {
     name = "coverage.class"
     source = "target/emma/coverage.xml"
