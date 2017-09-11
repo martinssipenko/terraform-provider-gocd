@@ -37,7 +37,6 @@ func testResourcePipelineBasic(t *testing.T) {
 					testCheckResourceName(
 						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
 				),
-				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
@@ -54,7 +53,7 @@ func testResourcePipelineFullStack(t *testing.T) {
 				Check: r.ComposeTestCheckFunc(
 					testCheckResourceExists("gocd_pipeline.test-pipeline3"),
 					testCheckResourceName(
-						"gocd_pipeline.test-pipeline", "test-pipeline3"),
+						"gocd_pipeline.test-pipeline3", "test-pipeline3"),
 				),
 			},
 		},
