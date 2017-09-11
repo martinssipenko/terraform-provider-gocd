@@ -342,11 +342,12 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 		materialMap["type"] = m.Type
 
 		attrs := map[string]interface{}{
-			"url":         m.Attributes.URL,
-			"auto_update": m.Attributes.AutoUpdate,
-			"branch":      m.Attributes.Branch,
-			"destination": m.Attributes.Destination,
-			"name":        m.Attributes.Name,
+			"url":           m.Attributes.URL,
+			"auto_update":   m.Attributes.AutoUpdate,
+			"branch":        m.Attributes.Branch,
+			"destination":   m.Attributes.Destination,
+			"name":          m.Attributes.Name,
+			"invert_filter": m.Attributes.InvertFilter,
 		}
 
 		filter := make([]map[string]interface{}, 1)
