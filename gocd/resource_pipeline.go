@@ -108,6 +108,14 @@ func resourcePipeline() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
+									"pipeline": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"stage": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 									"auto_update": {
 										Type:     schema.TypeBool,
 										Optional: true,
