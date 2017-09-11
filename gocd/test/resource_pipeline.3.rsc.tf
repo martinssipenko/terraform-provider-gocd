@@ -1,8 +1,20 @@
-## START pipeline.test-pipeline3
-# CMD terraform import gocd_pipeline.test-pipeline3 "test-pipeline3"
+resource "gocd_pipeline" "test-pipeline3-upstream" {
+  name = "test-pipeline3-upstream"
+  group = "testing"
+  label_template  = "$${COUNT}"
+  materials = [{
+    type = "git"
+    attributes {
+      url = "https://github.com/drewsonne/terraform-provider-gocd.git"
+      branch = "master"
+      auto_update = true
+    }
+  },]
+}
+
 resource "gocd_pipeline" "test-pipeline3" {
   name = "test-pipeline3"
-  group = "defaultGroup"
+  group = "testing"
   label_template  = "$${COUNT}"
   materials = [
     {
@@ -38,5 +50,3 @@ data "gocd_task_definition" "test-pipeline3_test_test_0" {
   arguments = [
     "test"]
 }
-
-## END
