@@ -190,7 +190,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	p := extractPipeline(d)
 
-	if templateChange && ! templateToPipeline{
+	if templateChange && !templateToPipeline {
 		p.Stages = nil
 	}
 
@@ -359,7 +359,7 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 
 func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change bool) {
 	change = d.HasChange("template")
-	if ! change {
+	if !change {
 		return false, false
 	}
 	if template, hasTemplate := d.GetOk("template"); hasTemplate {
