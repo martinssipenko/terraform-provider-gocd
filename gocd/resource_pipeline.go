@@ -164,6 +164,7 @@ func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
 	var name string
 	if pname, hasName := d.GetOk("name"); hasName {
 		name = pname.(string)
+		d.SetId(name)
 	}
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -313,6 +314,8 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 			filter[0] = map[string]interface{}{
 				"ignore": m.Attributes.Filter.Ignore,
 			}
+		} else {
+			filter = nil
 		}
 
 		materialMap["attributes"] = []map[string]interface{}{{

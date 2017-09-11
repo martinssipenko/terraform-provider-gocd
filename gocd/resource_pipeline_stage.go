@@ -376,11 +376,11 @@ func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.St
 
 func dataSourceStageParseJobs(jobs []string, doc *gocd.Stage) error {
 	for _, rawjob := range jobs {
-		job := gocd.Job{}
-		if err := json.Unmarshal([]byte(rawjob), &job); err != nil {
+		job := &gocd.Job{}
+		if err := json.Unmarshal([]byte(rawjob), job); err != nil {
 			return err
 		}
-		doc.Jobs = append(doc.Jobs, &job)
+		doc.Jobs = append(doc.Jobs, job)
 	}
 	return nil
 }
@@ -403,6 +403,12 @@ func ingestStageConfig(d *schema.ResourceData, stage *gocd.Stage) {
 	} else if d.Get("success_approval").(bool) {
 		stage.Approval.Type = "success"
 		stage.Approval.Authorization = nil
+	} else {
+		stage.Approval = nil
+	}
+
+	if fetchMaterials := d.Get("fetch_materials").(bool); fetchMaterials {
+		stage.FetchMaterials = fetchMaterials
 	}
 
 	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {

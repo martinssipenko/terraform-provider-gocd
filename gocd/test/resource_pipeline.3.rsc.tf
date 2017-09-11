@@ -19,7 +19,7 @@ resource "gocd_pipeline" "test-pipeline3" {
 # CMD terraform import gocd_pipeline_stage.test "test"
 resource "gocd_pipeline_stage" "test" {
   name = "test"
-  pipeline_template = "test-pipeline3"
+  pipeline = "${gocd_pipeline.test-pipeline3.name}"
   fetch_materials = true
   jobs = [
     "${data.gocd_job_definition.test.json}"
@@ -33,7 +33,8 @@ data "gocd_job_definition" "test" {
 }
 data "gocd_task_definition" "test-pipeline3_test_test_0" {
   type = "exec"
-  run_if = ["success"]
+  run_if = ["passed"]
+  command = "echo"
   arguments = [
     "test"]
 }
