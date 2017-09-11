@@ -27,8 +27,8 @@
     }
   ],
   "resources": [
-    "alpha",
-    "beta"
+    "betalpha",
+    "alphbeta"
   ],
   "tasks": [
     {
