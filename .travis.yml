@@ -35,7 +35,6 @@ install:
 - go get github.com/kardianos/govendor
 
 script:
-  - make vendor-status
   - make vet
   - make script
 
