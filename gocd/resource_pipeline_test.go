@@ -10,8 +10,9 @@ import (
 
 func testResourcePipeline(t *testing.T) {
 	t.Run("Basic", testResourcePipelineBasic)
-	//t.Run("ImportBasic", testResourcePipelineImportBasic)
-	//t.Run("ExistsFail", testResourcePipelineExistsFail)
+	t.Run("ImportBasic", testResourcePipelineImportBasic)
+	t.Run("ExistsFail", testResourcePipelineExistsFail)
+	t.Run("FullStack", testResourcePipelineFullStack)
 }
 
 func testResourcePipelineBasic(t *testing.T) {
@@ -37,6 +38,24 @@ func testResourcePipelineBasic(t *testing.T) {
 						"gocd_pipeline.test-pipeline", "pipeline0-terraform"),
 				),
 				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
+}
+
+func testResourcePipelineFullStack(t *testing.T) {
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline.3.rsc.tf"),
+				Check: r.ComposeTestCheckFunc(
+					testCheckResourceExists("gocd_pipeline.test-pipeline3"),
+					testCheckResourceName(
+						"gocd_pipeline.test-pipeline", "test-pipeline3"),
+				),
 			},
 		},
 	})
