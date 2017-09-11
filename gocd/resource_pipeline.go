@@ -151,6 +151,11 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) error {
 	defer client.Unlock()
 
 	p := extractPipeline(d)
+	if (p.Stages == nil || len(p.Stages) == 0) && p.Template == "" {
+		p.Stages = []*gocd.Stage{
+			stagePlaceHolder(),
+		}
+	}
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
 	return readPipeline(d, pc, err)
 }
@@ -181,7 +186,13 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) error {
 		name = pname.(string)
 	}
 
+	templateToPipeline, templateChange := isSwitchToTemplate(d)
+
 	p := extractPipeline(d)
+
+	if templateChange && !templateToPipeline {
+		p.Stages = nil
+	}
 
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
@@ -344,4 +355,15 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	err = readPipelineMaterials(d, p.Materials)
 
 	return err
+}
+
+func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change bool) {
+	change = d.HasChange("template")
+	if !change {
+		return false, false
+	}
+	if template, hasTemplate := d.GetOk("template"); hasTemplate {
+		return template == "", change
+	}
+	return templateToPipeline, change
 }

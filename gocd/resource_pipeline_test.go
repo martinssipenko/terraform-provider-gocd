@@ -10,8 +10,8 @@ import (
 
 func testResourcePipeline(t *testing.T) {
 	t.Run("Basic", testResourcePipelineBasic)
-	t.Run("ImportBasic", testResourcePipelineImportBasic)
-	t.Run("ExistsFail", testResourcePipelineExistsFail)
+	//t.Run("ImportBasic", testResourcePipelineImportBasic)
+	//t.Run("ExistsFail", testResourcePipelineExistsFail)
 }
 
 func testResourcePipelineBasic(t *testing.T) {
