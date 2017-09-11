@@ -324,6 +324,12 @@ func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
 					attr.Filter = extractPipelineMaterialFilter(attrValue)
 				case "invert_filter":
 					attr.InvertFilter = attrValue.(bool)
+				case "stage":
+					attr.Stage = attrValue.(string)
+				case "submodule_folder":
+					attr.SubmoduleFolder = attrValue.(string)
+				case "shallow_clone":
+					attr.ShallowClone = attrValue.(bool)
 				}
 			}
 
