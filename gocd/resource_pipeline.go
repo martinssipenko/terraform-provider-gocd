@@ -79,6 +79,7 @@ func resourcePipeline() *schema.Resource {
 			},
 			"materials": &schema.Schema{
 				Type:     schema.TypeList,
+				MinItems: 1,
 				Required: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -127,6 +128,7 @@ func resourcePipeline() *schema.Resource {
 										//	Type: schema.TypeString,
 										//},
 										MaxItems: 1,
+										MinItems: 1,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"ignore": {
@@ -268,7 +270,23 @@ func extractPipeline(d *schema.ResourceData) *gocd.Pipeline {
 		p.Materials = extractPipelineMaterials(materials)
 	}
 
+	rawParameters := d.Get("parameters")
+	if parameters := rawParameters.(map[string]interface{}); len(parameters) > 0 {
+		p.Parameters = extractPipelineParameters(parameters)
+	}
+
 	return &p
+}
+
+func extractPipelineParameters(rawProperties map[string]interface{}) []*gocd.Parameter {
+	ps := []*gocd.Parameter{}
+	for key, value := range rawProperties {
+		ps = append(ps, &gocd.Parameter{
+			Name:  key,
+			Value: value.(string),
+		})
+	}
+	return ps
 }
 
 func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
@@ -317,23 +335,23 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 		materialMap := make(map[string]interface{})
 		materialMap["type"] = m.Type
 
-		filter := make([]map[string]interface{}, 1)
-		if m.Attributes.Filter != nil {
-			filter[0] = map[string]interface{}{
-				"ignore": m.Attributes.Filter.Ignore,
-			}
-		} else {
-			filter = nil
-		}
-
-		materialMap["attributes"] = []map[string]interface{}{{
+		attrs := map[string]interface{}{
 			"url":         m.Attributes.URL,
 			"auto_update": m.Attributes.AutoUpdate,
 			"branch":      m.Attributes.Branch,
 			"destination": m.Attributes.Destination,
 			"name":        m.Attributes.Name,
-			"filter":      filter,
-		}}
+		}
+
+		filter := make([]map[string]interface{}, 1)
+		if m.Attributes.Filter != nil {
+			filter[0] = map[string]interface{}{
+				"ignore": m.Attributes.Filter.Ignore,
+			}
+			attrs["filter"] = filter
+		}
+
+		materialMap["attributes"] = []map[string]interface{}{attrs}
 		materialImports[i] = materialMap
 	}
 	if err := d.Set("materials", materialImports); err != nil {
@@ -361,9 +379,26 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	}
 
 	d.SetId(p.Name)
-	d.Set("template", p.Template)
+	if p.Template != "" {
+		d.Set("template", p.Template)
+	}
+
+	if p.LabelTemplate != "" && p.LabelTemplate != "${COUNT}" {
+		d.Set("label_template", p.LabelTemplate)
+	}
+
+	d.Set("enable_pipeline_locking", p.EnablePipelineLocking)
+	d.Set("environment_variables", p.EnvironmentVariables)
 
 	err = readPipelineMaterials(d, p.Materials)
+
+	if len(p.Parameters) > 0 {
+		rawParams := map[string]string{}
+		for _, param := range p.Parameters {
+			rawParams[param.Name] = param.Value
+		}
+		d.Set("parameters", rawParams)
+	}
 
 	return err
 }

@@ -11,24 +11,26 @@ import (
 )
 
 func testResourcePipelineImportBasic(t *testing.T) {
-	suffix := randomString(10)
-	resourceName := fmt.Sprintf("gocd_pipeline.test-%s", suffix)
+	for _, idx := range []int{4} { //{2,4}
+		suffix := randomString(10)
+		resourceName := fmt.Sprintf("gocd_pipeline.test-%s", suffix)
 
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testGocdProviders,
-		CheckDestroy: testGocdPipelineDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testGocdPipelineConfig(suffix),
+		resource.Test(t, resource.TestCase{
+			PreCheck:     func() { testAccPreCheck(t) },
+			Providers:    testGocdProviders,
+			CheckDestroy: testGocdPipelineDestroy,
+			Steps: []resource.TestStep{
+				{
+					Config: testGocdPipelineConfig(suffix, idx),
+				},
+				{
+					ResourceName:      resourceName,
+					ImportState:       true,
+					ImportStateVerify: true,
+				},
 			},
-			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
-		},
-	})
+		})
+	}
 }
 
 func testGocdPipelineDestroy(s *terraform.State) error {
@@ -49,9 +51,9 @@ func testGocdPipelineDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testGocdPipelineConfig(suffix string) string {
+func testGocdPipelineConfig(suffix string, idx int) string {
 	return strings.Replace(
-		testFile("resource_pipeline.2.rsc.tf"),
+		testFile(fmt.Sprintf("resource_pipeline.%d.rsc.tf", idx)),
 		"test-pipeline",
 		"test-"+suffix,
 		-1,

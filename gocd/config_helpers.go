@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	"sort"
 	"strconv"
 )
 
@@ -18,7 +17,6 @@ func decodeConfigStringList(lI []interface{}) []string {
 	for i, vI := range lI {
 		ret[i] = vI.(string)
 	}
-	sort.Sort(sort.StringSlice(ret))
 	return ret
 }
 
