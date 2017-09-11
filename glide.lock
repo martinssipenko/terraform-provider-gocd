@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-10T21:25:34.832537335+01:00
+updated: 2017-09-11T12:47:24.708005602+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -44,11 +44,11 @@ imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
 - name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  version: a476722483882dd40b8111f0eb64e1d7f43f56e4
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: a630baf7f541a54c7e57ef31c298102db46524e5
+  version: dadd1a7a57ce5009012741d6a81631ce51363ec0
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -152,7 +152,7 @@ imports:
   - internal/xlog
   - lzma
 - name: golang.org/x/crypto
-  version: 81e90905daefcd6fd217b62423c0908922eadb30
+  version: 9ba3862cf6a5452ae579de98f9364dd2e544844c
   subpackages:
   - bcrypt
   - blowfish
@@ -176,7 +176,7 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/sys
-  version: 7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce
+  version: a5054c7c1385fd50d9394475365355a87a7873ec
   subpackages:
   - unix
 - name: golang.org/x/text
