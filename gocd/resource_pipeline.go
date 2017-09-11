@@ -121,6 +121,10 @@ func resourcePipeline() *schema.Resource {
 										Type:     schema.TypeBool,
 										Optional: true,
 									},
+									"invert_filter": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
 									"filter": {
 										Type:     schema.TypeList,
 										Optional: true,
@@ -318,6 +322,8 @@ func extractPipelineMaterials(rawMaterials []interface{}) []gocd.Material {
 					attr.AutoUpdate = attrValue.(bool)
 				case "filter":
 					attr.Filter = extractPipelineMaterialFilter(attrValue)
+				case "invert_filter":
+					attr.InvertFilter = attrValue.(bool)
 				}
 			}
 
