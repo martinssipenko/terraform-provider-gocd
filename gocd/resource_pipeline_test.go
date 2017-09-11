@@ -43,6 +43,7 @@ func testResourcePipelineBasic(t *testing.T) {
 }
 
 func testResourcePipelineFullStack(t *testing.T) {
+
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
@@ -59,6 +60,21 @@ func testResourcePipelineFullStack(t *testing.T) {
 		},
 	})
 
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline.4.rsc.tf"),
+				Check: r.ComposeTestCheckFunc(
+					testCheckResourceExists("gocd_pipeline.test-pipeline"),
+					testCheckResourceName(
+						"gocd_pipeline.test-pipeline", "test-pipeline"),
+				),
+			},
+		},
+	})
 }
 
 func testResourcePipelineExistsFail(t *testing.T) {
