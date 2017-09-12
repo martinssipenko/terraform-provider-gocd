@@ -104,14 +104,15 @@ resource "gocd_pipeline" "terraform-image" {
     {
       type = "dependency"
       attributes {
-        pipeline = "${gocd_pipeline.base-image.name}"
-        stage = "clean"
+        pipeline = "${gocd_pipeline.test-pipeline.name}"
+        stage = "${gocd_pipeline_stage.clean.name}"
         auto_update = true
       }
     },
   ]
 }
-resource "gocd_pipeline" "base-image" {
+
+resource "gocd_pipeline" "test-pipeline" {
   name = "base-image"
   group = "ecsagent"
   template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
