@@ -24,11 +24,11 @@ type Pipeline struct {
 	EnablePipelineLocking bool                   `json:"enable_pipeline_locking,omitempty"`
 	Template              string                 `json:"template,omitempty"`
 	Origin                *PipelineConfigOrigin  `json:"origin,omitempty"`
-	Parameters            []*Parameter           `json:"parameters"`
-	EnvironmentVariables  []*EnvironmentVariable `json:"environment_variables"`
+	Parameters            []*Parameter           `json:"parameters,omitempty"`
+	EnvironmentVariables  []*EnvironmentVariable `json:"environment_variables,omitempty"`
 	Materials             []Material             `json:"materials,omitempty"`
 	Label                 string                 `json:"label,omitempty"`
-	Stages                []*Stage               `json:"stages"`
+	Stages                []*Stage               `json:"stages,omitempty"`
 	Version               string                 `json:"version,omitempty"`
 	//TrackingTool          string                 `json:"tracking_tool"`
 	//Timer                 string                 `json:"timer"`

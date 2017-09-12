@@ -17,6 +17,8 @@ const (
 	UpdatePipelineConfigCommandUsage = "Update Pipeline config"
 	DeletePipelineConfigCommandName  = "delete-pipeline-config"
 	DeletePipelineConfigCommandUsage = "Remove Pipeline. This will not delete the pipeline history, which will be stored in the database"
+	GetPipelineConfigCommandName     = "get-pipeline-config"
+	GetPipelineConfigCommandUsage    = "Get a Pipeline Configuration"
 )
 
 // CreatePipelineConfigAction handles the interaction between the cli flags and the action handler for
@@ -136,6 +138,21 @@ func DeletePipelineConfigAction(c *cli.Context) error {
 	return handleOutput(deleteResponse, r, "DeletePipelineTemplate", err)
 }
 
+// GetPipelineConfigAction handles the interaction between the cli flags and the action handler for get-pipeline-config
+func GetPipelineConfigAction(c *cli.Context) error {
+	name := c.String("name")
+	if name == "" {
+		return handleOutput(nil, nil, "GetPipelineConfig", errors.New("'--name' is missing"))
+	}
+
+	getResponse, r, err := cliAgent(c).PipelineConfigs.Get(context.Background(), name)
+	if r.HTTP.StatusCode != 404 {
+		getResponse.RemoveLinks()
+	}
+
+	return handleOutput(getResponse, r, "GetPipelineConfig", err)
+}
+
 // CreatePipelineConfigCommand handles the interaction between the cli flags and the action handler for create-pipeline-config
 func CreatePipelineConfigCommand() *cli.Command {
 	return &cli.Command{
@@ -174,6 +191,19 @@ func DeletePipelineConfigCommand() *cli.Command {
 		Usage:    DeletePipelineConfigCommandUsage,
 		Category: "Pipeline Configs",
 		Action:   DeletePipelineConfigAction,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "name"},
+		},
+	}
+}
+
+// GetPipelineConfigCommand handles the interaction between the cli flags and the action handler for get-pipeline-config
+func GetPipelineConfigCommand() *cli.Command {
+	return &cli.Command{
+		Name:     GetPipelineConfigCommandName,
+		Usage:    GetPipelineConfigCommandUsage,
+		Action:   GetPipelineConfigAction,
+		Category: "Pipeline Configs",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},
 		},
