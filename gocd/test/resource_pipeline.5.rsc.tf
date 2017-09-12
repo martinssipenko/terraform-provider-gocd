@@ -39,7 +39,8 @@ data "gocd_task_definition" "gocd-image-build-deploy_build_build_0" {
     "passed"]
   command = "make"
   arguments = [
-    "build"]
+    "build",
+  "#{Image}\"complex\"$${Env}"]
 }
 
 # CMD terraform import gocd_pipeline_stage.clean "clean"
@@ -104,6 +105,16 @@ resource "gocd_pipeline" "terraform-image" {
   parameters {
     Image = "terraform",
   }
+  environment_variables = [
+    {
+      name = "PACKER_ANSIBLE_VERSION",
+      value = "2.0.2.0"
+    },
+    {
+      name = "INSTALL_ANSIBLE_DEPENDENCIES",
+      value = "true"
+    },
+  ]
   materials = [
     {
       type = "git"
@@ -131,6 +142,16 @@ resource "gocd_pipeline" "test-pipeline" {
   parameters {
     Image = "base",
   }
+  environment_variables = [
+    {
+      name = "PACKER_ANSIBLE_VERSION",
+      value = "2.0.2.0"
+    },
+    {
+      name = "INSTALL_ANSIBLE_DEPENDENCIES",
+      value = "true"
+    },
+  ]
   materials = [
     {
       type = "git"
