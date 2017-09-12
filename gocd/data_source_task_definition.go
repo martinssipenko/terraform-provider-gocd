@@ -21,7 +21,7 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 			"run_if": {
 				Type:     schema.TypeList,
 				MaxItems: 3,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -108,8 +108,10 @@ func dataSourceGocdTaskDefinitionRead(d *schema.ResourceData, meta interface{}) 
 		Attributes: gocd.TaskAttributes{},
 	}
 
-	if runIf := decodeConfigStringList(d.Get("run_if").([]interface{})); len(runIf) > 0 {
-		task.Attributes.RunIf = runIf
+	if rawRunIf, hasRunIf := d.GetOk("run_if"); hasRunIf {
+		if runIf := decodeConfigStringList(rawRunIf.([]interface{})); len(runIf) > 0 {
+			task.Attributes.RunIf = runIf
+		}
 	}
 
 	switch task.Type {
