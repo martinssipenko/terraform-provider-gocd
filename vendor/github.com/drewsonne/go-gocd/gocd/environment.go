@@ -114,7 +114,7 @@ func (es *EnvironmentsService) Get(ctx context.Context, name string) (*Environme
 func (es *EnvironmentsService) Patch(ctx context.Context, name string, patch *EnvironmentPatchRequest) (*Environment, *APIResponse, error) {
 	env := Environment{}
 	_, resp, err := es.client.patchAction(ctx, &APIClientRequest{
-		Path:         "admin/environments" + name,
+		Path:         "admin/environments/" + name,
 		RequestBody:  patch,
 		ResponseBody: &env,
 		APIVersion:   apiV2,

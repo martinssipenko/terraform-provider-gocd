@@ -19,7 +19,6 @@ resource "gocd_pipeline" "test-pipeline" {
 }
 
 resource "gocd_environment_association" "test-environment-association" {
-  name = "test-pipeline-environment"
   environment = "${gocd_environment.test-environment.name}"
   pipeline = "${gocd_pipeline.test-pipeline.name}"
 }

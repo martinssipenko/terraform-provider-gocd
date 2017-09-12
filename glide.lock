@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-12T18:51:40.535861479+01:00
+updated: 2017-09-12T21:28:39.411004476+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -48,7 +48,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 3159b274dfce4c3a6ff1bf1b22d98814acdcb41f
+  version: 60242f7ef4ce38f01adc0ecb3f80c03f5f91f57c
   subpackages:
   - gocd
 - name: github.com/go-ini/ini

@@ -27,7 +27,7 @@ func testResourceEnvironmentAssociationImportBasic(t *testing.T) {
 				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateId:     rscId,
+				ImportStateId:     "test-environment/p/" + rscId,
 			},
 		},
 	})
@@ -42,7 +42,7 @@ func testGocdEnvironmentAssociationDestroy(s *terraform.State) error {
 			continue
 		}
 
-		name := rs.Primary.Attributes["name"]
+		name := rs.Primary.Attributes["environment"]
 
 		env, _, err := gocdclient.Environments.Get(context.Background(), name)
 		if err == nil {
@@ -59,7 +59,7 @@ func testGocdEnvironmentAssociationDestroy(s *terraform.State) error {
 func testGocdEnvironmentAssociationConfig(suffix string) string {
 	return strings.Replace(
 		testFile("resource_environment_association.0.rsc.tf"),
-		"test-environment_association",
+		"test-pipeline", // This is not a type, it should say "test-pipeline" as the name of the associaiton is kind of irrelevant.
 		"test-"+suffix,
 		-1,
 	)
