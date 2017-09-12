@@ -202,7 +202,7 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("clean_working_directory", stage.CleanWorkingDirectory)
 	d.Set("never_cleanup_artifacts", stage.NeverCleanupArtifacts)
 	d.Set("resources", stage.Resources)
-	
+
 	d.Set(
 		"environment_variables",
 		ingestEnvironmentVariables(stage.EnvironmentVariables),
