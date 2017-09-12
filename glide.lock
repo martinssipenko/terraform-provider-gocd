@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-12T08:59:41.605079729+01:00
+updated: 2017-09-12T18:51:40.535861479+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -8,7 +8,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: c774e20cd3e96c1963f7bdef55aba8b6a2937090
+  version: 49cd7b4cfcfcae1eb815db0a9139f07340bf49c8
   subpackages:
   - aws
   - aws/awserr
@@ -48,7 +48,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 4e4c52ddeec3906c5f2296d040bc9e191bfbd3df
+  version: 3159b274dfce4c3a6ff1bf1b22d98814acdcb41f
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -66,7 +66,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/go-getter
-  version: eed6d5401ad6a0719df2fdd60152d519df375f8c
+  version: a0a1db109e490aaf1059ee13aaab5bf049c2cdc4
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-hclog
@@ -180,7 +180,7 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: bd91bbf73e9a4a801adbfb97133c992678533126
+  version: acd49d43e9b95df46670431bf5c7ae59586daad8
   subpackages:
   - secure/bidirule
   - transform
