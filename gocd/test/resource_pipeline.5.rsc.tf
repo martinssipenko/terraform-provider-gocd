@@ -12,6 +12,12 @@ resource "gocd_pipeline_stage" "build" {
   jobs = [
     "${data.gocd_job_definition.build.json}"
   ]
+  environment_variables = [
+    {
+      name = "IMAGE"
+      value = "#{Image}"
+    },
+  ]
 }
 data "gocd_job_definition" "build" {
   name = "build"
@@ -20,6 +26,12 @@ data "gocd_job_definition" "build" {
   ]
   resources = [
     "v5.80"]
+  environment_variables = [
+    {
+      name = "IMAGE"
+      value = "#{Image}"
+    },
+  ]
 }
 data "gocd_task_definition" "gocd-image-build-deploy_build_build_0" {
   type = "exec"

@@ -1,5 +1,5 @@
 hash: 584bd41b97dc26351aa2b6d2165bd527a08cd482b6a6744420b6511b1d20d7ee
-updated: 2017-09-11T12:47:24.708005602+01:00
+updated: 2017-09-12T08:59:41.605079729+01:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: 2bd8b58cf4275aeb086ade613de226773e29e853
@@ -8,7 +8,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: 12b6a0f7b3e676d459a9480e75df7efe576cfcb2
+  version: c774e20cd3e96c1963f7bdef55aba8b6a2937090
   subpackages:
   - aws
   - aws/awserr
@@ -44,11 +44,11 @@ imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
 - name: github.com/davecgh/go-spew
-  version: a476722483882dd40b8111f0eb64e1d7f43f56e4
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: dadd1a7a57ce5009012741d6a81631ce51363ec0
+  version: 4e4c52ddeec3906c5f2296d040bc9e191bfbd3df
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -66,7 +66,7 @@ imports:
 - name: github.com/hashicorp/go-cleanhttp
   version: 3573b8b52aa7b37b9358d966a898feb387f62437
 - name: github.com/hashicorp/go-getter
-  version: 80eb888f740e980f6585273d48582c74b3a34f88
+  version: eed6d5401ad6a0719df2fdd60152d519df375f8c
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-hclog
@@ -152,7 +152,7 @@ imports:
   - internal/xlog
   - lzma
 - name: golang.org/x/crypto
-  version: 9ba3862cf6a5452ae579de98f9364dd2e544844c
+  version: 81e90905daefcd6fd217b62423c0908922eadb30
   subpackages:
   - bcrypt
   - blowfish
@@ -176,7 +176,7 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/sys
-  version: a5054c7c1385fd50d9394475365355a87a7873ec
+  version: 7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce
   subpackages:
   - unix
 - name: golang.org/x/text
@@ -191,7 +191,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 3214f767e5a22021f792f7c4625a6380ce1eb2b2
+  version: c443156028b9fa563e063e9fa8ba7881d467833b
   subpackages:
   - balancer
   - codes
