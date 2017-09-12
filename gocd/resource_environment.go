@@ -1,9 +1,9 @@
 package gocd
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/drewsonne/go-gocd/gocd"
 	"context"
+	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceEnvironment() *schema.Resource {
@@ -30,23 +30,41 @@ func resourceEnvironment() *schema.Resource {
 }
 
 func resourceEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
+	name := d.Get("name").(string)
+	client := meta.(*gocd.Client)
+	client.Lock()
+	defer client.Unlock()
+	env, _, err := client.Environments.Create(context.Background(), name)
+	if err != nil {
+		return err
+	}
+	d.SetId(name)
+	d.Set("version", env.Version)
 	return nil
 }
 
 func resourceEnvironmentRead(d *schema.ResourceData, meta interface{}) error {
+	name := d.Id()
+	client := meta.(*gocd.Client)
+	env, _, err := client.Environments.Get(context.Background(), name)
+	if err != nil {
+		return err
+	}
+	d.Set("version", env.Version)
+
 	return nil
 }
 
 func resourceEnvironmentDelete(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	name := d.Get("name").(string)
+	client := meta.(*gocd.Client)
+	_, _, err := client.Environments.Delete(context.Background(), name)
+	return err
 }
 
 func resourceEnvironmentExists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	name := d.Get("name").(string)
 	client := meta.(*gocd.Client)
-	client.Lock()
-	defer client.Unlock()
-
 	env, _, err := client.Environments.Get(context.Background(), name)
 	exists := (env.Name == name) && (err == nil)
 	return exists, err

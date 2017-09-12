@@ -73,6 +73,28 @@ func (es *EnvironmentsService) List(ctx context.Context) (*EnvironmentsResponse,
 	return &e, resp, err
 }
 
+// Delete an environment
+func (es *EnvironmentsService) Delete(ctx context.Context, name string) (string, *APIResponse, error) {
+	return es.client.deleteAction(ctx, "admin/environments/"+name, apiV2)
+}
+
+// Create an environment
+func (es *EnvironmentsService) Create(ctx context.Context, name string) (*Environment, *APIResponse, error) {
+	e := Environment{}
+	_, resp, err := es.client.postAction(ctx, &APIClientRequest{
+		Path: "admin/environments/",
+		RequestBody: Environment{
+			Name: name,
+		},
+		ResponseBody: &e,
+		APIVersion:   apiV2,
+	})
+	if err == nil {
+		e.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
+	}
+	return &e, resp, err
+}
+
 // Get a single environment by name
 func (es *EnvironmentsService) Get(ctx context.Context, name string) (*Environment, *APIResponse, error) {
 	e := Environment{}
