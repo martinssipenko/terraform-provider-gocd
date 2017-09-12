@@ -38,12 +38,8 @@ func resourcePipelineTemplateImport(d *schema.ResourceData, meta interface{}) ([
 }
 
 func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	var name string
-	if ptname, hasName := d.GetOk("name"); hasName {
-		name = ptname.(string)
-	} else {
-		return false, errors.New("`name` can not be empty")
-	}
+	name := d.Get("name").(string)
+
 	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
