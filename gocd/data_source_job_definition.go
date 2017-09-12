@@ -32,8 +32,32 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 			"environment_variables": {
 				Type:     schema.TypeList,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeMap,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"encrypted_value"},
+							Optional: true,
+						},
+						"encrypted_value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"value"},
+							Optional: true,
+						},
+						"secure": {
+							Type:     schema.TypeBool,
+							Default:  false,
+							Optional: true,
+						},
+					},
 				},
 			},
 			"resources": {
@@ -219,7 +243,7 @@ func dataSourceGocdJobEnvVarsRead(rawEnvVars []interface{}) []*gocd.EnvironmentV
 		}
 
 		if secure, ok := envVar["secure"]; ok {
-			envVarStruct.Secure = secure.(string) == "1"
+			envVarStruct.Secure = secure.(bool)
 		}
 
 		envVars = append(envVars, envVarStruct)
