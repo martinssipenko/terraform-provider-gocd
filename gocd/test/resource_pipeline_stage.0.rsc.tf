@@ -23,6 +23,12 @@ resource "gocd_pipeline_stage" "test-stage" {
   authorization_roles = [
     "one",
     "two"]
+  environment_variables = [
+    {
+      name = "IMAGE"
+      value = "#{Image}"
+    },
+  ]
   pipeline_template = "${gocd_pipeline_template.test-pipeline.id}"
 }
 

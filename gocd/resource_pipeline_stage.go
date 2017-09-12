@@ -67,8 +67,32 @@ func resourcePipelineStage() *schema.Resource {
 			"environment_variables": {
 				Type:     schema.TypeList,
 				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeMap,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"encrypted_value"},
+							Optional: true,
+						},
+						"encrypted_value": {
+							Type: schema.TypeString,
+							// ConflictsWith can only be applied to top level configs.
+							// A custom validation will need to be used.
+							//ConflictsWith: []string{"value"},
+							Optional: true,
+						},
+						"secure": {
+							Type:     schema.TypeBool,
+							Default:  false,
+							Optional: true,
+						},
+					},
 				},
 			},
 			"pipeline": {
@@ -177,8 +201,23 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("fetch_materials", stage.FetchMaterials)
 	d.Set("clean_working_directory", stage.CleanWorkingDirectory)
 	d.Set("never_cleanup_artifacts", stage.NeverCleanupArtifacts)
-	d.Set("environment_variables", stage.EnvironmentVariables)
 	d.Set("resources", stage.Resources)
+
+	envVarMaps := []map[string]interface{}{}
+	for _, rawEnvVar := range stage.EnvironmentVariables {
+		envVarMap := map[string]interface{}{
+			"name":   rawEnvVar.Name,
+			"secure": rawEnvVar.Secure,
+		}
+		if rawEnvVar.Value != "" {
+			envVarMap["value"] = rawEnvVar.Value
+		}
+		if rawEnvVar.EncryptedValue != "" {
+			envVarMap["encrypted_value"] = rawEnvVar.EncryptedValue
+		}
+		envVarMaps = append(envVarMaps, envVarMap)
+	}
+	d.Set("environment_variables", envVarMaps)
 
 	if appr := stage.Approval; appr != nil {
 		if appr.Type == "manual" {
@@ -416,6 +455,12 @@ func ingestStageConfig(d *schema.ResourceData, stage *gocd.Stage) {
 	if rJobs, hasJobs := d.GetOk("jobs"); hasJobs {
 		if jobs := decodeConfigStringList(rJobs.([]interface{})); len(jobs) > 0 {
 			dataSourceStageParseJobs(jobs, stage)
+		}
+	}
+
+	if rawEnvVars, hasEnvVars := d.GetOk("environment_variables"); hasEnvVars {
+		if envVars := rawEnvVars.([]interface{}); len(envVars) > 0 {
+			stage.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
 		}
 	}
 
