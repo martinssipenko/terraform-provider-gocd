@@ -7,7 +7,7 @@ resource "gocd_pipeline_template" "gocd-image-build-deploy" {
 # CMD terraform import gocd_pipeline_stage.build "build"
 resource "gocd_pipeline_stage" "build" {
   name = "build"
-  pipeline_template = "gocd-image-build-deploy"
+  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials = true
   jobs = [
     "${data.gocd_job_definition.build.json}"
@@ -33,7 +33,7 @@ data "gocd_task_definition" "gocd-image-build-deploy_build_build_0" {
 # CMD terraform import gocd_pipeline_stage.clean "clean"
 resource "gocd_pipeline_stage" "clean" {
   name = "clean"
-  pipeline_template = "gocd-image-build-deploy"
+  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials = true
   jobs = [
     "${data.gocd_job_definition.clean.json}"
@@ -61,7 +61,7 @@ data "gocd_task_definition" "gocd-image-build-deploy_clean_clean_0" {
 # CMD terraform import gocd_pipeline_stage.deploy "deploy"
 resource "gocd_pipeline_stage" "deploy" {
   name = "deploy"
-  pipeline_template = "gocd-image-build-deploy"
+  pipeline_template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   fetch_materials = true
   jobs = [
     "${data.gocd_job_definition.deploy.json}"
@@ -104,8 +104,7 @@ resource "gocd_pipeline" "terraform-image" {
     {
       type = "dependency"
       attributes {
-//        name = "terraform-image"
-        pipeline = "${gocd_pipeline.base-image.id}"
+        pipeline = "${gocd_pipeline.base-image.name}"
         stage = "clean"
         auto_update = true
       }
@@ -115,11 +114,10 @@ resource "gocd_pipeline" "terraform-image" {
 resource "gocd_pipeline" "base-image" {
   name = "base-image"
   group = "ecsagent"
-  template = "gocd-image-build-deploy"
+  template = "${gocd_pipeline_template.gocd-image-build-deploy.name}"
   parameters {
     Image = "base",
   }
-
   materials = [
     {
       type = "git"
