@@ -39,7 +39,8 @@ data "gocd_task_definition" "gocd-image-build-deploy_build_build_0" {
     "passed"]
   command = "make"
   arguments = [
-    "build"]
+    "build",
+  "#{Image}\"complex\"$${Env}"]
 }
 
 # CMD terraform import gocd_pipeline_stage.clean "clean"
