@@ -11,7 +11,7 @@ import (
 )
 
 func testResourcePipelineImportBasic(t *testing.T) {
-	for _, idx := range []int{4} { //{2,4}
+	for _, idx := range []int{2, 4, 5} { //{2,4}
 		suffix := randomString(10)
 		resourceName := fmt.Sprintf("gocd_pipeline.test-%s", suffix)
 
