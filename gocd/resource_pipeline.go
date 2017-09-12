@@ -291,6 +291,10 @@ func extractPipeline(d *schema.ResourceData) (p *gocd.Pipeline, err error) {
 		p.Parameters = extractPipelineParameters(parameters)
 	}
 
+	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
+		p.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
+	}
+
 	return p, nil
 }
 
@@ -349,6 +353,12 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 					attr.Stage = attrValue.(string)
 				default:
 					return nil, fmt.Errorf("Unexpected material attribute: `%s:%s`", attrKey, attrValue)
+				}
+			}
+
+			if m.Type == "dependency" {
+				if attr.Name == attr.Pipeline {
+					attr.Name = ""
 				}
 			}
 
