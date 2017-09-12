@@ -6,10 +6,15 @@ import (
 )
 
 func testEnvironment(t *testing.T) {
+	t.Run("Import", testResourceEnvironmentImportBasic)
+	t.Run("Basic", testResourceEnvironmentBasic)
+}
+
+func testResourceEnvironmentBasic(t *testing.T) {
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
-		CheckDestroy: testGocdPipelineDestroy,
+		CheckDestroy: testGocdEnvironmentDestroy,
 		Steps: []r.TestStep{
 			{
 				Config: testFile("resource_environment.0.rsc.tf"),

@@ -2,9 +2,9 @@ package gocd
 
 import (
 	"context"
+	"errors"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/pkg/errors"
 )
 
 const PLACEHOLDER_NAME = "TERRAFORM_PLACEHOLDER"
@@ -38,7 +38,12 @@ func resourcePipelineTemplateImport(d *schema.ResourceData, meta interface{}) ([
 }
 
 func resourcePipelineTemplateExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	name := d.Get("name").(string)
+	var name string
+	if ptname, hasName := d.GetOk("name"); hasName {
+		name = ptname.(string)
+	} else {
+		return false, errors.New("`name` can not be empty")
+	}
 
 	client := meta.(*gocd.Client)
 	client.Lock()

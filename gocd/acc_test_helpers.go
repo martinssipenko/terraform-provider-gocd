@@ -8,7 +8,8 @@ import (
 
 func testCheckResourceExists(resource string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[resource]
+		r := s.RootModule()
+		rs, ok := r.Resources[resource]
 		if !ok {
 			return fmt.Errorf("Not found: %s", resource)
 		}
