@@ -202,22 +202,11 @@ func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("clean_working_directory", stage.CleanWorkingDirectory)
 	d.Set("never_cleanup_artifacts", stage.NeverCleanupArtifacts)
 	d.Set("resources", stage.Resources)
-
-	envVarMaps := []map[string]interface{}{}
-	for _, rawEnvVar := range stage.EnvironmentVariables {
-		envVarMap := map[string]interface{}{
-			"name":   rawEnvVar.Name,
-			"secure": rawEnvVar.Secure,
-		}
-		if rawEnvVar.Value != "" {
-			envVarMap["value"] = rawEnvVar.Value
-		}
-		if rawEnvVar.EncryptedValue != "" {
-			envVarMap["encrypted_value"] = rawEnvVar.EncryptedValue
-		}
-		envVarMaps = append(envVarMaps, envVarMap)
-	}
-	d.Set("environment_variables", envVarMaps)
+	
+	d.Set(
+		"environment_variables",
+		ingestEnvironmentVariables(stage.EnvironmentVariables),
+	)
 
 	if appr := stage.Approval; appr != nil {
 		if appr.Type == "manual" {
@@ -463,5 +452,22 @@ func ingestStageConfig(d *schema.ResourceData, stage *gocd.Stage) {
 			stage.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
 		}
 	}
+}
 
+func ingestEnvironmentVariables(environmentVariables []*gocd.EnvironmentVariable) []map[string]interface{} {
+	envVarMaps := []map[string]interface{}{}
+	for _, rawEnvVar := range environmentVariables {
+		envVarMap := map[string]interface{}{
+			"name":   rawEnvVar.Name,
+			"secure": rawEnvVar.Secure,
+		}
+		if rawEnvVar.Value != "" {
+			envVarMap["value"] = rawEnvVar.Value
+		}
+		if rawEnvVar.EncryptedValue != "" {
+			envVarMap["encrypted_value"] = rawEnvVar.EncryptedValue
+		}
+		envVarMaps = append(envVarMaps, envVarMap)
+	}
+	return envVarMaps
 }
