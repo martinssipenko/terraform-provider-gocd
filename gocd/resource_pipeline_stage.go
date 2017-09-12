@@ -65,9 +65,11 @@ func resourcePipelineStage() *schema.Resource {
 				Elem:          stringArg,
 			},
 			"environment_variables": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
-				Elem:     stringArg,
+				Elem: &schema.Schema{
+					Type: schema.TypeMap,
+				},
 			},
 			"pipeline": {
 				Type:          schema.TypeString,
