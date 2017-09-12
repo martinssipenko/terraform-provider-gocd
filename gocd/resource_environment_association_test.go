@@ -27,7 +27,7 @@ func testResourceEnvironmentAssociationBasic(t *testing.T) {
 						"test-pipeline"),
 					testCheckResourceExists("gocd_environment_association.test-environment-association"),
 					testCheckResourceName("gocd_environment_association.test-environment-association",
-						"test-environment-association"),
+						"test-environment/p/test-pipeline"),
 				),
 			},
 		},

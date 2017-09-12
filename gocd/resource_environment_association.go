@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"strings"
 )
 
 func resourceEnvironmentAssociation() *schema.Resource {
@@ -18,10 +19,6 @@ func resourceEnvironmentAssociation() *schema.Resource {
 			State: resourceEnvironmentAssociationImport,
 		},
 		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"environment": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -100,11 +97,20 @@ func resourceEnvironmentAssociationCreate(d *schema.ResourceData, meta interface
 }
 
 func resourceEnvironmentAssociationRead(d *schema.ResourceData, meta interface{}) error {
-	name := d.Id()
+	id := strings.Split(d.Id(), "/")
+	environment := id[0]
+	//associationType := id[1]
+	value := id[2]
 	client := meta.(*gocd.Client)
-	env, _, err := client.Environments.Get(context.Background(), name)
+	env, _, err := client.Environments.Get(context.Background(), environment)
 	if err != nil {
 		return err
+	}
+
+	for _, p := range env.Pipelines {
+		if p.Name == value {
+			d.Set("pipeline", p.Name)
+		}
 	}
 	d.Set("version", env.Version)
 
@@ -112,18 +118,37 @@ func resourceEnvironmentAssociationRead(d *schema.ResourceData, meta interface{}
 }
 
 func resourceEnvironmentAssociationDelete(d *schema.ResourceData, meta interface{}) error {
-	name := d.Get("name").(string)
+	id := strings.Split(d.Id(), "/")
+	environment := id[0]
+	//associationType := id[1]
+	value := id[2]
+
 	client := meta.(*gocd.Client)
-	_, _, err := client.Environments.Delete(context.Background(), name)
+	_, _, err := client.Environments.Patch(context.Background(), environment, &gocd.EnvironmentPatchRequest{
+		Pipelines: &gocd.PatchStringAction{
+			Remove: []string{value},
+		},
+	})
 	return err
 }
 
 func resourceEnvironmentAssociationExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	name := d.Get("name").(string)
+	id := strings.Split(d.Id(), "/")
+	environment := id[0]
+	//associationType := id[1]
+	value := id[2]
+
 	client := meta.(*gocd.Client)
-	env, _, err := client.Environments.Get(context.Background(), name)
-	exists := (env.Name == name) && (err == nil)
-	return exists, err
+	env, _, err := client.Environments.Get(context.Background(), environment)
+	if err != nil {
+		return false, err
+	}
+	for _, p := range env.Pipelines {
+		if p.Name == value {
+			return true, nil
+		}
+	}
+	return false, err
 }
 
 func resourceEnvironmentAssociationUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -131,7 +156,12 @@ func resourceEnvironmentAssociationUpdate(d *schema.ResourceData, meta interface
 }
 
 func resourceEnvironmentAssociationImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	d.Set("name", d.Id())
+	id := strings.Split(d.Id(), "/")
+	environment := id[0]
+	//associationType := id[1]
+	value := id[2]
+	d.Set("environment", environment)
+	d.Set("pipeline", value)
 	return []*schema.ResourceData{d}, nil
 }
 
@@ -149,5 +179,5 @@ func environmentAssociationId(env string, pipeline string, agent string, envvar 
 		value = pipeline
 	}
 
-	return fmt.Sprintf("%s.%s.%s", env, envAssociationType, value)
+	return fmt.Sprintf("%s/%s/%s", env, envAssociationType, value)
 }
