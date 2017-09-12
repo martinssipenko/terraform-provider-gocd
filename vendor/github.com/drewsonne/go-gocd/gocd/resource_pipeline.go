@@ -15,6 +15,11 @@ func (p *Pipeline) GetStage(stageName string) *Stage {
 	return nil
 }
 
+// RemoveLinks from the pipeline object for json marshalling.
+func (p *Pipeline) RemoveLinks() {
+	p.Links = nil
+}
+
 // GetName of the pipeline
 func (p *Pipeline) GetName() string {
 	return p.Name

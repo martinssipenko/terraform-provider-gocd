@@ -33,21 +33,21 @@ type AgentsResponse struct {
 
 // Agent describes a single agent object.
 type Agent struct {
-	UUID             string        `json:"uuid"`
-	Hostname         string        `json:"hostname"`
-	ElasticAgentID   string        `json:"elastic_agent_id"`
-	ElasticPluginID  string        `json:"elastic_plugin_id"`
-	IPAddress        string        `json:"ip_address"`
-	Sandbox          string        `json:"sandbox"`
-	OperatingSystem  string        `json:"operating_system"`
-	FreeSpace        int           `json:"free_space"`
-	AgentConfigState string        `json:"agent_config_state"`
-	AgentState       string        `json:"agent_state"`
-	Resources        []string      `json:"resources"`
-	Environments     []string      `json:"environments"`
-	BuildState       string        `json:"build_state"`
-	BuildDetails     *BuildDetails `json:"build_details"`
-	Links            *AgentLinks   `json:"_links,omitempty"`
+	UUID             string        `json:"uuid,omitempty"`
+	Hostname         string        `json:"hostname,omitempty"`
+	ElasticAgentID   string        `json:"elastic_agent_id,omitempty"`
+	ElasticPluginID  string        `json:"elastic_plugin_id,omitempty"`
+	IPAddress        string        `json:"ip_address,omitempty"`
+	Sandbox          string        `json:"sandbox,omitempty"`
+	OperatingSystem  string        `json:"operating_system,omitempty"`
+	FreeSpace        int           `json:"free_space,omitempty"`
+	AgentConfigState string        `json:"agent_config_state,omitempty"`
+	AgentState       string        `json:"agent_state,omitempty"`
+	Resources        []string      `json:"resources,omitempty"`
+	Environments     []string      `json:"environments,omitempty"`
+	BuildState       string        `json:"build_state,omitempty"`
+	BuildDetails     *BuildDetails `json:"build_details,omitempty"`
+	Links            *AgentLinks   `json:"_links,omitempty,omitempty"`
 	client           *Client
 }
 
