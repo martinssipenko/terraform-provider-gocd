@@ -105,6 +105,16 @@ resource "gocd_pipeline" "terraform-image" {
   parameters {
     Image = "terraform",
   }
+  environment_variables = [
+    {
+      name = "PACKER_ANSIBLE_VERSION",
+      value = "2.0.2.0"
+    },
+    {
+      name = "INSTALL_ANSIBLE_DEPENDENCIES",
+      value = "true"
+    },
+  ]
   materials = [
     {
       type = "git"
@@ -132,6 +142,16 @@ resource "gocd_pipeline" "test-pipeline" {
   parameters {
     Image = "base",
   }
+  environment_variables = [
+    {
+      name = "PACKER_ANSIBLE_VERSION",
+      value = "2.0.2.0"
+    },
+    {
+      name = "INSTALL_ANSIBLE_DEPENDENCIES",
+      value = "true"
+    },
+  ]
   materials = [
     {
       type = "git"

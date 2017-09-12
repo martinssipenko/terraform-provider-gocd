@@ -439,7 +439,10 @@ func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	}
 
 	d.Set("enable_pipeline_locking", p.EnablePipelineLocking)
-	d.Set("environment_variables", p.EnvironmentVariables)
+	d.Set(
+		"environment_variables",
+		ingestEnvironmentVariables(p.EnvironmentVariables),
+	)
 
 	err = readPipelineMaterials(d, p.Materials)
 
