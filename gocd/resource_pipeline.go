@@ -179,6 +179,7 @@ func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
 	if pname, hasName := d.GetOk("name"); hasName {
 		name = pname.(string)
 		d.SetId(name)
+		d.Set("name", name)
 	}
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -199,6 +200,8 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) error {
 	var name string
 	if pname, hasName := d.GetOk("name"); hasName {
 		name = pname.(string)
+		d.SetId(name)
+		d.Set("name", name)
 	}
 
 	templateToPipeline, templateChange := isSwitchToTemplate(d)
