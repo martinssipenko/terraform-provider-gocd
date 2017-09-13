@@ -158,7 +158,7 @@ func resourcePipeline() *schema.Resource {
 				},
 			},
 			"state": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
