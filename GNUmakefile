@@ -91,6 +91,7 @@ test-compile:
 	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
+	cp godata/default-cruise-config.xml godata/server/config/cruise-config.xml
 	docker-compose build --build-arg UID=$(shell id -u) gocd-server
 	docker-compose up -d
 
