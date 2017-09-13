@@ -47,6 +47,11 @@ func resourcePipeline() *schema.Resource {
 				Elem:     schema.TypeString,
 				Optional: true,
 			},
+			"create_paused": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 			"environment_variables": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -152,6 +157,10 @@ func resourcePipeline() *schema.Resource {
 					},
 				},
 			},
+			"state": {
+				Type: schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -174,7 +183,20 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error
 			stagePlaceHolder(),
 		}
 	}
-	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
+
+	ctx := context.Background()
+	client.Lock()
+	defer client.Unlock()
+	pc, _, err := client.PipelineConfigs.Create(ctx, group, p)
+	if err != nil {
+		return err
+	}
+
+	createPaused := d.Get("create_paused").(bool)
+	if !createPaused {
+		client.Pipelines.Unpause(ctx, p.Name)
+	}
+
 	return readPipeline(d, pc, err)
 }
 
