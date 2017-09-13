@@ -99,11 +99,13 @@ func resourcePipelineStage() *schema.Resource {
 				Type:          schema.TypeString,
 				ConflictsWith: []string{"pipeline_template"},
 				Optional:      true,
+				ForceNew:      true,
 			},
 			"pipeline_template": {
 				Type:          schema.TypeString,
 				ConflictsWith: []string{"pipeline"},
 				Optional:      true,
+				ForceNew:      true,
 			},
 		},
 	}
@@ -264,6 +266,9 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("Could not find stage `%s` in pipeline/template `%s`", name, pipeline)
 	}
 
+	// If we are updating, make sure we are only adding jobs which we are responsible for. This avoids conflicts
+	// and encourages state to be managed by tf.
+	stage.Jobs = []*gocd.Job{}
 	ingestStageConfig(d, stage)
 
 	// Retrieve Pipeline object so we have the latest version
