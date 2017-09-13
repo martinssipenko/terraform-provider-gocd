@@ -215,16 +215,19 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 		return err
 	}
 
-	if templateChange && !templateToPipeline {
-		p.Stages = nil
-	}
-
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
 	client.Lock()
 	defer client.Unlock()
 
 	existing, _, err := client.PipelineConfigs.Get(ctx, name)
+
+	if templateChange && !templateToPipeline {
+		p.Stages = nil
+	} else {
+		p.Stages = existing.Stages
+	}
+
 	p.Version = existing.Version
 	pc, _, err := client.PipelineConfigs.Update(ctx, name, p)
 	return readPipeline(d, pc, err)
