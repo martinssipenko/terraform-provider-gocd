@@ -224,6 +224,8 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 
 	if templateChange && !templateToPipeline {
 		p.Stages = nil
+	} else if templateToPipeline {
+		p.Stages = []*gocd.Stage{stagePlaceHolder()}
 	} else {
 		p.Stages = existing.Stages
 	}
