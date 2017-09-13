@@ -27,6 +27,7 @@ func resourceEnvironmentAssociation() *schema.Resource {
 			"pipeline": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 				//	Optional:      true,
 				//	ConflictsWith: []string{"agent", "environment_variable"},
 			},
