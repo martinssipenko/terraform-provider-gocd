@@ -14,7 +14,6 @@ func resourceEnvironmentAssociation() *schema.Resource {
 		Read:   resourceEnvironmentAssociationRead,
 		Delete: resourceEnvironmentAssociationDelete,
 		Exists: resourceEnvironmentAssociationExists,
-		Update: resourceEnvironmentAssociationUpdate,
 		Importer: &schema.ResourceImporter{
 			State: resourceEnvironmentAssociationImport,
 		},
@@ -27,6 +26,7 @@ func resourceEnvironmentAssociation() *schema.Resource {
 			"pipeline": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 				//	Optional:      true,
 				//	ConflictsWith: []string{"agent", "environment_variable"},
 			},
@@ -149,10 +149,6 @@ func resourceEnvironmentAssociationExists(d *schema.ResourceData, meta interface
 		}
 	}
 	return false, err
-}
-
-func resourceEnvironmentAssociationUpdate(d *schema.ResourceData, meta interface{}) error {
-	return nil
 }
 
 func resourceEnvironmentAssociationImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
