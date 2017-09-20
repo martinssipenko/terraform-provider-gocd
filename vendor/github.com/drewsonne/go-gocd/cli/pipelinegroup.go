@@ -13,7 +13,7 @@ const (
 
 // ListPipelineGroupsAction handles the interaction between the cli flags and the action handler for
 // list-pipeline-groups
-func ListPipelineGroupsAction(c *cli.Context) error {
+func listPipelineGroupsAction(c *cli.Context) error {
 	pgs, r, err := cliAgent(c).PipelineGroups.List(context.Background(), c.String("group-name"))
 	if err != nil {
 		return handleOutput(nil, r, "ListPipelineTemplates", err)
@@ -24,11 +24,11 @@ func ListPipelineGroupsAction(c *cli.Context) error {
 
 // ListPipelineGroupsCommand handles the interaction between the cli flags and the action handler for
 // list-pipeline-groups
-func ListPipelineGroupsCommand() *cli.Command {
+func listPipelineGroupsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     ListPipelineGroupsCommandName,
 		Usage:    ListPipelineGroupsCommandUsage,
-		Action:   ListPipelineGroupsAction,
+		Action:   listPipelineGroupsAction,
 		Category: "Pipeline Groups",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "group-name"},

@@ -23,7 +23,7 @@ const (
 
 // CreatePipelineConfigAction handles the interaction between the cli flags and the action handler for
 // create-pipeline-config-action
-func CreatePipelineConfigAction(c *cli.Context) error {
+func createPipelineConfigAction(c *cli.Context) error {
 	group := c.String("group")
 	if group == "" {
 		return handleOutput(nil, nil, "CreatePipelineConfig", errors.New("'--group' is missing"))
@@ -32,14 +32,14 @@ func CreatePipelineConfigAction(c *cli.Context) error {
 	pipeline := c.String("pipeline")
 	pipelineFile := c.String("pipeline-file")
 	if pipeline == "" && pipelineFile == "" {
-		return handeErrOutput(
+		return handleErrOutput(
 			"CreatePipelineConfig",
 			errors.New("One of '--pipeline-file' or '--pipeline' must be specified"),
 		)
 	}
 
 	if pipeline != "" && pipelineFile != "" {
-		return handeErrOutput(
+		return handleErrOutput(
 			"CreatePipelineConfig",
 			errors.New("Only one of '--pipeline-file' or '--pipeline' can be specified"),
 		)
@@ -50,7 +50,7 @@ func CreatePipelineConfigAction(c *cli.Context) error {
 	if pipelineFile != "" {
 		pf, err = ioutil.ReadFile(pipelineFile)
 		if err != nil {
-			return handeErrOutput("CreatePipelineConfig", err)
+			return handleErrOutput("CreatePipelineConfig", err)
 		}
 	} else {
 		pf = []byte(pipeline)
@@ -58,19 +58,19 @@ func CreatePipelineConfigAction(c *cli.Context) error {
 	p := &gocd.Pipeline{}
 	err = json.Unmarshal(pf, &p)
 	if err != nil {
-		return handeErrOutput("CreatePipelineConfig", err)
+		return handleErrOutput("CreatePipelineConfig", err)
 	}
 
 	pc, r, err := cliAgent(c).PipelineConfigs.Create(context.Background(), group, p)
 	if err != nil {
-		return handeErrOutput("CreatePipelineConfig", err)
+		return handleErrOutput("CreatePipelineConfig", err)
 	}
 	return handleOutput(pc, r, "CreatePipelineConfig", err)
 }
 
 // UpdatePipelineConfigAction handles the interaction between the cli flags and the action handler for
 // update-pipeline-config-action
-func UpdatePipelineConfigAction(c *cli.Context) error {
+func updatePipelineConfigAction(c *cli.Context) error {
 	name := c.String("name")
 	if name == "" {
 		return handleOutput(nil, nil, "UpdatePipelineConfig", errors.New("'--name' is missing"))
@@ -84,14 +84,14 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 	pipeline := c.String("pipeline")
 	pipelineFile := c.String("pipeline-file")
 	if pipeline == "" && pipelineFile == "" {
-		return handeErrOutput(
+		return handleErrOutput(
 			"UpdatePipelineConfig",
 			errors.New("One of '--pipeline-file' or '--pipeline' must be specified"),
 		)
 	}
 
 	if pipeline != "" && pipelineFile != "" {
-		return handeErrOutput(
+		return handleErrOutput(
 			"UpdatePipelineConfig",
 			errors.New("Only one of '--pipeline-file' or '--pipeline' can be specified"),
 		)
@@ -102,7 +102,7 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 	if pipelineFile != "" {
 		pf, err = ioutil.ReadFile(pipelineFile)
 		if err != nil {
-			return handeErrOutput("UpdatePipelineConfig", err)
+			return handleErrOutput("UpdatePipelineConfig", err)
 		}
 	} else {
 		pf = []byte(pipeline)
@@ -112,12 +112,12 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 	}
 	err = json.Unmarshal(pf, &p)
 	if err != nil {
-		return handeErrOutput("UpdatePipelineConfig", err)
+		return handleErrOutput("UpdatePipelineConfig", err)
 	}
 
 	pc, r, err := cliAgent(c).PipelineConfigs.Update(context.Background(), name, p)
 	if err != nil {
-		return handeErrOutput("CreatePipelineConfig", err)
+		return handleErrOutput("CreatePipelineConfig", err)
 	}
 	return handleOutput(pc, r, "CreatePipelineConfig", err)
 
@@ -125,7 +125,7 @@ func UpdatePipelineConfigAction(c *cli.Context) error {
 
 // DeletePipelineConfigAction handles the interaction between the cli flags and the action handler for
 // delete-pipeline-config-action
-func DeletePipelineConfigAction(c *cli.Context) error {
+func deletePipelineConfigAction(c *cli.Context) error {
 	name := c.String("name")
 	if name == "" {
 		return handleOutput(nil, nil, "CreatePipelineConfig", errors.New("'--name' is missing"))
@@ -139,7 +139,7 @@ func DeletePipelineConfigAction(c *cli.Context) error {
 }
 
 // GetPipelineConfigAction handles the interaction between the cli flags and the action handler for get-pipeline-config
-func GetPipelineConfigAction(c *cli.Context) error {
+func getPipelineConfigAction(c *cli.Context) error {
 	name := c.String("name")
 	if name == "" {
 		return handleOutput(nil, nil, "GetPipelineConfig", errors.New("'--name' is missing"))
@@ -154,11 +154,11 @@ func GetPipelineConfigAction(c *cli.Context) error {
 }
 
 // CreatePipelineConfigCommand handles the interaction between the cli flags and the action handler for create-pipeline-config
-func CreatePipelineConfigCommand() *cli.Command {
+func createPipelineConfigCommand() *cli.Command {
 	return &cli.Command{
 		Name:     CreatePipelineConfigCommandName,
 		Usage:    CreatePipelineConfigCommandUsage,
-		Action:   CreatePipelineConfigAction,
+		Action:   createPipelineConfigAction,
 		Category: "Pipeline Configs",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "group"},
@@ -169,11 +169,11 @@ func CreatePipelineConfigCommand() *cli.Command {
 }
 
 // UpdatePipelineConfigCommand handles the interaction between the cli flags and the action handler for update-pipeline-config
-func UpdatePipelineConfigCommand() *cli.Command {
+func updatePipelineConfigCommand() *cli.Command {
 	return &cli.Command{
 		Name:     UpdatePipelineConfigCommandName,
 		Usage:    UpdatePipelineConfigCommandUsage,
-		Action:   UpdatePipelineConfigAction,
+		Action:   updatePipelineConfigAction,
 		Category: "Pipeline Configs",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},
@@ -185,12 +185,12 @@ func UpdatePipelineConfigCommand() *cli.Command {
 }
 
 // DeletePipelineConfigCommand handles the interaction between the cli flags and the action handler for delete-pipeline-config
-func DeletePipelineConfigCommand() *cli.Command {
+func deletePipelineConfigCommand() *cli.Command {
 	return &cli.Command{
 		Name:     DeletePipelineConfigCommandName,
 		Usage:    DeletePipelineConfigCommandUsage,
 		Category: "Pipeline Configs",
-		Action:   DeletePipelineConfigAction,
+		Action:   deletePipelineConfigAction,
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},
 		},
@@ -198,11 +198,11 @@ func DeletePipelineConfigCommand() *cli.Command {
 }
 
 // GetPipelineConfigCommand handles the interaction between the cli flags and the action handler for get-pipeline-config
-func GetPipelineConfigCommand() *cli.Command {
+func getPipelineConfigCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GetPipelineConfigCommandName,
 		Usage:    GetPipelineConfigCommandUsage,
-		Action:   GetPipelineConfigAction,
+		Action:   getPipelineConfigAction,
 		Category: "Pipeline Configs",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},

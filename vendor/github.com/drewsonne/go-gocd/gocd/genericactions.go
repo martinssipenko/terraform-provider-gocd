@@ -2,6 +2,9 @@ package gocd
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"strings"
 )
 
 // APIClientRequest helper struct to reduce amount of code.
@@ -70,6 +73,15 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 		r.ResponseType = responseTypeJSON
 	}
 
+	var isVersioned bool
+	var ver Versioned
+	if ver, isVersioned = (r.ResponseBody).(Versioned); isVersioned {
+		if r.Headers == nil {
+			r.Headers = map[string]string{}
+		}
+		r.Headers["If-Match"] = fmt.Sprintf("\"%s\"", ver.GetVersion())
+	}
+
 	// Build the request
 	var reqBody interface{}
 	if r.RequestBody != nil {
@@ -89,6 +101,18 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 		}
 	}
 
-	resp, err := c.Do(ctx, req, &r.ResponseBody, r.ResponseType)
+	resp, err := c.Do(ctx, req, r.ResponseBody, r.ResponseType)
+
+	if isVersioned {
+		parseVersions(resp.HTTP, ver)
+	}
+
 	return r.ResponseBody, resp, err
+}
+
+func parseVersions(response *http.Response, versioned Versioned) {
+	etag := response.Header.Get("Etag")
+	versioned.SetVersion(
+		strings.Replace(etag, "\"", "", -1),
+	)
 }

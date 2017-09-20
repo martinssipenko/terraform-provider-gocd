@@ -1,10 +1,13 @@
 language: go
 go:
-  - 1.7.x
   - 1.8.x
   - 1.9.x
   - release
   - tip
+
+env:
+ - CODECLIMATE_API_HOST=https://codebeat.co/webhooks/code_coverage
+
 
 addons:
   apt:
@@ -27,6 +30,8 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - go get github.com/goreleaser/goreleaser
+  - npm install -g codeclimate-test-reporter
+  - codeclimate-test-reporter < coverage.out
 
 deploy:
   - provider: script

@@ -21,10 +21,10 @@ const (
 )
 
 // ListEnvironmentsAction handles the listing of environments
-func ListEnvironmentsAction(c *cli.Context) error {
+func listEnvironmentsAction(c *cli.Context) error {
 	es, r, err := cliAgent(c).Environments.List(context.Background())
 	if err != nil {
-		return handeErrOutput("ListEnvironments", err)
+		return handleErrOutput("ListEnvironments", err)
 	}
 
 	es.RemoveLinks()
@@ -33,20 +33,20 @@ func ListEnvironmentsAction(c *cli.Context) error {
 }
 
 // GetEnvironmentAction handles the retrieval of environments
-func GetEnvironmentAction(c *cli.Context) error {
+func getEnvironmentAction(c *cli.Context) error {
 	if c.String("name") == "" {
 		return handleOutput(nil, nil, "GetEnvironment", errors.New("'--name' is missing"))
 	}
 	e, r, err := cliAgent(c).Environments.Get(context.Background(), c.String("name"))
 	if err != nil {
-		return handeErrOutput("GetEnvironment", err)
+		return handleErrOutput("GetEnvironment", err)
 	}
 	e.RemoveLinks()
 	return handleOutput(e, r, "GetEnvironment", err)
 }
 
 // AddPipelinesToEnvironmentAction handles the adding of a pipeline to an environment
-func AddPipelinesToEnvironmentAction(c *cli.Context) error {
+func addPipelinesToEnvironmentAction(c *cli.Context) error {
 	if c.String("environment-name") == "" {
 		return handleOutput(nil, nil, "AddPipelinesToEnvironment", errors.New("'--environment-name' is missing"))
 	}
@@ -60,14 +60,14 @@ func AddPipelinesToEnvironmentAction(c *cli.Context) error {
 		},
 	})
 	if err != nil {
-		return handeErrOutput("AddPipelinesToEnvironment", err)
+		return handleErrOutput("AddPipelinesToEnvironment", err)
 	}
 	e.RemoveLinks()
 	return handleOutput(e, r, "AddPipelinesToEnvironment", err)
 }
 
 // RemovePipelinesFromEnvironmentAction handles the removing of a pipeline from an environment
-func RemovePipelinesFromEnvironmentAction(c *cli.Context) error {
+func removePipelinesFromEnvironmentAction(c *cli.Context) error {
 	if c.String("environment-name") == "" {
 		return handleOutput(nil, nil, "RemovePipelinesFromEnvironment", errors.New("'--environment-name' is missing"))
 	}
@@ -81,28 +81,28 @@ func RemovePipelinesFromEnvironmentAction(c *cli.Context) error {
 		},
 	})
 	if err != nil {
-		return handeErrOutput("RemovePipelinesFromEnvironment", err)
+		return handleErrOutput("RemovePipelinesFromEnvironment", err)
 	}
 	e.RemoveLinks()
 	return handleOutput(e, r, "RemovePipelinesFromEnvironment", err)
 }
 
 // ListEnvironmentsCommand handles definition of cli command
-func ListEnvironmentsCommand() *cli.Command {
+func listEnvironmentsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     ListEnvironmentsCommandName,
 		Usage:    ListEnvironmentsCommandUsage,
-		Action:   ListEnvironmentsAction,
+		Action:   listEnvironmentsAction,
 		Category: "Environments",
 	}
 }
 
 // GetEnvironmentCommand handles definition of cli command
-func GetEnvironmentCommand() *cli.Command {
+func getEnvironmentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GetEnvironmentCommandName,
 		Usage:    GetEnvironmentCommandUsage,
-		Action:   GetEnvironmentAction,
+		Action:   getEnvironmentAction,
 		Category: "Environments",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},
@@ -111,11 +111,11 @@ func GetEnvironmentCommand() *cli.Command {
 }
 
 // AddPipelinesToEnvironmentCommand handles definition of cli command
-func AddPipelinesToEnvironmentCommand() *cli.Command {
+func addPipelinesToEnvironmentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     AddPipelinesToEnvironmentCommandName,
 		Usage:    AddPipelinesToEnvironmentCommandUsage,
-		Action:   AddPipelinesToEnvironmentAction,
+		Action:   addPipelinesToEnvironmentAction,
 		Category: "Environments",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "environment-name"},
@@ -128,11 +128,11 @@ func AddPipelinesToEnvironmentCommand() *cli.Command {
 }
 
 // RemovePipelinesFromEnvironmentCommand handles definition of cli command
-func RemovePipelinesFromEnvironmentCommand() *cli.Command {
+func removePipelinesFromEnvironmentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     RemovePipelinesFromEnvironmentCommandName,
 		Usage:    RemovePipelinesFromEnvironmentCommandUsage,
-		Action:   RemovePipelinesFromEnvironmentAction,
+		Action:   removePipelinesFromEnvironmentAction,
 		Category: "Environments",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "environment-name"},

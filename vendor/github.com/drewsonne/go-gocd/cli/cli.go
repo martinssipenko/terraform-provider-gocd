@@ -7,6 +7,46 @@ import (
 	"github.com/urfave/cli"
 )
 
+// GetCliCommands returns a list of all CLI Command structs
+func GetCliCommands() []cli.Command {
+	return []cli.Command{
+		*configureCommand(),
+		*listAgentsCommand(),
+		*listPipelineTemplatesCommand(),
+		*getAgentCommand(),
+		*getPipelineTemplateCommand(),
+		*createPipelineTemplateCommand(),
+		*updateAgentCommand(),
+		*updateAgentsCommand(),
+		*updatePipelineConfigCommand(),
+		*updatePipelineTemplateCommand(),
+		*deleteAgentCommand(),
+		*deleteAgentsCommand(),
+		*deletePipelineTemplateCommand(),
+		*deletePipelineConfigCommand(),
+		*listPipelineGroupsCommand(),
+		*getPipelineHistoryCommand(),
+		*getPipelineCommand(),
+		*createPipelineConfigCommand(),
+		*generateJSONSchemaCommand(),
+		*getPipelineStatusCommand(),
+		*pausePipelineCommand(),
+		*unpausePipelineCommand(),
+		*releasePipelineLockCommand(),
+		*getConfigurationCommand(),
+		*encryptCommand(),
+		*getVersionCommand(),
+		*listPluginsCommand(),
+		*getPluginCommand(),
+		*listScheduledJobsCommand(),
+		*getPipelineConfigCommand(),
+		*listEnvironmentsCommand(),
+		*getEnvironmentCommand(),
+		*addPipelinesToEnvironmentCommand(),
+		*removePipelinesFromEnvironmentCommand(),
+	}
+}
+
 // NewCliClient
 func cliAgent(c *cli.Context) *gocd.Client {
 	var cfg *gocd.Configuration
@@ -32,7 +72,7 @@ func cliAgent(c *cli.Context) *gocd.Client {
 	return cfg.Client()
 }
 
-func handeErrOutput(reqType string, err error) error {
+func handleErrOutput(reqType string, err error) error {
 	return handleOutput(nil, nil, reqType, err)
 }
 

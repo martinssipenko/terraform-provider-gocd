@@ -8,6 +8,11 @@ func (er *EnvironmentsResponse) RemoveLinks() {
 	}
 }
 
+// GetLinks from the EnvironmentResponse
+func (er *EnvironmentsResponse) GetLinks() *HALLinks {
+	return er.Links
+}
+
 // RemoveLinks gets the Environment ready to be submitted to the GoCD API.
 func (env *Environment) RemoveLinks() {
 	env.Links = nil
@@ -17,4 +22,19 @@ func (env *Environment) RemoveLinks() {
 	for _, a := range env.Agents {
 		a.RemoveLinks()
 	}
+}
+
+// GetLinks from the Environment
+func (env *Environment) GetLinks() *HALLinks {
+	return env.Links
+}
+
+// SetVersion sets a version string for this pipeline
+func (env *Environment) SetVersion(version string) {
+	env.Version = version
+}
+
+// GetVersion retrieves a version string for this pipeline
+func (env *Environment) GetVersion() (version string) {
+	return env.Version
 }

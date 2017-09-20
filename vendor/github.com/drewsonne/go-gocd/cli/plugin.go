@@ -14,7 +14,7 @@ const (
 )
 
 // GetPluginAction retrieves a single plugin by name
-func GetPluginAction(c *cli.Context) error {
+func getPluginAction(c *cli.Context) error {
 	pgs, r, err := cliAgent(c).Plugins.Get(context.Background(), c.String("name"))
 	if err != nil {
 		return handleOutput(nil, r, "GetPlugin", err)
@@ -24,7 +24,7 @@ func GetPluginAction(c *cli.Context) error {
 }
 
 // ListPluginsAction retrieves all plugin configurations
-func ListPluginsAction(c *cli.Context) error {
+func listPluginsAction(c *cli.Context) error {
 	pgs, r, err := cliAgent(c).Plugins.List(context.Background())
 	if err != nil {
 		return handleOutput(nil, r, "ListPlugins", err)
@@ -34,12 +34,12 @@ func ListPluginsAction(c *cli.Context) error {
 }
 
 // GetPluginCommand Describes the cli interface for the GetPluginAction
-func GetPluginCommand() *cli.Command {
+func getPluginCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GetPluginCommandName,
 		Usage:    GetPluginCommandUsage,
 		Category: "Plugins",
-		Action:   GetPluginAction,
+		Action:   getPluginAction,
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "name"},
 		},
@@ -47,11 +47,11 @@ func GetPluginCommand() *cli.Command {
 }
 
 // ListPluginsCommand Describes the cli interface for the ListPluginsCommand
-func ListPluginsCommand() *cli.Command {
+func listPluginsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     ListPluginsCommandName,
 		Usage:    ListPluginsCommandUsage,
 		Category: "Plugins",
-		Action:   ListPluginsAction,
+		Action:   listPluginsAction,
 	}
 }

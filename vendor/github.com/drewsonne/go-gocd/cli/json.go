@@ -25,7 +25,7 @@ var Schemas = map[string]interface{}{
 }
 
 // GenerateJSONSchemaAction will generate the list of files for the JSON Schema for the defined structs.
-func GenerateJSONSchemaAction(c *cli.Context) error {
+func generateJSONSchemaAction(c *cli.Context) error {
 	directory := "schema"
 	os.Mkdir(directory, os.FileMode(int(0777)))
 	for k, s := range Schemas {
@@ -43,11 +43,11 @@ func GenerateJSONSchemaAction(c *cli.Context) error {
 }
 
 // GenerateJSONSchemaCommand handles the interaction between the cli flags and the action handler for generate-json
-func GenerateJSONSchemaCommand() *cli.Command {
+func generateJSONSchemaCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GenerateJSONSchemaCommandName,
 		Usage:    GenerateJSONSchemaCommandUsage,
 		Category: "Schema",
-		Action:   GenerateJSONSchemaAction,
+		Action:   generateJSONSchemaAction,
 	}
 }

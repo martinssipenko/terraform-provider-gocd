@@ -26,48 +26,13 @@ func main() {
 	app.Usage = GoCDUtilityUsageInstructions
 	app.Version = Version
 	app.EnableBashCompletion = true
-	app.Commands = []cli.Command{
-		*gocli.ConfigureCommand(),
-		*gocli.ListAgentsCommand(),
-		*gocli.ListPipelineTemplatesCommand(),
-		*gocli.GetAgentCommand(),
-		*gocli.GetPipelineTemplateCommand(),
-		*gocli.CreatePipelineTemplateCommand(),
-		*gocli.UpdateAgentCommand(),
-		*gocli.UpdateAgentsCommand(),
-		*gocli.UpdatePipelineConfigCommand(),
-		*gocli.UpdatePipelineTemplateCommand(),
-		*gocli.DeleteAgentCommand(),
-		*gocli.DeleteAgentsCommand(),
-		*gocli.DeletePipelineTemplateCommand(),
-		*gocli.DeletePipelineConfigCommand(),
-		*gocli.ListPipelineGroupsCommand(),
-		*gocli.GetPipelineHistoryCommand(),
-		*gocli.GetPipelineCommand(),
-		*gocli.CreatePipelineConfigCommand(),
-		*gocli.GenerateJSONSchemaCommand(),
-		*gocli.GetPipelineStatusCommand(),
-		*gocli.PausePipelineCommand(),
-		*gocli.UnpausePipelineCommand(),
-		*gocli.ReleasePipelineLockCommand(),
-		*gocli.GetConfigurationCommand(),
-		*gocli.EncryptCommand(),
-		*gocli.GetVersionCommand(),
-		*gocli.ListPluginsCommand(),
-		*gocli.GetPluginCommand(),
-		*gocli.ListScheduledJobsCommand(),
-		*gocli.GetPipelineConfigCommand(),
-		*gocli.ListEnvironmentsCommand(),
-		*gocli.GetEnvironmentCommand(),
-		*gocli.AddPipelinesToEnvironmentCommand(),
-		*gocli.RemovePipelinesFromEnvironmentCommand(),
-	}
+	app.Commands = gocli.GetCliCommands()
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{Name: "server", EnvVar: gocd.EnvVarServer},
 		cli.StringFlag{Name: "username", EnvVar: gocd.EnvVarUsername},
 		cli.StringFlag{Name: "password", EnvVar: gocd.EnvVarPassword},
-		cli.BoolFlag{Name: "ssl_check", EnvVar: gocd.EnvVarSkipSsl},
+		cli.BoolFlag{Name: "skip_ssl_check", EnvVar: gocd.EnvVarSkipSsl},
 	}
 
 	sort.Sort(cli.CommandsByName(app.Commands))

@@ -9,11 +9,10 @@ format:
 	$(MAKE) -C ./cli/ format
 	$(MAKE) -C ./gocd/ format
 	$(MAKE) -C ./gocd-cli-action-generator/ format
-	$(MAKE) -C ./gocd-response-links-generator/ format
 
 lint:
 	diff -u <(echo -n) <(gofmt -d -s main.go $(GO_TARGETS))
-	golint -set_exit_status . ./cli ./gocd ./gocd-*-generator
+	golint -set_exit_status . $(go list ./... | grep -v vendor/)
 
 test: lint
 	go tool vet $(GO_TARGETS)
