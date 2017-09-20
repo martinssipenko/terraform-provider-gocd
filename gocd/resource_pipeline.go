@@ -120,6 +120,7 @@ func resourcePipeline() *schema.Resource {
 									},
 									"auto_update": {
 										Type:     schema.TypeBool,
+										Default:  true,
 										Optional: true,
 									},
 									"invert_filter": {
