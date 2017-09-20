@@ -185,14 +185,17 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	return err
 }
 
-func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) error {
+func resourcePipelineStageRead(d *schema.ResourceData, meta interface{}) (err error) {
 	var stage *gocd.Stage
+	var pType, pipeline, name string
 
 	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
-	pType, pipeline, name, err := parseGoCDPipelineStageId(d.Id())
+	if pType, pipeline, name, err = parseGoCDPipelineStageId(d.Id()); err != nil {
+		return err
+	}
 	if stage, err = retrieveStage(pType, name, pipeline, client); err != nil {
 		return err
 	}
@@ -394,17 +397,6 @@ func stagePlaceHolder() *gocd.Stage {
 		Name: PLACEHOLDER_NAME,
 		Jobs: []*gocd.Job{
 			{Name: PLACEHOLDER_NAME},
-		},
-	}
-}
-
-func materialPlaceHolder() *gocd.Material {
-	return &gocd.Material{
-		Type: "git",
-		Attributes: gocd.MaterialAttributes{
-			Name:       "TERRAFORM_PLACEHOLDER",
-			URL:        "git@example.com:repo.git",
-			AutoUpdate: false,
 		},
 	}
 }

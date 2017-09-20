@@ -327,103 +327,120 @@ func extractPipelineParameters(rawProperties map[string]interface{}) []*gocd.Par
 func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, error) {
 	ms := []gocd.Material{}
 	for _, rawMaterial := range rawMaterials {
-		mat := rawMaterial.(map[string]interface{})
-		m := gocd.Material{}
-
-		if mType, ok := mat["type"]; ok {
-			m.Type = mType.(string)
+		if m, err := extractPipelineMaterial(rawMaterial); err != nil {
+			return nil, err
+		} else {
+			ms = append(ms, *m)
 		}
-
-		if mAttributes, ok := mat["attributes"]; ok {
-
-			attr := gocd.MaterialAttributes{}
-
-			rawAttr := mAttributes.([]interface{})[0].(map[string]interface{})
-			for attrKey, attrValue := range rawAttr {
-				if s, ok := attrValue.(string); ok && s == "" {
-					continue
-				}
-				switch attrKey {
-				case "url":
-					attr.URL = attrValue.(string)
-				case "destination":
-					attr.Destination = attrValue.(string)
-				case "filter":
-					attr.Filter = extractPipelineMaterialFilter(attrValue)
-				case "invert_filter":
-					attr.InvertFilter = attrValue.(bool)
-				case "name":
-					attr.Name = attrValue.(string)
-				case "auto_update":
-					attr.AutoUpdate = attrValue.(bool)
-				case "branch":
-					attr.Branch = attrValue.(string)
-				case "submodule_folder":
-					attr.SubmoduleFolder = attrValue.(string)
-				case "shallow_clone":
-					attr.ShallowClone = attrValue.(bool)
-				case "pipeline":
-					attr.Pipeline = attrValue.(string)
-				case "stage":
-					attr.Stage = attrValue.(string)
-				default:
-					return nil, fmt.Errorf("Unexpected material attribute: `%s:%s`", attrKey, attrValue)
-				}
-			}
-
-			if m.Type == "dependency" {
-				if attr.Name == attr.Pipeline {
-					attr.Name = ""
-				}
-			}
-
-			m.Attributes = attr
-		}
-		ms = append(ms, m)
-
 	}
 	return ms, nil
+}
+
+func extractPipelineMaterialAttributes(materialType string, mAttributes interface{}) (*gocd.MaterialAttributes, error) {
+	attr := gocd.MaterialAttributes{}
+
+	rawAttr := mAttributes.([]interface{})[0].(map[string]interface{})
+	for attrKey, attrValue := range rawAttr {
+		if s, ok := attrValue.(string); ok && s == "" {
+			continue
+		}
+		switch attrKey {
+		case "url":
+			attr.URL = attrValue.(string)
+		case "destination":
+			attr.Destination = attrValue.(string)
+		case "filter":
+			attr.Filter = extractPipelineMaterialFilter(attrValue)
+		case "invert_filter":
+			attr.InvertFilter = attrValue.(bool)
+		case "name":
+			attr.Name = attrValue.(string)
+		case "auto_update":
+			attr.AutoUpdate = attrValue.(bool)
+		case "branch":
+			attr.Branch = attrValue.(string)
+		case "submodule_folder":
+			attr.SubmoduleFolder = attrValue.(string)
+		case "shallow_clone":
+			attr.ShallowClone = attrValue.(bool)
+		case "pipeline":
+			attr.Pipeline = attrValue.(string)
+		case "stage":
+			attr.Stage = attrValue.(string)
+		default:
+			return nil, fmt.Errorf("Unexpected material attribute: `%s:%s`", attrKey, attrValue)
+		}
+	}
+
+	if materialType == "dependency" {
+		if attr.Name == attr.Pipeline {
+			attr.Name = ""
+		}
+	}
+	return &attr, nil
+}
+
+func extractPipelineMaterial(rawMaterial interface{}) (*gocd.Material, error) {
+	mat := rawMaterial.(map[string]interface{})
+	m := gocd.Material{}
+
+	if mType, ok := mat["type"]; ok {
+		m.Type = mType.(string)
+	}
+
+	if mAttributes, ok := mat["attributes"]; ok {
+		attr, err := extractPipelineMaterialAttributes(m.Type, mAttributes)
+		if err != nil {
+			return nil, err
+		}
+		m.Attributes = *attr
+	}
+	return &m, nil
 }
 
 func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) error {
 	materialImports := make([]interface{}, len(materials))
 	for i, m := range materials {
-		materialMap := make(map[string]interface{})
-		materialMap["type"] = m.Type
-
-		attrs := map[string]interface{}{
-			"url":           m.Attributes.URL,
-			"auto_update":   m.Attributes.AutoUpdate,
-			"branch":        m.Attributes.Branch,
-			"destination":   m.Attributes.Destination,
-			"invert_filter": m.Attributes.InvertFilter,
-			"stage":         m.Attributes.Stage,
-			"pipeline":      m.Attributes.Pipeline,
-		}
-
-		if m.Type == "dependency" {
-			if m.Attributes.Name != m.Attributes.Pipeline {
-				attrs["name"] = m.Attributes.Name
-			}
-		} else {
-			attrs["name"] = m.Attributes.Name
-		}
-
-		filter := make([]map[string]interface{}, 1)
-		if m.Attributes.Filter != nil {
-			filter[0] = map[string]interface{}{
-				"ignore": m.Attributes.Filter.Ignore,
-			}
-			attrs["filter"] = filter
-		}
-
-		materialMap["attributes"] = []map[string]interface{}{attrs}
-		materialImports[i] = materialMap
+		materialImports[i] = readPipelineMaterial(&m)
 	}
 	if err := d.Set("materials", materialImports); err != nil {
 		return err
 	}
 	return nil
+}
+
+func readPipelineMaterial(m *gocd.Material) (materialMap map[string]interface{}) {
+	materialMap = make(map[string]interface{})
+	materialMap["type"] = m.Type
+
+	attrs := map[string]interface{}{
+		"url":           m.Attributes.URL,
+		"auto_update":   m.Attributes.AutoUpdate,
+		"branch":        m.Attributes.Branch,
+		"destination":   m.Attributes.Destination,
+		"invert_filter": m.Attributes.InvertFilter,
+		"stage":         m.Attributes.Stage,
+		"pipeline":      m.Attributes.Pipeline,
+	}
+
+	if m.Type == "dependency" {
+		if m.Attributes.Name != m.Attributes.Pipeline {
+			attrs["name"] = m.Attributes.Name
+		}
+	} else {
+		attrs["name"] = m.Attributes.Name
+	}
+
+	filter := make([]map[string]interface{}, 1)
+	if m.Attributes.Filter != nil {
+		filter[0] = map[string]interface{}{
+			"ignore": m.Attributes.Filter.Ignore,
+		}
+		attrs["filter"] = filter
+	}
+
+	materialMap["attributes"] = []map[string]interface{}{attrs}
+	return materialMap
 }
 
 func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
