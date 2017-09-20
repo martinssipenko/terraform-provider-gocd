@@ -4,6 +4,7 @@ import "testing"
 
 func TestResource(t *testing.T) {
 	t.Run("PipelineTemplate", testResourcePipelineTemplate)
+	t.Run("PipelineMaterial", testResourcePipelineMaterial)
 	t.Run("Pipeline", testResourcePipeline)
 	t.Run("Stage", testResourceStage)
 	t.Run("Environment", testEnvironment)

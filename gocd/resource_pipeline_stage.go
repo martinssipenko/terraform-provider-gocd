@@ -398,6 +398,17 @@ func stagePlaceHolder() *gocd.Stage {
 	}
 }
 
+func materialPlaceHolder() *gocd.Material {
+	return &gocd.Material{
+		Type: "git",
+		Attributes: gocd.MaterialAttributes{
+			Name:       "TERRAFORM_PLACEHOLDER",
+			URL:        "git@example.com:repo.git",
+			AutoUpdate: false,
+		},
+	}
+}
+
 func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.Stage) error {
 	doc.Approval.Type = "manual"
 	doc.Approval.Authorization = &gocd.Authorization{}

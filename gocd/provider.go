@@ -26,9 +26,10 @@ func SchemaProvider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"gocd_environment":             resourceEnvironment(),
 			"gocd_environment_association": resourceEnvironmentAssociation(),
-			"gocd_pipeline_template":       resourcePipelineTemplate(),
 			"gocd_pipeline":                resourcePipeline(),
+			"gocd_pipeline_material":       resourcePipelineMaterial(),
 			"gocd_pipeline_stage":          resourcePipelineStage(),
+			"gocd_pipeline_template":       resourcePipelineTemplate(),
 		},
 		Schema: map[string]*schema.Schema{
 			"baseurl": {

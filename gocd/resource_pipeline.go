@@ -80,73 +80,76 @@ func resourcePipeline() *schema.Resource {
 			},
 			"materials": &schema.Schema{
 				Type:     schema.TypeList,
-				MinItems: 1,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"attributes": {
-							Type:     schema.TypeList,
-							MaxItems: 1,
-							Required: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"name": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"branch": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"destination": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"url": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"pipeline": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"stage": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"auto_update": {
-										Type:     schema.TypeBool,
-										Default:  true,
-										Optional: true,
-									},
-									"invert_filter": {
-										Type:     schema.TypeBool,
-										Optional: true,
-									},
-									"filter": {
-										Type:     schema.TypeList,
-										Optional: true,
-										//Elem: &schema.Schema{
-										//	Type: schema.TypeString,
-										//},
-										MaxItems: 1,
-										MinItems: 1,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"ignore": {
-													Type:     schema.TypeList,
-													Required: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
-												},
-											},
-										},
-									},
+						"attributes": materialsAttributeSchema(),
+					},
+				},
+			},
+		},
+	}
+}
+
+func materialsAttributeSchema() *schema.Schema {
+	return &schema.Schema{
+		Type:     schema.TypeList,
+		MaxItems: 1,
+		Required: true,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"name": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"branch": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"destination": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"url": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"pipeline": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"stage": {
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"auto_update": {
+					Type:     schema.TypeBool,
+					Default:  true,
+					Optional: true,
+				},
+				"invert_filter": {
+					Type:     schema.TypeBool,
+					Optional: true,
+				},
+				"filter": {
+					Type:     schema.TypeList,
+					Optional: true,
+					//Elem: &schema.Schema{
+					//	Type: schema.TypeString,
+					//},
+					MaxItems: 1,
+					MinItems: 1,
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"ignore": {
+								Type:     schema.TypeList,
+								Required: true,
+								Elem: &schema.Schema{
+									Type: schema.TypeString,
 								},
 							},
 						},
@@ -173,6 +176,12 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error
 	if (p.Stages == nil || len(p.Stages) == 0) && p.Template == "" {
 		p.Stages = []*gocd.Stage{
 			stagePlaceHolder(),
+		}
+	}
+
+	if p.Materials == nil || len(p.Materials) == 0 {
+		p.Materials = []gocd.Material{
+			*materialPlaceHolder(),
 		}
 	}
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
