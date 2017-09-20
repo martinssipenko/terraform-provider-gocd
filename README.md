@@ -19,6 +19,20 @@ the `tf-install-provider` utility can be used to copy the provider binary to the
 
 ### Building the Provider
 
+## Resources
+
+### gocd\_pipeline
+
+Provides support for creating pipelines in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline" "build" {
+  name = "build"
+}
+```
+
 ## Demo
 
 You will need docker and terraform >= 0.10.0 installed for this demo to work.
