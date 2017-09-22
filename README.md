@@ -65,11 +65,29 @@ Type `materials` block supports:
  - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes.
    
 
-
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
  
+### gocd\_pipeline\_template
+
+Provides support for creating pipeline templates in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline_template" "terraform-builder" {
+  name = "terraform-build-template"
+}
+```
+
+#### Argument Reference
+
+ - `name` - (Required) The name of the pipeline template.
+
+#### Attributes Reference
+
+ - `version` - The current version of the resource configuration in GoCD.
 
 ## Demo
 
