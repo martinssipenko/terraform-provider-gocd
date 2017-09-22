@@ -26,7 +26,7 @@ Provides support for creating pipelines in GoCD.
 
 ```hcl
 resource "gocd_pipeline" "build" {
-  name = "validate"
+  name = "build"
   group = "terraform-provider-gocd"
   label_template = "0.0.$${COUNT}"
   materials = [
@@ -88,6 +88,34 @@ resource "gocd_pipeline_template" "terraform-builder" {
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
+
+### gocd\_pipeline\_stage
+
+Provides support for creating stages for pipelines or pipeline templates in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline_stage" "build" {
+  name = "plan"
+  pipeline = "plan"
+  jobs = [
+  <<JOB
+ {
+  "name": "plan",
+  "tasks": [{
+    "type": "exec",
+    "attributes": {
+      "run_if": ["passed"],
+      "command": "terraform",
+      "arguments": ["plan"]
+    }
+  }]
+ }
+  JOB
+  ]
+}
+```
 
 ## Demo
 
