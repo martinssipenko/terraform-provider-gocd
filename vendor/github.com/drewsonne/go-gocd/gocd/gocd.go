@@ -103,14 +103,6 @@ type Auth struct {
 	Password string
 }
 
-// Configuration object used to initialise a gocd lib client to interact with the GoCD server.
-type Configuration struct {
-	Server   string `yaml:"server"`
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
-	SslCheck bool   `yaml:"ssl_check,omitempty"`
-}
-
 // HasAuth checks whether or not we have the required Username/Password variables provided.
 func (c *Configuration) HasAuth() bool {
 	return (c.Username != "") && (c.Password != "")
@@ -129,9 +121,9 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 	}
 
 	if strings.HasPrefix(cfg.Server, "https") {
-		if !cfg.SslCheck {
+		if cfg.SkipSslCheck {
 			httpClient.Transport = &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslCheck},
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.SkipSslCheck},
 			}
 		}
 	}

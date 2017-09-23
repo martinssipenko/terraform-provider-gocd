@@ -66,6 +66,7 @@ type MaterialAttributes struct {
 	ShallowClone    bool            `json:"shallow_clone,omitempty"`
 	Pipeline        string          `json:"pipeline,omitempty"`
 	Stage           string          `json:"stage,omitempty"`
+	Ref             string          `json:"ref"`
 }
 
 // MaterialFilter describes which globs to ignore

@@ -1,4 +1,4 @@
-# GoCD SDK 0.3.13
+# GoCD SDK 0.5.0
 
 [![GoDoc](https://godoc.org/github.com/drewsonne/go-gocd/gocd?status.svg)](https://godoc.org/github.com/drewsonne/go-gocd/gocd)
 [![Build Status](https://travis-ci.org/drewsonne/go-gocd.svg?branch=master)](https://travis-ci.org/drewsonne/go-gocd)
@@ -50,10 +50,24 @@ The library can either be configured using environment variables, cli flags, or 
 Run `gocd configure` to launch a wizard which will create a file at `~/.gocd.conf`, or create the file manually:
 
 ```yaml
-server: https://goserver:8154/go
-username: admin
-password: mypassword
-skip_ssl_check: true
+default:
+  server: https://goserver:8154/go
+  username: admin
+  password: mypassword
+  skip_ssl_check: true
+```
+
+##### Configuration Profiles
+Authentication credentials for multiple gocd servers can be stored by using the `--profile` flag.
+Configuration Profiles can be created using:
+```bash
+gocd --profile other-server configure
+```
+Which will create a new configuration block in `~/.beamly.conf`
+
+Configuration profiles can be used by specifying `--profile` before your command
+```bash
+gocd --profile other-server list-agents
 ```
 
 #### Help
@@ -121,8 +135,6 @@ func main() {
 }
 ```
 
-### Usage
-lk
 ## Roadmap ##
 This library is still in pre-release. It was initially developed to be an interface for a [gocd terraform provider](https://github.com/drewsonne/terraform-provider-gocd),
 which, at this stage, will heavily influence the direction of this library. A list of new features and the expected release

@@ -13,26 +13,28 @@ const ConfigDirectoryPath = "~/.gocd.conf"
 
 // Environment variables for configuration.
 const (
-	EnvVarServer   = "GOCD_SERVER"
-	EnvVarUsername = "GOCD_USERNAME"
-	EnvVarPassword = "GOCD_PASSWORD"
-	EnvVarSkipSsl  = "GOCD_SKIP_SSL_CHECK"
+	EnvVarDefaultProfile = "GOCD_DEFAULT_PROFILE"
+	EnvVarServer         = "GOCD_SERVER"
+	EnvVarUsername       = "GOCD_USERNAME"
+	EnvVarPassword       = "GOCD_PASSWORD"
+	EnvVarSkipSsl        = "GOCD_SKIP_SSL_CHECK"
 )
 
-// LoadConfig loads configurations from yaml at default file location
-func LoadConfig() (*Configuration, error) {
-	var b []byte
-	cfg := &Configuration{}
+// Configuration object used to initialise a gocd lib client to interact with the GoCD server.
+type Configuration struct {
+	Server       string
+	Username     string `yaml:"username,omitempty"`
+	Password     string `yaml:"password,omitempty"`
+	SkipSslCheck bool   `yaml:"skip_ssl_check,omitempty" survey:"skip_ssl_check"`
+}
 
-	p := ConfigFilePath()
-	if _, err := os.Stat(p); !os.IsNotExist(err) {
-		if b, err = ioutil.ReadFile(p); err != nil {
-			return nil, err
-		}
-
-		if err = yaml.Unmarshal(b, &cfg); err != nil {
-			return nil, err
-		}
+// LoadConfigByName loads configurations from yaml at default file location
+func LoadConfigByName(name string) (cfg *Configuration, err error) {
+	var cfgs map[string]*Configuration
+	if cfgs, err = LoadConfigFromFile(); err != nil {
+		cfg = cfgs[name]
+	} else {
+		return nil, err
 	}
 
 	if server := os.Getenv(EnvVarServer); server != "" {
@@ -48,6 +50,24 @@ func LoadConfig() (*Configuration, error) {
 	}
 
 	return cfg, nil
+}
+
+func LoadConfigFromFile() (cfgs map[string]*Configuration, err error) {
+	var b []byte
+	cfgs = make(map[string]*Configuration, 1)
+
+	p := ConfigFilePath()
+	if _, err := os.Stat(p); !os.IsNotExist(err) {
+		if b, err = ioutil.ReadFile(p); err != nil {
+			return nil, err
+		}
+
+		if err = yaml.Unmarshal(b, &cfgs); err != nil {
+			return nil, err
+		}
+	}
+
+	return cfgs, nil
 }
 
 // ConfigFilePath specifies the default path to a config file

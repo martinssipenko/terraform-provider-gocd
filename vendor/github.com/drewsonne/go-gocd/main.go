@@ -29,10 +29,26 @@ func main() {
 	app.Commands = gocli.GetCliCommands()
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{Name: "server", EnvVar: gocd.EnvVarServer},
-		cli.StringFlag{Name: "username", EnvVar: gocd.EnvVarUsername},
-		cli.StringFlag{Name: "password", EnvVar: gocd.EnvVarPassword},
-		cli.BoolFlag{Name: "skip_ssl_check", EnvVar: gocd.EnvVarSkipSsl},
+		cli.StringFlag{
+			Name:   "profile",
+			EnvVar: gocd.EnvVarDefaultProfile,
+		},
+		cli.StringFlag{
+			Name:   "server",
+			EnvVar: gocd.EnvVarServer,
+		},
+		cli.StringFlag{
+			Name:   "username",
+			EnvVar: gocd.EnvVarUsername,
+		},
+		cli.StringFlag{
+			Name:   "password",
+			EnvVar: gocd.EnvVarPassword,
+		},
+		cli.BoolFlag{
+			Name:   "skip_ssl_check",
+			EnvVar: gocd.EnvVarSkipSsl,
+		},
 	}
 
 	sort.Sort(cli.CommandsByName(app.Commands))

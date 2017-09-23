@@ -1,3 +1,16 @@
+## 0.10.6 (September 19, 2017)
+
+UPGRADE NOTES:
+
+* The internal storage of modules has changed in this release, so after
+  upgrading `terraform init` must be run to re-install modules in the new
+  on-disk format. The existing installed versions of modules will be ignored,
+  so the latest version of each module will be installed.
+
+IMPROVEMENTS:
+
+* cli: `terraform import` now accepts an option `-allow-missing-config` that overrides the default requirement that a configuration block must already be present for the resource being imported. ([#15876](https://github.com/hashicorp/terraform/issues/15876))
+
 ## 0.10.5 (September 14, 2017)
 
 NEW FEATURES:

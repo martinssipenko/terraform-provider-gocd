@@ -76,8 +76,8 @@ func TestClient(t *testing.T) {
 
 func testClientNewHTTPS(t *testing.T) {
 	c := NewClient(&Configuration{
-		Server:   "https://my-goserver:8154/go/",
-		SslCheck: false,
+		Server:       "https://my-goserver:8154/go/",
+		SkipSslCheck: true,
 	}, nil)
 	assert.NotNil(t, c)
 
