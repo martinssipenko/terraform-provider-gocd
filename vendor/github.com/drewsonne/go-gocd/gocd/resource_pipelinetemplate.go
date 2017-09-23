@@ -60,3 +60,13 @@ func (pt *PipelineTemplate) SetVersion(version string) {
 func (pt PipelineTemplate) GetVersion() (version string) {
 	return pt.Version
 }
+
+// SetVersion sets a version string for this pipeline
+func (pt *PipelineTemplateRequest) SetVersion(version string) {
+	pt.Version = version
+}
+
+// GetVersion retrieves a version string for this pipeline
+func (pt PipelineTemplateRequest) GetVersion() (version string) {
+	return pt.Version
+}

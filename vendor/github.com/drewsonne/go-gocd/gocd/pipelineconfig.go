@@ -2,7 +2,7 @@ package gocd
 
 import (
 	"context"
-	"fmt"
+	//"fmt"
 )
 
 // PipelineConfigsService describes the HAL _link resource for the api response object for a pipelineconfig
@@ -37,9 +37,6 @@ func (pcs *PipelineConfigsService) Update(ctx context.Context, name string, p *P
 			Pipeline: p,
 		},
 		ResponseBody: &pr,
-		Headers: map[string]string{
-			"If-Match": fmt.Sprintf("\"%s\"", p.Version),
-		},
 	})
 
 	return &pr, resp, err

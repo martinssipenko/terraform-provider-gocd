@@ -10,6 +10,7 @@ type StageContainer interface {
 	SetStages(stages []*Stage)
 	GetStages() []*Stage
 	AddStage(stage *Stage)
+	Versioned
 }
 
 // HALContainer represents objects with HAL _link and _embedded resources.

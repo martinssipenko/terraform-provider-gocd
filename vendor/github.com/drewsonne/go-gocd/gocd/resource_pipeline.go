@@ -60,3 +60,13 @@ func (p *Pipeline) SetVersion(version string) {
 func (p *Pipeline) GetVersion() (version string) {
 	return p.Version
 }
+
+// GetVersion of pipeline config
+func (pr *PipelineConfigRequest) GetVersion() (version string) {
+	return pr.Pipeline.GetVersion()
+}
+
+// SetVersion of pipeline config
+func (pr *PipelineConfigRequest) SetVersion(version string) {
+	pr.Pipeline.SetVersion(version)
+}

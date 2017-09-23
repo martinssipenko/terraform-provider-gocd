@@ -75,7 +75,7 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 
 	var isVersioned bool
 	var ver Versioned
-	if ver, isVersioned = (r.ResponseBody).(Versioned); isVersioned {
+	if ver, isVersioned = (r.RequestBody).(Versioned); isVersioned {
 		if r.Headers == nil {
 			r.Headers = map[string]string{}
 		}
@@ -103,7 +103,7 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 
 	resp, err := c.Do(ctx, req, r.ResponseBody, r.ResponseType)
 
-	if isVersioned {
+	if ver, isVersioned = (r.ResponseBody).(Versioned); isVersioned {
 		parseVersions(resp.HTTP, ver)
 	}
 

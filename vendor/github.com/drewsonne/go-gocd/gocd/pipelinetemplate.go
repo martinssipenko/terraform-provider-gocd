@@ -10,8 +10,9 @@ type PipelineTemplatesService service
 
 // PipelineTemplateRequest describes a PipelineTemplate
 type PipelineTemplateRequest struct {
-	Name   string   `json:"name"`
-	Stages []*Stage `json:"stages"`
+	Name    string   `json:"name"`
+	Stages  []*Stage `json:"stages"`
+	Version string   `json:"version"`
 }
 
 // PipelineTemplateResponse describes an api response for a single pipeline templates
@@ -94,10 +95,11 @@ func (pts *PipelineTemplatesService) Create(ctx context.Context, name string, st
 // Update an PipelineTemplate object in the GoCD API.
 func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, template *PipelineTemplate) (*PipelineTemplate, *APIResponse, error) {
 	pt := &PipelineTemplateRequest{
-		Name:   name,
-		Stages: template.Stages,
+		Name:    name,
+		Stages:  template.Stages,
+		Version: template.Version,
 	}
-	ptr := &PipelineTemplate{}
+	ptr := PipelineTemplate{}
 
 	_, resp, err := pts.client.putAction(ctx, &APIClientRequest{
 		Path:         "admin/templates/" + name,
@@ -106,7 +108,7 @@ func (pts *PipelineTemplatesService) Update(ctx context.Context, name string, te
 		ResponseBody: &ptr,
 	})
 
-	return ptr, resp, err
+	return &ptr, resp, err
 
 }
 

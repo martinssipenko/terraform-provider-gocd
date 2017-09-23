@@ -169,6 +169,9 @@ func testPipelineConfigUpdate(t *testing.T) {
 		//	"{\n  \"pipeline\": {\n    \"name\": \"\",\n    \"stages\": null,\n    \"version\": \"test-version\"\n  }\n}\n",
 		//	string(b))
 		j, _ := ioutil.ReadFile("test/resources/pipelineconfig.0.json")
+
+		assert.Equal(t, "\"test-version\"", r.Header.Get("If-Match"))
+		w.Header().Set("ETag", "\"mock-version\"")
 		fmt.Fprint(w, string(j))
 	})
 
@@ -179,6 +182,8 @@ func testPipelineConfigUpdate(t *testing.T) {
 	if err != nil {
 		t.Error(t, err)
 	}
+
+	assert.Equal(t, pcs.Version, "mock-version")
 
 	assert.NotNil(t, pcs)
 }

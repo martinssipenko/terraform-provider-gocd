@@ -49,14 +49,13 @@ func GetCliCommands() []cli.Command {
 
 // NewCliClient
 func cliAgent(c *cli.Context) *gocd.Client {
-	var cfg *gocd.Configuration
-	var err error
 	var profile string
 	if profile = c.String("profile"); profile == "" {
 		profile = "default"
 	}
 
-	if cfg, err = gocd.LoadConfigByName(profile); err != nil {
+	cfg, err := gocd.LoadConfigByName(profile)
+	if err != nil {
 		panic(err)
 	}
 
