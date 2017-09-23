@@ -13,10 +13,10 @@ import (
 
 func testResourceStage(t *testing.T) {
 	t.Run("Basic", testResourceStageBasic)
-	//t.Run("Import", testResourcePipelineStageImportBasic)
-	//t.Run("PTypeName", testResourcePipelineStagePtypeName)
-	//t.Run("Helpers", testResourcePipelineStageHelpers)
-	//t.Run("ExistsFails", testResourcePipelineStageExistsFails)
+	t.Run("Import", testResourcePipelineStageImportBasic)
+	t.Run("PTypeName", testResourcePipelineStagePtypeName)
+	t.Run("Helpers", testResourcePipelineStageHelpers)
+	t.Run("ExistsFails", testResourcePipelineStageExistsFails)
 	//t.Run("Update", testResourcePipelineStageUpdate)
 }
 
