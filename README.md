@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/drewsonne/terraform-provider-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/drewsonne/terraform-provider-gocd)
 [![Go Report Card](https://goreportcard.com/badge/github.com/drewsonne/terraform-provider-gocd)](https://goreportcard.com/report/github.com/drewsonne/terraform-provider-gocd)
 
-## Terraform provider
 Terraform provider for GoCD Server
 
 ## Installation
@@ -16,8 +15,6 @@ Terraform provider for GoCD Server
     
 __NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
 the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
-
-### Building the Provider
 
 ## Resources
 
@@ -30,6 +27,93 @@ Provides support for creating pipelines in GoCD.
 ```hcl
 resource "gocd_pipeline" "build" {
   name = "build"
+  group = "terraform-provider-gocd"
+  label_template = "0.0.$${COUNT}"
+  materials = [
+    {
+      type = "git"
+      attributes {
+        name = "terraform-provider-gocd"
+        url = "https://github.com/drewsonne/terraform-provider-gocd.git"
+      }
+    }
+  ]
+}
+```
+
+#### Argument Reference
+
+ - `name` - (Required) The name of the pipeline.
+ - `group` - (Required) The name of the pipeline group to deploy into.
+ - `materials` - (Required) The list of materials to be used by pipeline. At least one material must be specified. Each `materials` block supports fields documented below.
+ - `label_template` - (Optional)  The label template to customise the pipeline instance label. 
+ - `enable_pipeline_locking` - (Optional)  Whether pipeline is locked to run single instance or not.
+ - `template` - (Optional)  The name of the template used by pipeline. A `gocd_pipeline_stage` can not be assigned to a `gocd_pipeline` it `template` is set.
+ - `parameters` - (Optional) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of parameters to be used for substitution in a pipeline or pipeline template.
+ - `environment_variables` - (Optional) The list of environment variables that will be passed to all tasks (commands) that are part of this pipeline. Each `environment_variables` block supports fields documented below.
+ 
+The `environment_variables` block supports:
+
+ - `name` - (Required) The name of the environment variable.
+ - `value` - (Optional) The value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `encrypted_value` - (Optional) The encrypted value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `secure` - Whether environment variable is secure or not. When set to `true`, encrypts the value if one is specified. The default value is `false`.
+
+Type `materials` block supports:
+
+ - `type` (Required) The type of a material. Can be one of git, dependency.
+ - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes.
+   
+
+#### Attributes Reference
+
+ - `version` - The current version of the resource configuration in GoCD.
+ 
+### gocd\_pipeline\_template
+
+Provides support for creating pipeline templates in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline_template" "terraform-builder" {
+  name = "terraform-build-template"
+}
+```
+
+#### Argument Reference
+
+ - `name` - (Required) The name of the pipeline template.
+
+#### Attributes Reference
+
+ - `version` - The current version of the resource configuration in GoCD.
+
+### gocd\_pipeline\_stage
+
+Provides support for creating stages for pipelines or pipeline templates in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline_stage" "build" {
+  name = "plan"
+  pipeline = "plan"
+  jobs = [
+  <<JOB
+ {
+  "name": "plan",
+  "tasks": [{
+    "type": "exec",
+    "attributes": {
+      "run_if": ["passed"],
+      "command": "terraform",
+      "arguments": ["plan"]
+    }
+  }]
+ }
+  JOB
+  ]
 }
 ```
 

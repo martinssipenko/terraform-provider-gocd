@@ -90,10 +90,10 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	nossl := d.Get("skip_ssl_check").(bool)
 
 	cfg = &gocd.Configuration{
-		Server:   url,
-		Username: u,
-		Password: p,
-		SslCheck: !nossl,
+		Server:       url,
+		Username:     u,
+		Password:     p,
+		SkipSslCheck: nossl,
 	}
 
 	return cfg.Client(), nil

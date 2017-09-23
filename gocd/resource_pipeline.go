@@ -110,6 +110,10 @@ func materialsAttributeSchema() *schema.Schema {
 					Type:     schema.TypeString,
 					Optional: true,
 				},
+				"shallow_clone": {
+					Type:     schema.TypeBool,
+					Optional: true,
+				},
 				"destination": {
 					Type:     schema.TypeString,
 					Optional: true,
@@ -421,6 +425,7 @@ func readPipelineMaterial(m *gocd.Material) (materialMap map[string]interface{})
 		"invert_filter": m.Attributes.InvertFilter,
 		"stage":         m.Attributes.Stage,
 		"pipeline":      m.Attributes.Pipeline,
+		"shallow_clone": m.Attributes.ShallowClone,
 	}
 
 	if m.Type == "dependency" {
