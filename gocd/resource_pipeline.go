@@ -102,6 +102,10 @@ func resourcePipeline() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
+									"shallow_clone": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
 									"destination": {
 										Type:     schema.TypeString,
 										Optional: true,
@@ -120,6 +124,7 @@ func resourcePipeline() *schema.Resource {
 									},
 									"auto_update": {
 										Type:     schema.TypeBool,
+										Default:  true,
 										Optional: true,
 									},
 									"invert_filter": {
@@ -389,6 +394,7 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 			"invert_filter": m.Attributes.InvertFilter,
 			"stage":         m.Attributes.Stage,
 			"pipeline":      m.Attributes.Pipeline,
+			"shallow_clone": m.Attributes.ShallowClone,
 		}
 
 		if m.Type == "dependency" {
