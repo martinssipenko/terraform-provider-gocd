@@ -107,6 +107,10 @@ func resourcePipeline() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 									},
+									"shallow_clone": {
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
 									"destination": {
 										Type:     schema.TypeString,
 										Optional: true,
@@ -125,6 +129,7 @@ func resourcePipeline() *schema.Resource {
 									},
 									"auto_update": {
 										Type:     schema.TypeBool,
+										Default:  true,
 										Optional: true,
 									},
 									"invert_filter": {
@@ -237,16 +242,21 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 		return err
 	}
 
-	if templateChange && !templateToPipeline {
-		p.Stages = nil
-	}
-
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
 	client.Lock()
 	defer client.Unlock()
 
 	existing, _, err := client.PipelineConfigs.Get(ctx, name)
+
+	if templateChange && !templateToPipeline {
+		p.Stages = nil
+	} else if templateToPipeline {
+		p.Stages = []*gocd.Stage{stagePlaceHolder()}
+	} else {
+		p.Stages = existing.Stages
+	}
+
 	p.Version = existing.Version
 	pc, _, err := client.PipelineConfigs.Update(ctx, name, p)
 	return readPipeline(d, pc, err)
@@ -406,6 +416,7 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 			"invert_filter": m.Attributes.InvertFilter,
 			"stage":         m.Attributes.Stage,
 			"pipeline":      m.Attributes.Pipeline,
+			"shallow_clone": m.Attributes.ShallowClone,
 		}
 
 		if m.Type == "dependency" {
