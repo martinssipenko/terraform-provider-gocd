@@ -394,6 +394,9 @@ func stagePlaceHolder() *gocd.Stage {
 }
 
 func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.Stage) error {
+	if doc.Approval == nil {
+		doc.Approval = &gocd.Approval{}
+	}
 	doc.Approval.Type = "manual"
 	doc.Approval.Authorization = &gocd.Authorization{}
 	if users := data.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
