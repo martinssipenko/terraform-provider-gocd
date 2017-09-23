@@ -351,24 +351,26 @@ func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string
 }
 
 func updateStageContainer(pType string, existing *gocd.StageContainer, client *gocd.Client) (updated *gocd.StageContainer, err error) {
+	var sc gocd.StageContainer
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		*updated, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
+		sc, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
 	} else if pType == STAGE_TYPE_PIPELINE {
-		*updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
+		sc, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
 	}
-	return updated, err
+	return &sc, err
 }
 
 func getStageContainer(pType string, pipelineName string, client *gocd.Client) (existing *gocd.StageContainer, err error) {
+	var sc gocd.StageContainer
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		*existing, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
+		sc, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
 	} else if pType == STAGE_TYPE_PIPELINE {
-		*existing, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
+		sc, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
 	}
 
-	return existing, err
+	return &sc, err
 
 }
 
