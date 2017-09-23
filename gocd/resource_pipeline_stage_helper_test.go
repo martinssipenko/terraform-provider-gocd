@@ -10,7 +10,7 @@ import (
 func testResourcePipelineStageHelpers(t *testing.T) {
 	t.Run("ParseJobsFail", testStageParseJobsFail)
 	t.Run("ParseIds", testStageParseIDFail)
-	//t.Run("ParseManualApproval", testParseManualApproval)
+	t.Run("ParseManualApproval", testParseManualApproval)
 }
 
 func testParseManualApproval(t *testing.T) {
