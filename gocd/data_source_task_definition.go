@@ -32,7 +32,6 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 			},
 			"arguments": {
 				Type:     schema.TypeList,
-				MaxItems: 3,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
