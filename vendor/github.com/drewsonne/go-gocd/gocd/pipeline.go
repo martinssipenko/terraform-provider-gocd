@@ -3,7 +3,6 @@ package gocd
 import (
 	"context"
 	"fmt"
-	"net/url"
 )
 
 // PipelinesService describes the HAL _link resource for the api response object for a pipelineconfig
@@ -18,7 +17,7 @@ type PipelineRequest struct {
 // Pipeline describes a pipeline object
 type Pipeline struct {
 	Group                 string                 `json:"group,omitempty"`
-	Links                 *PipelineLinks         `json:"_links,omitempty"`
+	Links                 *HALLinks              `json:"_links,omitempty"`
 	Name                  string                 `json:"name"`
 	LabelTemplate         string                 `json:"label_template,omitempty"`
 	EnablePipelineLocking bool                   `json:"enable_pipeline_locking,omitempty"`
@@ -46,14 +45,6 @@ type PipelineConfigOrigin struct {
 	File string `json:"file"`
 }
 
-// PipelineLinks describes the HAL _link resource for the api response object for a collection of pipeline objects.
-//go:generate gocd-response-links-generator -type=PipelineLinks
-type PipelineLinks struct {
-	Self *url.URL `json:"self"`
-	Doc  *url.URL `json:"doc"`
-	Find *url.URL `json:"find"`
-}
-
 // Material describes an artifact dependency for a pipeline object.
 type Material struct {
 	Type        string             `json:"type"`
@@ -75,6 +66,7 @@ type MaterialAttributes struct {
 	ShallowClone    bool            `json:"shallow_clone,omitempty"`
 	Pipeline        string          `json:"pipeline,omitempty"`
 	Stage           string          `json:"stage,omitempty"`
+	Ref             string          `json:"ref"`
 }
 
 // MaterialFilter describes which globs to ignore
@@ -189,8 +181,7 @@ func (pgs *PipelinesService) GetHistory(ctx context.Context, name string, offset
 func (pgs *PipelinesService) pipelineAction(ctx context.Context, name string, action string) (bool, *APIResponse, error) {
 
 	_, resp, err := pgs.client.postAction(ctx, &APIClientRequest{
-		Path:         fmt.Sprintf("pipelines/%s/%s", name, action),
-		ResponseType: responseTypeJSON,
+		Path: fmt.Sprintf("pipelines/%s/%s", name, action),
 		Headers: map[string]string{
 			"Confirm": "true",
 		},

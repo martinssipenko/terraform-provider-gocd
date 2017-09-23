@@ -56,7 +56,7 @@ func updateAgentAction(c *cli.Context) error {
 		return handleOutput(nil, nil, "UpdateAgent", errors.New("'--config' is missing"))
 	}
 
-	a := gocd.AgentUpdate{}
+	a := &gocd.Agent{}
 	b := []byte(c.String("config"))
 	if err := json.Unmarshal(b, &a); err != nil {
 		return handleOutput(nil, nil, "UpdateAgent", err)
@@ -118,7 +118,7 @@ func deleteAgentsAction(c *cli.Context) error {
 }
 
 // ListAgentsCommand checks a template-name is provided and that the response is a 2xx response.
-func ListAgentsCommand() *cli.Command {
+func listAgentsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     ListAgentsCommandName,
 		Usage:    ListAgentsCommandUsage,
@@ -128,7 +128,7 @@ func ListAgentsCommand() *cli.Command {
 }
 
 // GetAgentCommand handles the interaction between the cli flags and the action handler for get-agent
-func GetAgentCommand() *cli.Command {
+func getAgentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GetAgentCommandName,
 		Usage:    GetAgentCommandUsage,
@@ -141,7 +141,7 @@ func GetAgentCommand() *cli.Command {
 }
 
 // UpdateAgentCommand handles the interaction between the cli flags and the action handler for update-agent
-func UpdateAgentCommand() *cli.Command {
+func updateAgentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     UpdateAgentCommandName,
 		Usage:    UpdateAgentCommandUsage,
@@ -155,7 +155,7 @@ func UpdateAgentCommand() *cli.Command {
 }
 
 // DeleteAgentCommand handles the interaction between the cli flags and the action handler for delete-agent
-func DeleteAgentCommand() *cli.Command {
+func deleteAgentCommand() *cli.Command {
 	return &cli.Command{
 		Name:     DeleteAgentCommandName,
 		Usage:    DeleteAgentCommandUsage,
@@ -168,7 +168,7 @@ func DeleteAgentCommand() *cli.Command {
 }
 
 // UpdateAgentsCommand handles the interaction between the cli flags and the action handler for update-agents
-func UpdateAgentsCommand() *cli.Command {
+func updateAgentsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     UpdateAgentsCommandName,
 		Usage:    UpdateAgentsCommandUsage,
@@ -183,7 +183,7 @@ func UpdateAgentsCommand() *cli.Command {
 }
 
 // DeleteAgentsCommand handles the interaction between the cli flags and the action handler for delete-agents
-func DeleteAgentsCommand() *cli.Command {
+func deleteAgentsCommand() *cli.Command {
 	return &cli.Command{
 		Name:     DeleteAgentsCommandName,
 		Usage:    DeleteAgentsCommandUsage,

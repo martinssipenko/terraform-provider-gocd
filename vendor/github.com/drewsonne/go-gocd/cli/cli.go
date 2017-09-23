@@ -7,11 +7,55 @@ import (
 	"github.com/urfave/cli"
 )
 
+// GetCliCommands returns a list of all CLI Command structs
+func GetCliCommands() []cli.Command {
+	return []cli.Command{
+		*configureCommand(),
+		*listAgentsCommand(),
+		*listPipelineTemplatesCommand(),
+		*getAgentCommand(),
+		*getPipelineTemplateCommand(),
+		*createPipelineTemplateCommand(),
+		*updateAgentCommand(),
+		*updateAgentsCommand(),
+		*updatePipelineConfigCommand(),
+		*updatePipelineTemplateCommand(),
+		*deleteAgentCommand(),
+		*deleteAgentsCommand(),
+		*deletePipelineTemplateCommand(),
+		*deletePipelineConfigCommand(),
+		*listPipelineGroupsCommand(),
+		*getPipelineHistoryCommand(),
+		*getPipelineCommand(),
+		*createPipelineConfigCommand(),
+		*generateJSONSchemaCommand(),
+		*getPipelineStatusCommand(),
+		*pausePipelineCommand(),
+		*unpausePipelineCommand(),
+		*releasePipelineLockCommand(),
+		*getConfigurationCommand(),
+		*encryptCommand(),
+		*getVersionCommand(),
+		*listPluginsCommand(),
+		*getPluginCommand(),
+		*listScheduledJobsCommand(),
+		*getPipelineConfigCommand(),
+		*listEnvironmentsCommand(),
+		*getEnvironmentCommand(),
+		*addPipelinesToEnvironmentCommand(),
+		*removePipelinesFromEnvironmentCommand(),
+	}
+}
+
 // NewCliClient
 func cliAgent(c *cli.Context) *gocd.Client {
-	var cfg *gocd.Configuration
-	var err error
-	if cfg, err = gocd.LoadConfig(); err != nil {
+	var profile string
+	if profile = c.String("profile"); profile == "" {
+		profile = "default"
+	}
+
+	cfg, err := gocd.LoadConfigByName(profile)
+	if err != nil {
 		panic(err)
 	}
 
@@ -27,12 +71,12 @@ func cliAgent(c *cli.Context) *gocd.Client {
 		cfg.Password = password
 	}
 
-	cfg.SslCheck = cfg.SslCheck || c.Bool("ssl_check")
+	cfg.SkipSslCheck = cfg.SkipSslCheck || c.Bool("skip_ssl_check")
 
 	return cfg.Client()
 }
 
-func handeErrOutput(reqType string, err error) error {
+func handleErrOutput(reqType string, err error) error {
 	return handleOutput(nil, nil, reqType, err)
 }
 
@@ -41,7 +85,8 @@ func handleOutput(r interface{}, hr *gocd.APIResponse, reqType string, err error
 	var o map[string]interface{}
 	if err != nil {
 		o = map[string]interface{}{
-			"Error": err.Error(),
+			"Request": reqType,
+			"Error":   err.Error(),
 		}
 	} else if hr.HTTP.StatusCode >= 200 && hr.HTTP.StatusCode < 300 {
 		o = map[string]interface{}{

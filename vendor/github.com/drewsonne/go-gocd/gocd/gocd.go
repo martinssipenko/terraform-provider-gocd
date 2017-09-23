@@ -103,14 +103,6 @@ type Auth struct {
 	Password string
 }
 
-// Configuration object used to initialise a gocd lib client to interact with the GoCD server.
-type Configuration struct {
-	Server   string `yaml:"server"`
-	Username string `yaml:"username,omitempty"`
-	Password string `yaml:"password,omitempty"`
-	SslCheck bool   `yaml:"ssl_check,omitempty"`
-}
-
 // HasAuth checks whether or not we have the required Username/Password variables provided.
 func (c *Configuration) HasAuth() bool {
 	return (c.Username != "") && (c.Password != "")
@@ -129,9 +121,9 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 	}
 
 	if strings.HasPrefix(cfg.Server, "https") {
-		if !cfg.SslCheck {
+		if cfg.SkipSslCheck {
 			httpClient.Transport = &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslCheck},
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.SkipSslCheck},
 			}
 		}
 	}
@@ -238,42 +230,46 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 
 // Do takes an HTTP request and resposne the response from the GoCD API endpoint.
 func (c *Client) Do(ctx context.Context, req *APIRequest, v interface{}, responseType string) (*APIResponse, error) {
+	var err error
+	var resp *http.Response
 
 	req.HTTP = req.HTTP.WithContext(ctx)
 
-	response := &APIResponse{
-		Request: req,
-	}
-
-	resp, err := c.client.Do(req.HTTP)
-	if err != nil {
+	if resp, err = c.client.Do(req.HTTP); err != nil {
 		return nil, err
 	}
 
-	response.HTTP = resp
-	err = CheckResponse(response.HTTP)
-	if err != nil {
-		return response, err
+	r := &APIResponse{
+		Request: req,
+		HTTP:    resp,
+	}
+
+	if err = CheckResponse(r.HTTP); err != nil {
+		return r, err
 	}
 
 	if v != nil {
-		if w, ok := v.(io.Writer); ok {
-			io.Copy(w, resp.Body)
-		} else {
-			bdy, err := ioutil.ReadAll(resp.Body)
-			if responseType == responseTypeXML {
-				err = xml.Unmarshal(bdy, v)
-			} else {
-				err = json.Unmarshal(bdy, v)
-			}
-			response.Body = string(bdy)
-			if err == io.EOF {
-				err = nil // ignore EOF errors caused by empty response body
-			}
+		if r.Body, err = readDoResponseBody(v, &r.HTTP.Body, responseType); err != nil {
+			return nil, err
 		}
 	}
 
-	return response, err
+	return r, err
+}
+
+func readDoResponseBody(v interface{}, body *io.ReadCloser, responseType string) (string, error) {
+	bdy, err := ioutil.ReadAll(*body)
+	if responseType == responseTypeXML {
+		err = xml.Unmarshal(bdy, v)
+	} else {
+		err = json.Unmarshal(bdy, v)
+	}
+	if err == io.EOF {
+		err = nil // ignore EOF errors caused by empty response body
+	} else if err != nil {
+		return "", nil
+	}
+	return string(bdy), nil
 }
 
 // CheckResponse asserts that the http response status code was 2xx.

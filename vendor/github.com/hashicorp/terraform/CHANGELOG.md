@@ -1,3 +1,32 @@
+## 0.10.6 (September 19, 2017)
+
+UPGRADE NOTES:
+
+* The internal storage of modules has changed in this release, so after
+  upgrading `terraform init` must be run to re-install modules in the new
+  on-disk format. The existing installed versions of modules will be ignored,
+  so the latest version of each module will be installed.
+
+IMPROVEMENTS:
+
+* cli: `terraform import` now accepts an option `-allow-missing-config` that overrides the default requirement that a configuration block must already be present for the resource being imported. ([#15876](https://github.com/hashicorp/terraform/issues/15876))
+
+## 0.10.5 (September 14, 2017)
+
+NEW FEATURES:
+
+* config: `indent` interpolation function appends spaces to all but the first line of a multi-line string ([#15311](https://github.com/hashicorp/terraform/issues/15311))
+
+IMPROVEMENTS:
+
+* cli: `terraform fmt` has a new option `-check` which makes it return a non-zero exit status if any formatting changes are required ([#15387](https://github.com/hashicorp/terraform/issues/15387))
+* cli: When [running Terraform in automation](https://www.terraform.io/guides/running-terraform-in-automation.html), a new environment variable `TF_IN_AUTOMATION` can be used to disable or adjust certain prompts that would normally include specific CLI commands to run. This assumes that the wrapping automation tool is providing its own UI for guiding the user through the workflow, and thus the standard advice would be redundant and/or confusing. ([#16059](https://github.com/hashicorp/terraform/issues/16059))
+
+BUG FIXES:
+
+* cli: restore the "(forces new resource)" annotations on attributes that were inadvertently disabled in 0.10.4. ([#16067](https://github.com/hashicorp/terraform/issues/16067))
+* cli: fix regression with installing modules from git when the `GIT_SSH_COMMAND` environment variable is set ([#16099](https://github.com/hashicorp/terraform/issues/16099))
+
 ## 0.10.4 (September 6, 2017)
 
 IMPROVEMENTS:
