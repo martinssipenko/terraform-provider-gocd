@@ -68,7 +68,30 @@ Type `materials` block supports:
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
- 
+
+### gocd\_pipeline\_material
+
+Allows the addition of materials to a pipeline after they are created.
+
+#### Example Usage
+
+```hcl
+resource "gocd_pipeline_material" "gocd-src" {
+  pipeline = "build"
+  type = "git"
+  attributes {
+    name = "gocd-src"
+    url = "https://github.com/gocd/gocd"
+  }
+}
+``` 
+
+#### Argument Reference
+
+ - `pipeline` - (Required) The pipeline to attach this material to.
+ - `type` (Required) The type of a material. Can be one of `git`, or `dependency`.
+ - `attributes` (Required) A [map](https://www.terraform.io/docs/configuration/variables.html#maps) of attributes for each material type. See the [GoCD API Documentation](https://api.gocd.org/current/#the-pipeline-material-object) for each material type attributes.
+
 ### gocd\_pipeline\_template
 
 Provides support for creating pipeline templates in GoCD.
