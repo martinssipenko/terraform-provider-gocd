@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	"strconv"
 	"reflect"
+	"strconv"
 )
 
 // Give an abstract list of strings cast as []interface{}, convert them back to []string{}.
