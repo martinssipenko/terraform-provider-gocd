@@ -40,10 +40,11 @@ resource "gocd_pipeline_stage" "test" {
 data "gocd_job_definition" "test" {
   name = "test"
   tasks = [
-    "${data.gocd_task_definition.test-pipeline3_test_test_0.json}",
+    "${data.gocd_task_definition.test-pipeline3_test_test_1.json}",
   ]
 }
-data "gocd_task_definition" "test-pipeline3_test_test_0" {
+
+data "gocd_task_definition" "test-pipeline3_test_test_1" {
   type = "exec"
   run_if = ["passed"]
   command = "echo"
