@@ -38,6 +38,7 @@ deploy_on_develop:
 
 ## General Targets
 teardown-test-gocd:
+	rm -f godata/server/config/cruise-config.xml
 	docker-compose down
 
 cleanup: teardown-test-gocd upload_logs
@@ -91,6 +92,7 @@ test-compile:
 	go test -c $(TEST) $(TESTARGS)
 
 provision-test-gocd:
+	cp godata/default.gocd.config.xml godata/server/config/cruise-config.xml
 	docker-compose build --build-arg UID=$(shell id -u) gocd-server
 	docker-compose up -d
 

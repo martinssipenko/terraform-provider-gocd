@@ -9,11 +9,12 @@ import (
 )
 
 func testResourcePipeline(t *testing.T) {
-	//t.Run("Basic", testResourcePipelineBasic)
-	//t.Run("ImportBasic", testResourcePipelineImportBasic)
-	//t.Run("ExistsFail", testResourcePipelineExistsFail)
-	//t.Run("FullStack", testResourcePipelineFullStack)
 	t.Run("Minimal", testResourcePipelineMinimal)
+	t.Run("Basic", testResourcePipelineBasic)
+	t.Run("ImportBasic", testResourcePipelineImportBasic)
+	t.Run("ExistsFail", testResourcePipelineExistsFail)
+	t.Run("FullStack1", testResourcePipelineFullStack1)
+	t.Run("FullStack2", testResourcePipelineFullStack2)
 }
 
 func testResourcePipelineBasic(t *testing.T) {
@@ -43,7 +44,7 @@ func testResourcePipelineBasic(t *testing.T) {
 	})
 }
 
-func testResourcePipelineFullStack(t *testing.T) {
+func testResourcePipelineFullStack1(t *testing.T) {
 
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -60,6 +61,8 @@ func testResourcePipelineFullStack(t *testing.T) {
 			},
 		},
 	})
+}
+func testResourcePipelineFullStack2(t *testing.T) {
 
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
