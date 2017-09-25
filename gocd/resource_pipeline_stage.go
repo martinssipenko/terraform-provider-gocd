@@ -38,9 +38,10 @@ func resourcePipelineStage() *schema.Resource {
 			"clean_working_directory": optionalBoolArg,
 			"never_cleanup_artifacts": optionalBoolArg,
 			"jobs": {
-				Type:     schema.TypeList,
-				Required: true,
-				Elem:     stringArg,
+				Type:             schema.TypeList,
+				Required:         true,
+				Elem:             stringArg,
+				DiffSuppressFunc: supressJSONDiffs,
 			},
 			"manual_approval": {
 				Type:          schema.TypeBool,
