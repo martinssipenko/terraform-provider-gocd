@@ -50,7 +50,7 @@ func GetCliCommands() []cli.Command {
 // NewCliClient
 func cliAgent(c *cli.Context) *gocd.Client {
 	var profile string
-	if profile = c.String("profile"); profile == "" {
+	if profile = c.Parent().String("profile"); profile == "" {
 		profile = "default"
 	}
 
