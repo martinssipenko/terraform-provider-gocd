@@ -12,6 +12,7 @@ func TestResource(t *testing.T) {
 	t.Run("StageContainer", testResourceStageContainers)
 	t.Run("HALContainer", testResourceHALContainers)
 	t.Run("Versioned", testResourceVersioned)
+	t.Run("Materials", testMaterialEquality)
 }
 
 func testResourceVersioned(t *testing.T) {

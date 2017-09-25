@@ -102,6 +102,9 @@ func (c *Client) httpAction(ctx context.Context, r *APIClientRequest) (interface
 	}
 
 	resp, err := c.Do(ctx, req, r.ResponseBody, r.ResponseType)
+	if err != nil {
+		return r.ResponseBody, resp, err
+	}
 
 	if ver, isVersioned = (r.ResponseBody).(Versioned); isVersioned {
 		parseVersions(resp.HTTP, ver)
