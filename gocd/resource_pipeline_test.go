@@ -9,11 +9,11 @@ import (
 )
 
 func testResourcePipeline(t *testing.T) {
-	//t.Run("Basic", testResourcePipelineBasic)
-	//t.Run("ImportBasic", testResourcePipelineImportBasic)
-	//t.Run("ExistsFail", testResourcePipelineExistsFail)
+	t.Run("Basic", testResourcePipelineBasic)
+	t.Run("ImportBasic", testResourcePipelineImportBasic)
+	t.Run("ExistsFail", testResourcePipelineExistsFail)
 	t.Run("FullStack1", testResourcePipelineFullStack1)
-	//t.Run("FullStack2", testResourcePipelineFullStack2)
+	t.Run("FullStack2", testResourcePipelineFullStack2)
 }
 
 func testResourcePipelineBasic(t *testing.T) {
