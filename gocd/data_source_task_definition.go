@@ -188,8 +188,10 @@ func dataSourceGocdFetchTemplate(t *gocd.Task, d *schema.ResourceData) {
 
 	if isaf, ok := d.GetOk("is_source_a_file"); ok && isaf.(bool) {
 		t.Attributes.IsSourceAFile = "true"
+	} else {
+		t.Attributes.IsSourceAFile = "false"
 	}
-	
+
 	if d, ok := d.GetOk("destination"); ok {
 		t.Attributes.Destination = d.(string)
 	}
