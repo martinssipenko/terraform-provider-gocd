@@ -229,6 +229,12 @@ func resourcePipelineUpdate(d *schema.ResourceData, meta interface{}) (err error
 		return err
 	}
 
+	if p.Materials == nil || len(p.Materials) == 0 {
+		p.Materials = []gocd.Material{
+			*materialPlaceHolder(),
+		}
+	}
+
 	client := meta.(*gocd.Client)
 	ctx := context.Background()
 	client.Lock()
@@ -403,9 +409,12 @@ func extractPipelineMaterial(rawMaterial interface{}) (*gocd.Material, error) {
 }
 
 func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) error {
-	materialImports := make([]interface{}, len(materials))
-	for i, m := range materials {
-		materialImports[i] = readPipelineMaterial(&m)
+	materialImports := []interface{}{}
+	for _, m := range materials {
+		if !m.Equal(materialPlaceHolder()) {
+			rawMaterial := readPipelineMaterial(&m)
+			materialImports = append(materialImports, rawMaterial)
+		}
 	}
 	if err := d.Set("materials", materialImports); err != nil {
 		return err

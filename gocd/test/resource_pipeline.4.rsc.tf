@@ -1,4 +1,4 @@
-resource  "gocd_pipeline_template" "test-template4" {
+resource "gocd_pipeline_template" "test-template4" {
   name = "test-template4"
 }
 
@@ -24,6 +24,5 @@ resource "gocd_pipeline" "test-pipeline" {
           ]
         }
       }
-    },
-  ]
+    }]
 }

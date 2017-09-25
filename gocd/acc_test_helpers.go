@@ -24,8 +24,9 @@ func testCheckResourceExists(resource string) r.TestCheckFunc {
 
 func testCheckResourceName(resource string, id string) r.TestCheckFunc {
 	return func(s *terraform.State) error {
-		r := s.RootModule()
-		if rs := r.Resources[resource]; rs.Primary.ID != id {
+		root := s.RootModule()
+		rs, ok := root.Resources[resource]
+		if ok && rs.Primary.ID != id {
 			return fmt.Errorf("Expected id '%s', got '%s", id, rs.Primary.ID)
 		}
 
