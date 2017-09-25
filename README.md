@@ -18,11 +18,11 @@ the `tf-install-provider` utility can be used to copy the provider binary to the
 
 ## Resources
 
- - `gocd_pipeline`
- - `gocd_pipeline_template`
- - `gocd_pipeline_stage`
- - `gocd_environment`
- - `gocd_environment_association`
+ - [`gocd_pipeline`](#gocd_pipeline)
+ - [`gocd_pipeline_template`](#gocd_pipeline_template)
+ - [`gocd_pipeline_stage`](#gocd_pipeline_stage)
+ - [`gocd_environment`](#gocd_environment)
+ - [`gocd_environment_association`](#gocd_environment_association)
 
 ### gocd\_pipeline
 
