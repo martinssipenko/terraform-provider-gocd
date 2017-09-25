@@ -117,6 +117,60 @@ resource "gocd_pipeline_stage" "build" {
 }
 ```
 
+### gocd\_environment
+
+Provides support for creating environmnets in GoCD.
+
+#### Example Usage
+
+```hcl
+resource "gocd_environment" "testing" {
+  name = "testing"
+}
+```
+
+#### Argument Rference
+
+ - `name` - (Required) Name of the environment to create.
+ 
+#### Attributes Reference
+
+ - `version` - The current version of the resource configuration in GoCD.
+ 
+### gocd\_environment\_association
+
+Provides support for associating pipelines and environments in GoCD.
+
+__NOTE:__ There is an intention to support agents and environment variables in the future.
+
+#### Example Usage
+
+```hcl
+resource "gocd_environment_association" "build-in-testing" {
+  environment = "${gocd_environment.testing.name}"
+  pipeline = "${gocd_pipeline.build.name}"
+}
+
+resource "gocd_environment" "testing" {
+  name = "testing"
+}
+
+resource "gocd_pipeline" "build" {
+  name = "build"
+  # ...
+}
+```
+
+#### Argument Reference
+
+ - `environment` - (Required) The name of the environment which the resource is being associated to.
+ - `pipeline` - (Required) The name of the pipeline to associate to the environment
+ 
+
+#### Attributes Reference
+
+ - `version` - The current version of the resource configuration in GoCD.
+
 ## Demo
 
 You will need docker and terraform >= 0.10.0 installed for this demo to work.
