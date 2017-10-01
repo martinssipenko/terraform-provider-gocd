@@ -41,7 +41,7 @@ resource "gocd_pipeline" "test-pipeline" {
         url = "git@github.com:gocd/gocd"
         branch = "feature/my-addition"
         destination = "gocd-dir"
-        auto_update = true
+//        auto_update = true
         filter {
           ignore = [
             "one",

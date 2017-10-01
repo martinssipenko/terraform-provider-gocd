@@ -121,7 +121,7 @@ resource "gocd_pipeline" "terraform-image" {
       attributes {
         url = "git@github.com:company/gocd-ecsagents.git"
         branch = "master"
-        auto_update = true
+//        auto_update = true
       }
     },
     {
@@ -129,7 +129,7 @@ resource "gocd_pipeline" "terraform-image" {
       attributes {
         pipeline = "${gocd_pipeline.test-pipeline.name}"
         stage = "${gocd_pipeline_stage.clean.name}"
-        auto_update = true
+//        auto_update = true
       }
     },
   ]
@@ -165,7 +165,7 @@ resource "gocd_pipeline" "test-pipeline" {
         }
         invert_filter = true
         branch = "master"
-        auto_update = true
+//        auto_update = true
       }
     },
   ]
