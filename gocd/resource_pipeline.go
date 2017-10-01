@@ -341,6 +341,7 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 			return nil, err
 		} else {
 			ms = append(ms, *m)
+
 		}
 	}
 	return ms, nil
@@ -389,6 +390,8 @@ func extractPipelineMaterialAttributes(materialType string, mAttributes interfac
 	}
 	return &attr, nil
 }
+
+
 
 func extractPipelineMaterial(rawMaterial interface{}) (*gocd.Material, error) {
 	mat := rawMaterial.(map[string]interface{})
@@ -512,4 +515,11 @@ func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change
 		return template == "", change
 	}
 	return templateToPipeline, change
+}
+
+func supressMaterialBranchDiff(k, old, new string, d *schema.ResourceData) bool {
+	if old == "" && new == "master" || old == "master" && new == "" {
+		return true
+	}
+	return false
 }
