@@ -4,7 +4,6 @@ resource "gocd_pipeline" "pipeline1" {
   materials = [{
     type = "git"
     attributes {
-      name = "gocd-src"
       url = "https://github.com/gocd/gocd"
       auto_update = false
     }
@@ -17,7 +16,6 @@ resource "gocd_pipeline" "pipeline2" {
   materials = [{
     type = "git"
     attributes {
-      name = "gocd-src"
       url = "https://github.com/gocd/gocd"
       auto_update = true
     }

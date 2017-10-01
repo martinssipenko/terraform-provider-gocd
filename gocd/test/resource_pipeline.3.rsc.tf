@@ -7,7 +7,7 @@ resource "gocd_pipeline" "test-pipeline3-upstream" {
     attributes {
       url = "https://github.com/drewsonne/terraform-provider-gocd.git"
       branch = "master"
-      auto_update = true
+//      auto_update = true
     }
   },]
 }
@@ -22,7 +22,7 @@ resource "gocd_pipeline" "test-pipeline3" {
       attributes {
         url = "https://github.com/drewsonne/terraform-provider-gocd.git"
         branch = "master"
-        auto_update = true
+//        auto_update = true
       }
     },
   ]
