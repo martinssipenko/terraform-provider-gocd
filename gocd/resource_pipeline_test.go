@@ -6,18 +6,26 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"regexp"
 )
 
 func testResourcePipeline(t *testing.T) {
-	//t.Run("Basic", testResourcePipelineBasic)
-	//t.Run("ImportBasic", testResourcePipelineImportBasic)
-	//t.Run("ExistsFail", testResourcePipelineExistsFail)
-	//t.Run("FullStack1", testResourcePipelineFullStack1)
-	//t.Run("FullStack2", testResourcePipelineFullStack2)
+	t.Run("Basic", testResourcePipelineBasic)
+	t.Run("ImportBasic", testResourcePipelineImportBasic)
+	t.Run("ExistsFail", testResourcePipelineExistsFail)
+	t.Run("FullStack1", testResourcePipelineFullStack1)
+	t.Run("FullStack2", testResourcePipelineFullStack2)
 	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
 }
 
 func testResourcePipelineDisableAutoUpdate(t *testing.T) {
+	// Managing auto_update on a per material basis is not possible through the current GoCD API as of 01/10/2017.
+	// For details see, https://github.com/drewsonne/terraform-provider-gocd/issues/32
+	errRE, err := regexp.Compile("The `auto_update` attribute has been disabled until a way to manage updates atomically has been devised")
+	if err != nil {
+		t.Error(err)
+	}
+
 	r.Test(t, r.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testGocdProviders,
@@ -30,14 +38,7 @@ func testResourcePipelineDisableAutoUpdate(t *testing.T) {
 					testCheckResourceName(
 						"gocd_pipeline.pipeline1", "pipeline1"),
 				),
-			},
-			{
-				Config: testFile("resource_pipeline_auto_update.1.rsc.tf"),
-				Check: r.ComposeTestCheckFunc(
-					testCheckResourceExists("gocd_pipeline.pipeline1"),
-					testCheckResourceName(
-						"gocd_pipeline.pipeline1", "pipeline1"),
-				),
+				ExpectError: errRE,
 			},
 		},
 	})
