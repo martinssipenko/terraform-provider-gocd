@@ -15,7 +15,7 @@ resource "gocd_pipeline" "test-pipeline" {
       attributes {
         url = "git@github.com:org/gocd-ecsagents.git"
         branch = "master"
-        auto_update = true
+//        auto_update = true
         filter {
           ignore = [
             "gocd-agents/Dockerfile.base",
