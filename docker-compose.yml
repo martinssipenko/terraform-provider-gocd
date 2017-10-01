@@ -3,6 +3,11 @@ services:
   gocd-server:
     build:
       context: ./
+    deploy:
+      resources:
+        limits:
+         cpus: '1.0'
+         memory: 1G
     ports:
      - "8153:8153"
      - "8154:8154"
