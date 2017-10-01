@@ -5,8 +5,8 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
-	"testing"
 	"regexp"
+	"testing"
 )
 
 func testResourcePipeline(t *testing.T) {
