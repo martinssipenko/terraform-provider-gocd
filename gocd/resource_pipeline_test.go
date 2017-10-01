@@ -9,11 +9,38 @@ import (
 )
 
 func testResourcePipeline(t *testing.T) {
-	t.Run("Basic", testResourcePipelineBasic)
-	t.Run("ImportBasic", testResourcePipelineImportBasic)
-	t.Run("ExistsFail", testResourcePipelineExistsFail)
-	t.Run("FullStack1", testResourcePipelineFullStack1)
-	t.Run("FullStack2", testResourcePipelineFullStack2)
+	//t.Run("Basic", testResourcePipelineBasic)
+	//t.Run("ImportBasic", testResourcePipelineImportBasic)
+	//t.Run("ExistsFail", testResourcePipelineExistsFail)
+	//t.Run("FullStack1", testResourcePipelineFullStack1)
+	//t.Run("FullStack2", testResourcePipelineFullStack2)
+	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
+}
+
+func testResourcePipelineDisableAutoUpdate(t *testing.T) {
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline_auto_update.0.rsc.tf"),
+				Check: r.ComposeTestCheckFunc(
+					testCheckResourceExists("gocd_pipeline.pipeline1"),
+					testCheckResourceName(
+						"gocd_pipeline.pipeline1", "pipeline1"),
+				),
+			},
+			{
+				Config: testFile("resource_pipeline_auto_update.1.rsc.tf"),
+				Check: r.ComposeTestCheckFunc(
+					testCheckResourceExists("gocd_pipeline.pipeline1"),
+					testCheckResourceName(
+						"gocd_pipeline.pipeline1", "pipeline1"),
+				),
+			},
+		},
+	})
 }
 
 func testResourcePipelineBasic(t *testing.T) {
