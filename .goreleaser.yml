@@ -36,6 +36,7 @@ brew:
   homepage: https://github.com/drewsonne/terraform-provider-gocd
   description: Terraform Provider for ThoughtWorks GoCD
   dependencies:
+    - terraform
     - drewsonne/homebrew-tap/tf-install-provider
   caveats: |
     After installing, you will need to copy the provider to a place terraform can find it by running:
