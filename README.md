@@ -16,6 +16,37 @@ Terraform provider for GoCD Server
 __NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
 the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
 
+## Data
+
+ - [`gocd_job_definition`](#gocd_job_definition)
+ 
+### gocd\_job\_definition
+
+Generates json strings for GoCD job definitions
+
+#### Example Usage
+
+```hcl
+data "gocd_job_definition" "my-job" {
+  name = "my-job"
+  tasks = []
+  environment_variables = [{
+    name = "HOME"
+    value = "/home/go"
+  }]
+}
+
+output "my-job" {
+  value = "${data.gocd_job_definition.my-job.json}"
+}
+```
+
+#### Argument Reference
+ - `name` - (Required) The name of the job.
+ - `tasks` - (Required) A list of json strings defining a task definition for this job
+ - `run_instance_count` - (Optional) 
+ - ()
+
 ## Resources
 
  - [`gocd_pipeline`](#gocd_pipeline)
