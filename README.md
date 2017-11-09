@@ -97,6 +97,8 @@ The `properties` block supports:
 
 #### Attributes Reference
 
+ - `json` - JSON encoded string of the job definition
+
 
 ## Resources
 
