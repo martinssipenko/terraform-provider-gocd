@@ -99,7 +99,12 @@ func resourcePipeline() *schema.Resource {
 										Optional: true,
 									},
 									"branch": {
-										Type:     schema.TypeString,
+										Type:             schema.TypeString,
+										Optional:         true,
+										DiffSuppressFunc: supressMaterialBranchDiff,
+									},
+									"shallow_clone": {
+										Type:     schema.TypeBool,
 										Optional: true,
 									},
 									"destination": {
@@ -121,6 +126,7 @@ func resourcePipeline() *schema.Resource {
 									"auto_update": {
 										Type:     schema.TypeBool,
 										Optional: true,
+										Removed:  "The `auto_update` attribute has been disabled until a way to manage updates atomically has been devised.",
 									},
 									"invert_filter": {
 										Type:     schema.TypeBool,
@@ -361,10 +367,15 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 				}
 			}
 
-			if m.Type == "dependency" {
+			switch m.Type {
+			case "dependency":
 				if attr.Name == attr.Pipeline {
 					attr.Name = ""
 				}
+				//case "git":
+				//	if attr.Branch == "" {
+				//		attr.Branch = "master"
+				//	}
 			}
 
 			m.Attributes = attr
@@ -382,13 +393,14 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 		materialMap["type"] = m.Type
 
 		attrs := map[string]interface{}{
-			"url":           m.Attributes.URL,
-			"auto_update":   m.Attributes.AutoUpdate,
+			"url": m.Attributes.URL,
+			//"auto_update":   m.Attributes.AutoUpdate,
 			"branch":        m.Attributes.Branch,
 			"destination":   m.Attributes.Destination,
 			"invert_filter": m.Attributes.InvertFilter,
 			"stage":         m.Attributes.Stage,
 			"pipeline":      m.Attributes.Pipeline,
+			"shallow_clone": m.Attributes.ShallowClone,
 		}
 
 		if m.Type == "dependency" {
@@ -471,4 +483,11 @@ func isSwitchToTemplate(d *schema.ResourceData) (templateToPipeline bool, change
 		return template == "", change
 	}
 	return templateToPipeline, change
+}
+
+func supressMaterialBranchDiff(k, old, new string, d *schema.ResourceData) bool {
+	if old == "" && new == "master" || old == "master" && new == "" {
+		return true
+	}
+	return false
 }

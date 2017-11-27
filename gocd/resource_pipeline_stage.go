@@ -38,9 +38,10 @@ func resourcePipelineStage() *schema.Resource {
 			"clean_working_directory": optionalBoolArg,
 			"never_cleanup_artifacts": optionalBoolArg,
 			"jobs": {
-				Type:     schema.TypeList,
-				Required: true,
-				Elem:     stringArg,
+				Type:             schema.TypeList,
+				Required:         true,
+				Elem:             stringArg,
+				DiffSuppressFunc: supressJSONDiffs,
 			},
 			"manual_approval": {
 				Type:          schema.TypeBool,
@@ -152,16 +153,15 @@ func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool
 	}
 }
 
-func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error {
+func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) (err error) {
 	var existing *gocd.StageContainer
 	var updated *gocd.StageContainer
-	var err error
 
-	doc := gocd.Stage{
+	stage := gocd.Stage{
 		Approval: &gocd.Approval{},
 	}
 
-	ingestStageConfig(d, &doc)
+	ingestStageConfig(d, &stage)
 
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -174,13 +174,13 @@ func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	(*existing).SetStages(cleanPlaceHolderStage((*existing).GetStages()))
-	(*existing).AddStage(&doc)
+	(*existing).AddStage(&stage)
 
 	if updated, err = updateStageContainer(pType, existing, client); err != nil {
 		return err
 	}
 
-	d.SetId(fmt.Sprintf("%s/%s/%s", pType, (*updated).GetName(), doc.Name))
+	d.SetId(fmt.Sprintf("%s/%s/%s", pType, (*updated).GetName(), stage.Name))
 
 	return err
 }
@@ -285,10 +285,9 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, meta interface{}) error
 	return nil
 }
 
-func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error {
+func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) (err error) {
 	var updated *gocd.StageContainer
 	var existing *gocd.StageContainer
-	var err error
 
 	pipeline, pType := pipelineNameType(d)
 
@@ -331,15 +330,14 @@ func resourcePipelineStageDelete(d *schema.ResourceData, meta interface{}) error
 	return nil
 }
 
-func retrieveStage(pType string, stageName string, pipeline string, client *gocd.Client) (*gocd.Stage, error) {
+func retrieveStage(pType string, stageName string, pipeline string, client *gocd.Client) (stage *gocd.Stage, err error) {
 	var existing *gocd.StageContainer
-	var err error
 
 	if existing, err = getStageContainer(pType, pipeline, client); err != nil {
 		return nil, err
 	}
 
-	if stage := (*existing).GetStage(stageName); stage != nil {
+	if stage = (*existing).GetStage(stageName); stage != nil {
 		return stage, nil
 	}
 
@@ -353,29 +351,27 @@ func pipelineNameType(d *schema.ResourceData) (pipelineName string, pType string
 	return d.Get("pipeline_template").(string), STAGE_TYPE_PIPELINE_TEMPLATE
 }
 
-func updateStageContainer(pType string, existing *gocd.StageContainer, client *gocd.Client) (*gocd.StageContainer, error) {
-	var updated gocd.StageContainer
-	var err error
+func updateStageContainer(pType string, existing *gocd.StageContainer, client *gocd.Client) (updated *gocd.StageContainer, err error) {
+	var sc gocd.StageContainer
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		updated, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
+		sc, _, err = client.PipelineTemplates.Update(ctx, (*existing).GetName(), (*existing).(*gocd.PipelineTemplate))
 	} else if pType == STAGE_TYPE_PIPELINE {
-		updated, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
+		sc, _, err = client.PipelineConfigs.Update(ctx, (*existing).GetName(), (*existing).(*gocd.Pipeline))
 	}
-	return &updated, err
+	return &sc, err
 }
 
-func getStageContainer(pType string, pipelineName string, client *gocd.Client) (*gocd.StageContainer, error) {
-	var existing gocd.StageContainer
-	var err error
+func getStageContainer(pType string, pipelineName string, client *gocd.Client) (existing *gocd.StageContainer, err error) {
+	var sc gocd.StageContainer
 	ctx := context.Background()
 	if pType == STAGE_TYPE_PIPELINE_TEMPLATE {
-		existing, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
+		sc, _, err = client.PipelineTemplates.Get(ctx, pipelineName)
 	} else if pType == STAGE_TYPE_PIPELINE {
-		existing, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
+		sc, _, err = client.PipelineConfigs.Get(ctx, pipelineName)
 	}
 
-	return &existing, err
+	return &sc, err
 
 }
 
@@ -399,6 +395,9 @@ func stagePlaceHolder() *gocd.Stage {
 }
 
 func dataSourceStageParseManuallApproval(data *schema.ResourceData, doc *gocd.Stage) error {
+	if doc.Approval == nil {
+		doc.Approval = &gocd.Approval{}
+	}
 	doc.Approval.Type = "manual"
 	doc.Approval.Authorization = &gocd.Authorization{}
 	if users := data.Get("authorization_users").(*schema.Set).List(); len(users) > 0 {
