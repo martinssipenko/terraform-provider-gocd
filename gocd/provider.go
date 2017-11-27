@@ -2,8 +2,10 @@ package gocd
 
 import (
 	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"net/http"
 	"os"
 )
 
@@ -89,13 +91,18 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	nossl := d.Get("skip_ssl_check").(bool)
 
 	cfg = &gocd.Configuration{
-		Server:   url,
-		Username: u,
-		Password: p,
-		SslCheck: !nossl,
+		Server:       url,
+		Username:     u,
+		Password:     p,
+		SkipSslCheck: nossl,
 	}
 
-	return cfg.Client(), nil
+	hClient := http.DefaultClient
+
+	// Add API logging
+	hClient.Transport = logging.NewTransport("GoCD", hClient.Transport)
+
+	return gocd.NewClient(cfg, hClient), nil
 
 }
 
