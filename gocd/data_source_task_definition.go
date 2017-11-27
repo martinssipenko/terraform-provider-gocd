@@ -32,7 +32,6 @@ func dataSourceGocdTaskDefinition() *schema.Resource {
 			},
 			"arguments": {
 				Type:     schema.TypeList,
-				MaxItems: 3,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -189,8 +188,8 @@ func dataSourceGocdFetchTemplate(t *gocd.Task, d *schema.ResourceData) {
 
 	if isaf, ok := d.GetOk("is_source_a_file"); ok && isaf.(bool) {
 		t.Attributes.IsSourceAFile = true
-	} else {
-		t.Attributes.IsSourceAFile = false
+
+
 	}
 
 	if d, ok := d.GetOk("destination"); ok {

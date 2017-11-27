@@ -1,5 +1,5 @@
 hash: e4bb500dea9970bf0d1621e50725aad47b366d360ad46fb81172c5510d0e33b8
-updated: 2017-11-27T20:26:29.020563669Z
+updated: 2017-11-27T21:17:24.817087385Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
