@@ -2,39 +2,25 @@ package gocd
 
 import (
 	"context"
-	"net/url"
-	"strings"
 )
 
 // EnvironmentsService exposes calls for interacting with Environment objects in the GoCD API.
 type EnvironmentsService service
 
-// EnvironmentsResponseLinks describes the HAL _link resource for the api response object for a collection of environment
-// objects
-//go:generate gocd-response-links-generator -type=EnvironmentsResponseLinks,EnvironmentLinks
-type EnvironmentsResponseLinks struct {
-	Self *url.URL `json:"self"`
-	Doc  *url.URL `json:"doc"`
-}
-
-// EnvironmentLinks describes the HAL _link resource for the api response object for a collection of environment objects.
-type EnvironmentLinks struct {
-	Self *url.URL `json:"self"`
-	Doc  *url.URL `json:"doc"`
-	Find *url.URL `json:"find"`
-}
-
 // EnvironmentsResponse describes the response obejct for a plugin API call.
 type EnvironmentsResponse struct {
-	Links    *EnvironmentsResponseLinks `json:"_links"`
-	Embedded struct {
-		Environments []*Environment `json:"environments"`
-	} `json:"_embedded"`
+	Links    *HALLinks             `json:"_links"`
+	Embedded *EmbeddedEnvironments `json:"_embedded"`
+}
+
+// EmbeddedEnvironments encapsulates the environment struct
+type EmbeddedEnvironments struct {
+	Environments []*Environment `json:"environments"`
 }
 
 // Environment describes a group of pipelines and agents
 type Environment struct {
-	Links                *EnvironmentLinks      `json:"_links,omitempty"`
+	Links                *HALLinks              `json:"_links,omitempty"`
 	Name                 string                 `json:"name"`
 	Pipelines            []*Pipeline            `json:"pipelines,omitempty"`
 	Agents               []*Agent               `json:"agents,omitempty"`
@@ -89,9 +75,7 @@ func (es *EnvironmentsService) Create(ctx context.Context, name string) (*Enviro
 		ResponseBody: &e,
 		APIVersion:   apiV2,
 	})
-	if err == nil {
-		e.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
-	}
+
 	return &e, resp, err
 }
 
@@ -103,9 +87,6 @@ func (es *EnvironmentsService) Get(ctx context.Context, name string) (*Environme
 		ResponseBody: &e,
 		APIVersion:   apiV2,
 	})
-	if err == nil {
-		e.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
-	}
 
 	return &e, resp, err
 }
@@ -119,9 +100,6 @@ func (es *EnvironmentsService) Patch(ctx context.Context, name string, patch *En
 		ResponseBody: &env,
 		APIVersion:   apiV2,
 	})
-	if err == nil {
-		env.Version = strings.Replace(resp.HTTP.Header.Get("Etag"), "\"", "", -1)
-	}
 
 	return &env, resp, err
 }

@@ -22,10 +22,6 @@ func TestSourceDirSubdir(t *testing.T) {
 			"hashicorp.com?bar=baz", "foo",
 		},
 		{
-			"https://hashicorp.com/path//*?archive=foo",
-			"https://hashicorp.com/path?archive=foo", "*",
-		},
-		{
 			"file://foo//bar",
 			"file://foo", "bar",
 		},
