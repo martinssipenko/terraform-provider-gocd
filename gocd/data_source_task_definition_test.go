@@ -11,7 +11,7 @@ import (
 )
 
 func testDataSourceTaskDefinition(t *testing.T) {
-	for i := 0; i <= 5; i++ {
+	for i := 0; i <= 6; i++ {
 		t.Run(
 			fmt.Sprintf("gocd_task_definition.%d", i),
 			DataSourceTaskDefinition(t, i,
