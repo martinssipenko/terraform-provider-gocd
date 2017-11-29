@@ -23,10 +23,10 @@ const (
 )
 
 // ListPipelineTemplatesAction lists all pipeline templates.
-func listPipelineTemplatesAction(c *cli.Context) error {
-	ts, r, err := cliAgent(c).PipelineTemplates.List(context.Background())
+func listPipelineTemplatesAction(client *gocd.Client, c *cli.Context) (r interface{}, resp *gocd.APIResponse, err error) {
+	ts, resp, err := client.PipelineTemplates.List(context.Background())
 	if err != nil {
-		return handleOutput(nil, r, "ListPipelineTemplates", err)
+		return ts, resp, err
 	}
 
 	type p struct {
@@ -50,30 +50,30 @@ func listPipelineTemplatesAction(c *cli.Context) error {
 			Pipelines: ps,
 		})
 	}
-	return handleOutput(responses, r, "ListPipelineTemplates", err)
+	return responses, resp, err
 }
 
 // GetPipelineTemplateAction checks template-name is provided, and that the response is 2xx.
-func getPipelineTemplateAction(c *cli.Context) error {
+func getPipelineTemplateAction(client *gocd.Client, c *cli.Context) (r interface{}, resp *gocd.APIResponse, err error) {
 	var name string
 	if name = c.String("template-name"); name == "" {
-		return handleOutput(nil, nil, "GetPipelineTemplate", errors.New("'--template-name' is missing"))
+		return nil, nil, NewFlagError("template-name")
 	}
 
-	pt, r, err := cliAgent(c).PipelineTemplates.Get(context.Background(), name)
-	if r.HTTP.StatusCode != 404 {
+	pt, resp, err := client.PipelineTemplates.Get(context.Background(), name)
+	if resp.HTTP.StatusCode != 404 {
 		pt.RemoveLinks()
 	}
-	return handleOutput(pt, r, "GetPipelineTemplate", err)
+	return pt, resp, err
 }
 
 // CreatePipelineTemplateAction checks stages and template-name is provided, and that the response is 2xx.
-func createPipelineTemplateAction(c *cli.Context) error {
+func createPipelineTemplateAction(client *gocd.Client, c *cli.Context) (r interface{}, resp *gocd.APIResponse, err error) {
 	if c.String("template-name") == "" {
-		return handleOutput(nil, nil, "CreatePipelineTemplate", errors.New("'--template-name' is missing"))
+		return nil, nil, NewFlagError("template-name")
 	}
 	if len(c.StringSlice("stage")) < 1 {
-		return handleOutput(nil, nil, "CreatePipelineTemplate", errors.New("At least 1 '--stage' must be set"))
+		return nil, nil, errors.New("At least 1 '--stage' must be set")
 	}
 
 	stages := []*gocd.Stage{}
@@ -82,26 +82,25 @@ func createPipelineTemplateAction(c *cli.Context) error {
 		json.Unmarshal([]byte(stage), &st)
 
 		if err := st.Validate(); err != nil {
-			return handleOutput(nil, nil, "CreatePipelineTemplate", err)
+			return nil, nil, err
 		}
 		stages = append(stages, &st)
 	}
 
-	pt, r, err := cliAgent(c).PipelineTemplates.Create(context.Background(), c.String("template-name"), stages)
-	return handleOutput(pt, r, "CreatePipelineTemplate", err)
+	return client.PipelineTemplates.Create(context.Background(), c.String("template-name"), stages)
 }
 
 // UpdatePipelineTemplateAction checks stages, template-name and template-version is provided, and that the response is
 // 2xx.
-func updatePipelineTemplateAction(c *cli.Context) error {
+func updatePipelineTemplateAction(client *gocd.Client, c *cli.Context) (r interface{}, resp *gocd.APIResponse, err error) {
 	if c.String("template-name") == "" {
-		return handleErrOutput("UpdatePipelineTemplate", errors.New("'--template-name' is missing"))
+		return nil, nil, NewFlagError("template-name")
 	}
 	if c.String("template-version") == "" {
-		return handleErrOutput("UpdatePipelineTemplate", errors.New("'--version' is missing"))
+		return nil, nil, NewFlagError("version")
 	}
 	if len(c.StringSlice("stage")) < 1 {
-		return handleErrOutput("UpdatePipelineTemplate", errors.New("At least 1 '--stage' must be set"))
+		return nil, nil, errors.New("At least 1 '--stage' must be set")
 	}
 
 	stages := []*gocd.Stage{}
@@ -110,7 +109,7 @@ func updatePipelineTemplateAction(c *cli.Context) error {
 		json.Unmarshal([]byte(stage), &st)
 
 		if err := st.Validate(); err != nil {
-			return handleErrOutput("UpdatePipelineTemplate", err)
+			return nil, nil, err
 		}
 		stages = append(stages, &st)
 	}
@@ -120,8 +119,7 @@ func updatePipelineTemplateAction(c *cli.Context) error {
 		Stages:  stages,
 	}
 
-	pt, r, err := cliAgent(c).PipelineTemplates.Update(context.Background(), c.String("template-name"), &ptr)
-	return handleOutput(pt, r, "UpdatePipelineTemplate", err)
+	return client.PipelineTemplates.Update(context.Background(), c.String("template-name"), &ptr)
 }
 
 // DeletePipelineTemplateCommand handles the interaction between the cli flags and the action handler for
@@ -133,16 +131,16 @@ func deletePipelineTemplateCommand() *cli.Command {
 		Category: "Pipeline Templates",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "template-name", Usage: "Pipeline Template name."}},
-		Action: func(c *cli.Context) error {
+		Action: func(client *gocd.Client, c *cli.Context) (r interface{}, resp *gocd.APIResponse, err error) {
 			if c.String("template-name") == "" {
-				return handleOutput(nil, nil, "DeletePipelineTemplate", errors.New("'--template-name' is missing"))
+				return nil, nil, NewFlagError("template-name")
 			}
 
-			deleteResponse, r, err := cliAgent(c).PipelineTemplates.Delete(context.Background(), c.String("template-name"))
-			if r.HTTP.StatusCode == 406 {
+			deleteResponse, resp, err := client.PipelineTemplates.Delete(context.Background(), c.String("template-name"))
+			if resp.HTTP.StatusCode == 406 {
 				err = errors.New(deleteResponse)
 			}
-			return handleOutput(deleteResponse, r, "DeletePipelineTemplate", err)
+			return deleteResponse, resp, err
 		},
 	}
 }
@@ -153,7 +151,7 @@ func listPipelineTemplatesCommand() *cli.Command {
 	return &cli.Command{
 		Name:     ListPipelineTemplatesCommandName,
 		Usage:    ListPipelineTemplatesCommandUsage,
-		Action:   listPipelineTemplatesAction,
+		Action:   ActionWrapper(listPipelineTemplatesAction),
 		Category: "Pipeline Templates",
 	}
 }
@@ -164,7 +162,7 @@ func getPipelineTemplateCommand() *cli.Command {
 	return &cli.Command{
 		Name:     GetPipelineTemplateCommandName,
 		Usage:    GetPipelineTemplateCommandUsage,
-		Action:   getPipelineTemplateAction,
+		Action:   ActionWrapper(getPipelineTemplateAction),
 		Category: "Pipeline Templates",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "template-name", Usage: "Name of the Pipeline Template configuration."},
@@ -178,7 +176,7 @@ func createPipelineTemplateCommand() *cli.Command {
 	return &cli.Command{
 		Name:     CreatePipelineTemplateCommandName,
 		Usage:    CreatePipelineTemplateCommandUsage,
-		Action:   createPipelineTemplateAction,
+		Action:   ActionWrapper(createPipelineTemplateAction),
 		Category: "Pipeline Templates",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "template-name", Usage: "Pipeline Template name."},
@@ -193,7 +191,7 @@ func updatePipelineTemplateCommand() *cli.Command {
 	return &cli.Command{
 		Name:     UpdatePipelineTemplateCommandName,
 		Usage:    UpdatePipelineTemplateCommandUsage,
-		Action:   updatePipelineTemplateAction,
+		Action:   ActionWrapper(updatePipelineTemplateAction),
 		Category: "Pipeline Templates",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "template-version", Usage: "Pipeline template version."},

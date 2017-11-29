@@ -611,8 +611,7 @@
         "runningTasksCount":{"shape":"Integer"},
         "pendingTasksCount":{"shape":"Integer"},
         "agentUpdateStatus":{"shape":"AgentUpdateStatus"},
-        "attributes":{"shape":"Attributes"},
-        "registeredAt":{"shape":"Timestamp"}
+        "attributes":{"shape":"Attributes"}
       }
     },
     "ContainerInstanceStatus":{
@@ -631,10 +630,7 @@
       "members":{
         "name":{"shape":"String"},
         "command":{"shape":"StringList"},
-        "environment":{"shape":"EnvironmentVariables"},
-        "cpu":{"shape":"BoxedInteger"},
-        "memory":{"shape":"BoxedInteger"},
-        "memoryReservation":{"shape":"BoxedInteger"}
+        "environment":{"shape":"EnvironmentVariables"}
       }
     },
     "ContainerOverrides":{

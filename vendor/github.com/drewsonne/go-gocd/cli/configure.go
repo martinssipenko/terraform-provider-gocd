@@ -10,35 +10,59 @@ import (
 
 // List of command name and descriptions
 const (
-	ConfigureCommandName  = "configure"
-	ConfigureCommandUsage = "Generate configuration file ~/.gocd.conf"
+	configureCommandName  = "configure"
+	configureCommandUsage = "Generate configuration file ~/.gocd.conf"
 )
 
-func configureAction(c *cli.Context) (err error) {
+type generateConfigFunc func() (cfg *gocd.Configuration, err error)
+type loadConfigFunc func() (cfgs map[string]*gocd.Configuration, err error)
+type writeConfigFunc func(b []byte) (err error)
+
+type configActionRunner struct {
+	context *cli.Context
+
+	generateConfig generateConfigFunc
+	loadConfigs    loadConfigFunc
+	writeConfigs   writeConfigFunc
+}
+
+func (car configActionRunner) run() (err error) {
 	var cfg *gocd.Configuration
 	var profile string
+	var b []byte
 
-	if profile = c.Parent().String("profile"); profile == "" {
+	if profile = car.context.Parent().String("profile"); profile == "" {
 		profile = "default"
 	}
 
-	cfgs, err := gocd.LoadConfigFromFile()
-
-	if cfg, err = generateConfig(); err != nil {
-		return handleErrOutput("Configure:generate", err)
-	} else {
-		cfgs[profile] = cfg
-	}
-
-	b, err := yaml.Marshal(cfgs)
+	cfgs, err := car.loadConfigs()
 	if err != nil {
-		return handleErrOutput("Configure:yaml", err)
+		return NewCliError("Configure:generate", nil, err)
 	}
 
-	if err = ioutil.WriteFile(gocd.ConfigFilePath(), b, 0644); err != nil {
-		return handleErrOutput("Configure:write", err)
+	if cfg, err = car.generateConfig(); err != nil {
+		return NewCliError("Configure:generate", nil, err)
 	}
 
+	cfgs[profile] = cfg
+
+	if b, err = yaml.Marshal(cfgs); err != nil {
+		return NewCliError("Configure:yaml", nil, err)
+	}
+
+	car.writeConfigs(b)
+
+	return nil
+}
+
+func writeConfigsToFile(b []byte) (err error) {
+	path, err := gocd.ConfigFilePath()
+	if err != nil {
+		return err
+	}
+	if err = ioutil.WriteFile(path, b, 0644); err != nil {
+		return NewCliError("Configure:write", nil, err)
+	}
 	return nil
 }
 
@@ -66,15 +90,23 @@ func generateConfig() (cfg *gocd.Configuration, err error) {
 	}
 
 	err = survey.Ask(qs, cfg)
-	return cfg, err
+	return
 }
 
 // ConfigureCommand handles the interaction between the cli flags and the action handler for configure
 func configureCommand() *cli.Command {
 	return &cli.Command{
-		Name:   ConfigureCommandName,
-		Usage:  ConfigureCommandUsage,
-		Action: configureAction,
+		Name:  configureCommandName,
+		Usage: configureCommandUsage,
+		Action: func(c *cli.Context) (err error) {
+			return configActionRunner{
+				context: c,
+
+				generateConfig: generateConfig,
+				loadConfigs:    gocd.LoadConfigFromFile,
+				writeConfigs:   writeConfigsToFile,
+			}.run()
+		},
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "profile"},
 		},
