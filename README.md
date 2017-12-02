@@ -16,6 +16,90 @@ Terraform provider for GoCD Server
 __NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
 the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
 
+## Data
+
+ - [`gocd_task_definition`](#gocd_task_definition)
+ - [`gocd_job_definition`](#gocd_job_definition)
+
+### gocd\_task\_definition
+
+Generates json strings for GoCD task definitions
+
+#### Example Usage
+
+```hcl
+data "gocd_task_definition" "my-task" {
+  type = "exec"
+  command = "terraform"
+  arguments = ["init"]
+}
+```
+
+#### Argument Reference
+
+### gocd\_job\_definition
+
+Generates json strings for GoCD job definitions
+
+#### Example Usage
+
+```hcl
+data "gocd_job_definition" "my-job" {
+  name = "my-job"
+  tasks = []
+  environment_variables = [{
+    name = "HOME"
+    value = "/home/go"
+  }]
+}
+
+output "my-job" {
+  value = "${data.gocd_job_definition.my-job.json}"
+}
+```
+
+#### Argument Reference
+
+ - `name` - (Required) The name of the job.
+ - `tasks` - (Required) A list of json strings defining a task definition for this job
+ - `run_instance_count` - (Optional) The number of jobs to run. If set to null (default), one job will be created. If set to the literal string all, the job will be run on all agents. If set to a positive integer, the specified number of jobs will be created. Can be one of null, Integer, all.
+ - `timeout` - (Optional) The time period(in minute) after which the job will be terminated by go if it has not generated any output.
+ - `environment_variables` - (Optional) The list of environment variables defined here are set on the agents and can be used within your tasks. Each `environment_variables` block supports fields documented below.
+ - `resources` - (Optional) The list of (String) resources that specifies the resource which the job requires to build. MUST NOT be specified along with elastic_profile_id.
+ - `tabs` - (Optional) The list of tabs which let you add custom tabs within the job details page. Each `tabs` block supports fields documented below.
+ - `artifacts` - (Optional) The list of artifacts specifies what files the agent will publish to the server. Each `artifacts` block supports fields documented below.
+ - `properties` - (Optional) The list of properties of the build from XML files or artifacts created during your build. Each `properties` block supports fields documented below.
+ - `elastic_profile_id` - (Optional) The id of the elastic profile, specifying this attribute would run the job on an elastic agent asociated with this profile. MUST NOT be specified along with resources. Since v16.10.0.
+
+The `environment_variables` block supports:
+
+ - `name` - (Required) The name of the environment variable.
+ - `value` - (Optional) The value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `encrypted_value` - (Optional) The encrypted value of the environment variable. One of `value` or `encrypted_value` must be set.
+ - `secure` - Whether environment variable is secure or not. When set to `true`, encrypts the value if one is specified. The default value is `false`.
+
+The `tabs` block supports:
+
+ - `name` - (Required) The name of the tab which will appear in the Job detail page.
+ - `path` - (Required) The relative path of a file in the server artifact destination directory of the job that will be render in the tab.
+
+The `artifacts` block supports:
+
+ - `type` - (Required) The type of the artifact. Can be one of test, build.
+ - `source` - (Required) The file or folder to publish to the server.
+ - `destination` - (Optional) The destination is relative to the artifacts folder of the current job instance on the server side. If it is not specified, the artifact will be stored in the root of the artifacts directory.
+
+The `properties` block supports:
+
+ - `name` - (Required) The name of the property.
+ - `source` - (Optional) The relative path to the XML file containing the data that you want to use to create the property.
+ - `xpath` - (Optional) The xpath that will be used to create property.
+
+#### Attributes Reference
+
+ - `json` - JSON encoded string of the job definition
+
+
 ## Resources
 
  - [`gocd_pipeline`](#gocd_pipeline)

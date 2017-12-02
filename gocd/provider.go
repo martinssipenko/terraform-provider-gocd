@@ -1,10 +1,14 @@
 package gocd
 
 import (
+	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"net/http"
 	"os"
+	"runtime"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -96,7 +100,18 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		SkipSslCheck: nossl,
 	}
 
-	return cfg.Client(), nil
+	hClient := &http.Client{
+		Transport: http.DefaultTransport,
+	}
+
+	// Add API logging
+	hClient.Transport = logging.NewTransport("GoCD", hClient.Transport)
+	gc := gocd.NewClient(cfg, hClient)
+
+	versionString := terraform.VersionString()
+	gc.UserAgent = fmt.Sprintf("(%s %s) Terraform/%s", runtime.GOOS, runtime.GOARCH, versionString)
+
+	return gc, nil
 
 }
 
