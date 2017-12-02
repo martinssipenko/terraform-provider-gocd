@@ -33,6 +33,7 @@ resource "gocd_pipeline" "test-pipeline" {
   name = "pipeline0-terraform"
   group = "testing"
   template = "${gocd_pipeline_template.test-pipeline.id}"
+  enable_pipeline_locking = true
   materials = [
     {
       type = "git"
