@@ -4,3 +4,8 @@ package gocd
 func (a *Agent) GetLinks() *HALLinks {
 	return a.Links
 }
+
+// RemoveLinks sets the `Link` attribute as `nil`. Used when rendering an `Agent` struct to JSON.
+func (a *Agent) RemoveLinks() {
+	a.Links = nil
+}

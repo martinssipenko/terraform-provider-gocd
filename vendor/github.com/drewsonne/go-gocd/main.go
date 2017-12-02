@@ -20,6 +20,10 @@ const GoCDUtilityUsageInstructions = "CLI Tool to interact with GoCD server"
 var Version string
 
 func main() {
+	buildCli().Run(os.Args)
+}
+
+func buildCli() *cli.App {
 
 	app := cli.NewApp()
 	app.Name = GoCDUtilityName
@@ -27,6 +31,9 @@ func main() {
 	app.Version = Version
 	app.EnableBashCompletion = true
 	app.Commands = gocli.GetCliCommands()
+
+	app.Metadata = map[string]interface{}{}
+	app.Metadata["c"] = gocli.NewCliClient
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -53,5 +60,5 @@ func main() {
 
 	sort.Sort(cli.CommandsByName(app.Commands))
 
-	app.Run(os.Args)
+	return app
 }

@@ -44,78 +44,74 @@ func GetCliCommands() []cli.Command {
 		*getEnvironmentCommand(),
 		*addPipelinesToEnvironmentCommand(),
 		*removePipelinesFromEnvironmentCommand(),
+		*listPropertiesCommand(),
+		*createPropertyCommand(),
 	}
 }
 
-// NewCliClient
-func cliAgent(c *cli.Context) *gocd.Client {
+// NewCliClient creates a new gocd client for use by cli actions.
+func NewCliClient(c *cli.Context) (*gocd.Client, error) {
 	var profile string
-	if profile = c.Parent().String("profile"); profile == "" {
+
+	if profile = c.String("profile"); profile == "" {
 		profile = "default"
 	}
 
-	cfg, err := gocd.LoadConfigByName(profile)
-	if err != nil {
-		panic(err)
+	cfg := &gocd.Configuration{}
+	cfgErr := gocd.LoadConfigByName(profile, cfg)
+
+	setStringFromContext(&cfg.Server, "server", c)
+
+	if cfg.Server == "" {
+		if cfgErr != nil {
+			return nil, cfgErr
+		} else {
+			// If we didn't have any errors, and our server is empty, use the local.
+			cfg.Server = "https://127.0.0.1:8154/go/"
+		}
 	}
 
-	if server := c.String("server"); server != "" {
-		cfg.Server = server
-	}
-
-	if username := c.String("username"); username != "" {
-		cfg.Username = username
-	}
-
-	if password := c.String("password"); password != "" {
-		cfg.Password = password
-	}
+	setStringFromContext(&cfg.Username, "username", c)
+	setStringFromContext(&cfg.Password, "password", c)
 
 	cfg.SkipSslCheck = cfg.SkipSslCheck || c.Bool("skip_ssl_check")
 
-	return cfg.Client()
+	return cfg.Client(), nil
 }
 
-func handleErrOutput(reqType string, err error) error {
-	return handleOutput(nil, nil, reqType, err)
-}
-
-func handleOutput(r interface{}, hr *gocd.APIResponse, reqType string, err error) error {
-	var b []byte
-	var o map[string]interface{}
-	if err != nil {
-		o = map[string]interface{}{
-			"Request": reqType,
-			"Error":   err.Error(),
-		}
-	} else if hr.HTTP.StatusCode >= 200 && hr.HTTP.StatusCode < 300 {
-		o = map[string]interface{}{
-			fmt.Sprintf("%sResponse", reqType): r,
-		}
-		//} else if hr.HTTP.StatusCode == 404 {
-		//	o = map[string]interface{}{
-		//		"Error": fmt.Sprintf("Could not find resource for '%s' action.", reqType),
-		//	}
-	} else {
-
-		b1, _ := json.Marshal(hr.HTTP.Header)
-		b2, _ := json.Marshal(hr.Request.HTTP.Header)
-		o = map[string]interface{}{
-			"Error":           "An error occurred while retrieving the resource.",
-			"Status":          hr.HTTP.StatusCode,
-			"ResponseHeader":  string(b1),
-			"ResponseBody":    hr.Body,
-			"RequestBody":     hr.Request.Body,
-			"RequestEndpoint": hr.Request.HTTP.URL.String(),
-			"RequestHeader":   string(b2),
-		}
+func setStringFromContext(dest *string, key string, c *cli.Context) {
+	var value string
+	if value = c.String(key); value != "" {
+		*dest = value
 	}
-	b, err = json.MarshalIndent(o, "", "    ")
+}
+
+func handleOutput(r interface{}, reqType string) cli.ExitCoder {
+	o := map[string]interface{}{
+		fmt.Sprintf("%s-response", reqType): r,
+	}
+	b, err := json.MarshalIndent(o, "", "    ")
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(string(b))
-
 	return nil
+}
+
+type ActionWrapperFunc func(client *gocd.Client, c *cli.Context) (interface{}, *gocd.APIResponse, error)
+
+func ActionWrapper(callback ActionWrapperFunc) interface{} {
+	return func(c *cli.Context) error {
+		cl := c.App.Metadata["c"].(func(c *cli.Context) (*gocd.Client, error))
+		client, err := cl(c.Parent())
+		if err != nil {
+			return NewCliError(c.Command.Name, nil, err)
+		}
+		v, resp, err := callback(client, c)
+		if err != nil {
+			return NewCliError(c.Command.Name, resp, err)
+		}
+		return handleOutput(v, c.Command.Name)
+	}
 }

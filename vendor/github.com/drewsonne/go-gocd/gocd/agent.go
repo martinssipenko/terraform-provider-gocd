@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AgentsService describes the HAL _link resource for the api response object for an agent objects.
+// AgentsService describes Actions which can be performed on agents
 type AgentsService service
 
 // AgentsResponse describes the structure of the API response when listing collections of agent object.
@@ -62,11 +62,6 @@ type BuildDetails struct {
 	Pipeline string    `json:"pipeline"`
 	Stage    string    `json:"stage"`
 	Job      string    `json:"job"`
-}
-
-// RemoveLinks sets the `Link` attribute as `nil`. Used when rendering an `Agent` struct to JSON.
-func (a *Agent) RemoveLinks() {
-	a.Links = nil
 }
 
 // List will retrieve all agents, their status, and metadata from the GoCD Server.

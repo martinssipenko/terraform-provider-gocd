@@ -18,14 +18,13 @@ func (m Material) Equal(a *Material) bool {
 }
 
 func (a1 MaterialAttributes) equalGit(a2 *MaterialAttributes) bool {
-	if a1.URL == a2.URL {
-		if a1.Branch == a2.Branch {
-			// Check if branches are equal
-			return true
-		} else if a1.Branch == "" && a2.Branch == "master" || a1.Branch == "master" && a2.Branch == "" {
-			// Check if branches are master equal
-			return true
-		}
+	urlsEqual := a1.URL == a2.URL
+	branchesEqual := a1.Branch == a2.Branch ||
+		a1.Branch == "" && a2.Branch == "master" ||
+		a1.Branch == "master" && a2.Branch == ""
+
+	if !urlsEqual {
+		return false
 	}
-	return false
+	return branchesEqual
 }

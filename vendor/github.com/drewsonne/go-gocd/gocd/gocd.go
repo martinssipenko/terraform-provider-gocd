@@ -36,6 +36,12 @@ const (
 const (
 	responseTypeXML  = "xml"
 	responseTypeJSON = "json"
+	responseTypeText = "text"
+)
+
+//Logging Environment variables
+const (
+	gocdLogLevel = "GOCD_LOG"
 )
 
 // StringResponse handles the unmarshaling of the single string response from DELETE requests.
@@ -79,6 +85,7 @@ type Client struct {
 	Encryption        *EncryptionService
 	Plugins           *PluginsService
 	Environments      *EnvironmentsService
+	Properties        *PropertiesService
 
 	common service
 	cookie string
@@ -152,6 +159,9 @@ func NewClient(cfg *Configuration, httpClient *http.Client) *Client {
 	c.Encryption = (*EncryptionService)(&c.common)
 	c.Plugins = (*PluginsService)(&c.common)
 	c.Environments = (*EnvironmentsService)(&c.common)
+	c.Properties = (*PropertiesService)(&c.common)
+
+	SetupLogging()
 
 	return c
 }
@@ -176,12 +186,21 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, apiVersion 
 		return request, errors.New("Mock Testing Error")
 	}
 
-	rel, err := url.Parse("api/" + urlStr)
+	// Some calls
+	if strings.HasPrefix(urlStr, "/") {
+		urlStr = urlStr[1:]
+	} else {
+		urlStr = "api/" + urlStr
+	}
+	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return request, err
 	}
 
 	u := c.BaseURL.ResolveReference(rel)
+	if c.BaseURL.RawQuery != "" {
+		u.RawQuery = c.BaseURL.RawQuery
+	}
 
 	var buf io.ReadWriter
 	if body != nil {
@@ -244,22 +263,31 @@ func (c *Client) Do(ctx context.Context, req *APIRequest, v interface{}, respons
 		HTTP:    resp,
 	}
 
-	if err = CheckResponse(r.HTTP); err != nil {
-		return r, err
-	}
-
 	if v != nil {
 		if r.Body, err = readDoResponseBody(v, &r.HTTP.Body, responseType); err != nil {
 			return nil, err
 		}
 	}
 
+	if err = CheckResponse(r.HTTP); err != nil {
+		return r, err
+	}
+
 	return r, err
 }
 
 func readDoResponseBody(v interface{}, body *io.ReadCloser, responseType string) (string, error) {
+
+	if w, ok := v.(io.Writer); ok {
+		_, err := io.Copy(w, *body)
+		return "", err
+	}
+
 	bdy, err := ioutil.ReadAll(*body)
-	if responseType == responseTypeXML {
+	if responseType == responseTypeText {
+		strBody := string(bdy)
+		v = &strBody
+	} else if responseType == responseTypeXML {
 		err = xml.Unmarshal(bdy, v)
 	} else {
 		err = json.Unmarshal(bdy, v)

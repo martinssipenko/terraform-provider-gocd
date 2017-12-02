@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -29,12 +30,18 @@ type Configuration struct {
 }
 
 // LoadConfigByName loads configurations from yaml at default file location
-func LoadConfigByName(name string) (cfg *Configuration, err error) {
+func LoadConfigByName(name string, cfg *Configuration) (err error) {
+
 	cfgs, err := LoadConfigFromFile()
 	if err == nil {
-		cfg = cfgs[name]
+		newCfg, hasCfg := cfgs[name]
+		if !hasCfg {
+			return fmt.Errorf("Could not find configuration profile '%s'", name)
+		}
+
+		*cfg = *newCfg
 	} else {
-		return nil, err
+		return err
 	}
 
 	if server := os.Getenv(EnvVarServer); server != "" {
@@ -49,14 +56,17 @@ func LoadConfigByName(name string) (cfg *Configuration, err error) {
 		cfg.Password = password
 	}
 
-	return cfg, nil
+	return nil
 }
 
+// LoadConfigFromFile on disk and return it as a Config item
 func LoadConfigFromFile() (cfgs map[string]*Configuration, err error) {
 	var b []byte
-	cfgs = make(map[string]*Configuration, 1)
 
-	p := ConfigFilePath()
+	p, err := ConfigFilePath()
+	if err != nil {
+		return cfgs, err
+	}
 	if _, err := os.Stat(p); !os.IsNotExist(err) {
 		if b, err = ioutil.ReadFile(p); err != nil {
 			return nil, err
@@ -71,8 +81,12 @@ func LoadConfigFromFile() (cfgs map[string]*Configuration, err error) {
 }
 
 // ConfigFilePath specifies the default path to a config file
-func ConfigFilePath() string {
+func ConfigFilePath() (string, error) {
 	// @TODO Make it work for windows. Maybe...
-	usr, _ := user.Current()
-	return strings.Replace(ConfigDirectoryPath, "~", usr.HomeDir, 1)
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	homeDir := usr.HomeDir
+	return strings.Replace(ConfigDirectoryPath, "~", homeDir, 1), nil
 }
