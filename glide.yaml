@@ -6,7 +6,7 @@ owners:
     email: drew.sonne@gmail.com
 import:
 - package: github.com/drewsonne/go-gocd
-  version: ^0.6.6
+  version: 6ade9bc2b319663892788829c47e09361fe9cf85
   subpackages:
   - gocd
 - package: github.com/hashicorp/terraform
