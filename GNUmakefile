@@ -17,6 +17,8 @@ before_install:
 	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/goreleaser/goreleaser
+	curl https://glide.sh/get | sh
+	glide install
 	pip install awscli --upgrade --user
 
 script: testacc
