@@ -1,5 +1,5 @@
-hash: 3d89bc3915ccf62a8cf6c02e93c78b9db3b08f634b4dbedcf023219dca600c70
-updated: 2017-12-29T14:52:15.941066243Z
+hash: 50b2954e97dd1b7755725a92c17c6f0141b7712398d25fb8ff27ec38dfab86a8
+updated: 2017-12-29T20:16:41.496082923Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -14,7 +14,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: 793c7bad9fd33bf3cf2095f32f8024bf47f3cd0a
+  version: f98ff3505c17e44d349af899eb85e6b37a7953db
   subpackages:
   - aws
   - aws/awserr
@@ -54,7 +54,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 23f9accf1930757ea229fc6d33d6bd1c0cb34a63
+  version: 6ade9bc2b319663892788829c47e09361fe9cf85
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -128,6 +128,8 @@ imports:
   - helper/logging
   - helper/resource
   - helper/schema
+  - helper/structure
+  - helper/validation
   - moduledeps
   - plugin
   - plugin/discovery
