@@ -1,6 +1,6 @@
 #TEST?=$$(go list ./... |grep -v 'vendor')
 TEST?=github.com/drewsonne/terraform-provider-gocd/gocd/
-GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+GOFMT_FILES?=$$(glide novendor)
 SHELL:=/bin/bash
 
 # For local testing, run `docker-compose up -d`
@@ -77,7 +77,7 @@ vet:
 	fi
 
 fmt:
-	gofmt -w $(GOFMT_FILES)
+	go fmt $(GOFMT_FILES)
 
 fmtcheck:
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
