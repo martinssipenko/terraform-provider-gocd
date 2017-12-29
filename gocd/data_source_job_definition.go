@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func dataSourceGocdJobTemplate() *schema.Resource {
@@ -15,8 +16,9 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				Required: true,
 			},
 			"tasks": {
-				Type:     schema.TypeList,
-				Required: true,
+				Type:         schema.TypeList,
+				Required:     true,
+				ValidateFunc: validation.ValidateJsonString,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
