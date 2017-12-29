@@ -11,3 +11,4 @@
 /.terraform
 /coverage.txt
 /gocd.test
+vendor
