@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
-	"regexp"
 	"github.com/hashicorp/terraform/helper/validation"
+	"regexp"
 )
 
 const STAGE_TYPE_PIPELINE = "pipeline"
