@@ -10,12 +10,29 @@ import (
 )
 
 func testResourcePipeline(t *testing.T) {
-	t.Run("Basic", testResourcePipelineBasic)
-	t.Run("ImportBasic", testResourcePipelineImportBasic)
-	t.Run("ExistsFail", testResourcePipelineExistsFail)
-	t.Run("FullStack1", testResourcePipelineFullStack1)
-	t.Run("FullStack2", testResourcePipelineFullStack2)
-	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
+	//t.Run("Basic", testResourcePipelineBasic)
+	//t.Run("ImportBasic", testResourcePipelineImportBasic)
+	//t.Run("ExistsFail", testResourcePipelineExistsFail)
+	//t.Run("FullStack1", testResourcePipelineFullStack1)
+	//t.Run("FullStack2", testResourcePipelineFullStack2)
+	//t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
+	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
+}
+
+func testResourcePipelineLinkedDependencies(t *testing.T) {
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline_linked_dep.0.rsc.tf"),
+			},
+			{
+				Config: testFile("resource_pipeline_linked_dep.1.rsc.tf"),
+			},
+		},
+	})
 }
 
 func testResourcePipelineDisableAutoUpdate(t *testing.T) {
