@@ -1,5 +1,5 @@
-hash: 50b2954e97dd1b7755725a92c17c6f0141b7712398d25fb8ff27ec38dfab86a8
-updated: 2017-12-29T20:16:41.496082923Z
+hash: 64dd014bc27c94d3f7f88a8b5fa07b5ccc6c5e697beef8a7b5a121ef0f9b2f2f
+updated: 2017-12-30T15:44:30.992521Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -14,7 +14,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: f98ff3505c17e44d349af899eb85e6b37a7953db
+  version: 9888dc32d6e5aca1321b0276b223545271f8b1ef
   subpackages:
   - aws
   - aws/awserr
@@ -54,7 +54,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 6ade9bc2b319663892788829c47e09361fe9cf85
+  version: 287ac57580021fb0d8bae6af679b38613ada2df5
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -70,7 +70,7 @@ imports:
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-cleanhttp
-  version: d5fe4b57a186c716b0e00b8c301cbd9b4182694d
+  version: 06c9ea3a335b7443026f8124b22619524420291b
 - name: github.com/hashicorp/go-getter
   version: 994f50a6f071b07cfbea9eca9618c9674091ca51
   subpackages:
@@ -142,7 +142,7 @@ imports:
   - tfdiags
   - version
 - name: github.com/hashicorp/yamux
-  version: 683f49123a33db61abfb241b7ac5e4af4dc54d55
+  version: f5742cb6b85602e7fa834e9d5d91a7d7fa850824
 - name: github.com/jmespath/go-jmespath
   version: dd801d4f4ce7ac746e7e7b4489d2fa600b3b096b
 - name: github.com/mattn/go-isatty
@@ -160,19 +160,19 @@ imports:
 - name: github.com/mitchellh/hashstructure
   version: 2bca23e0e452137f789efbc8610126fd8b94f73b
 - name: github.com/mitchellh/mapstructure
-  version: 06020f85339e21b2478f756a78e295255ffa4d6a
+  version: db1efb556f84b25a0a13a04aad883943538ad2e0
 - name: github.com/mitchellh/reflectwalk
   version: 63d60e9d0dbc60cf9164e6510889b0db6683d98c
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/posener/complete
-  version: 6bee943216c8cea4cc983c8596346d8945279a1f
+  version: dc2bc5a81accba8782bebea28628224643a8286a
   subpackages:
   - cmd
   - cmd/install
   - match
 - name: github.com/satori/go.uuid
-  version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/ulikunitz/xz
@@ -182,7 +182,7 @@ imports:
   - internal/xlog
   - lzma
 - name: github.com/zclconf/go-cty
-  version: 48ce95f3a00f37ac934ff90a62e377146f9428e1
+  version: 8bf222d6d03b7b336d013978f3acbfd877da428f
   subpackages:
   - cty
   - cty/convert
@@ -205,7 +205,7 @@ imports:
   - openpgp/s2k
   - ssh/terminal
 - name: golang.org/x/net
-  version: d866cfc389cec985d6fda2859936a575a55a3ab6
+  version: 9dfe39835686865bff950a07b394c12a98ddc811
   subpackages:
   - context
   - html
@@ -222,18 +222,18 @@ imports:
   - unix
   - windows
 - name: golang.org/x/text
-  version: e19ae1496984b1c655b8044a65c0300a3c878dd3
+  version: 88f656faf3f37f690df1a32515b479415e1a6769
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/genproto
-  version: a8101f21cf983e773d0c1133ebc5424792003214
+  version: 73cb5d0be5af113b42057925bd6c93e3cd9f60fd
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 65c901e45820d9c7555afc14337b82cf53ea3e42
+  version: cce0e436e5c428f2094edd926779788f1024938d
   subpackages:
   - balancer
   - balancer/base
@@ -253,6 +253,7 @@ imports:
   - peer
   - resolver
   - resolver/dns
+  - resolver/manual
   - resolver/passthrough
   - stats
   - status
