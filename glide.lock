@@ -1,5 +1,5 @@
-hash: 64dd014bc27c94d3f7f88a8b5fa07b5ccc6c5e697beef8a7b5a121ef0f9b2f2f
-updated: 2018-01-03T20:03:45.482179748Z
+hash: 574a6668f67160a2b835e018868ad36acc2f7ce90c32c6bbdb1b4a8ca6e71eef
+updated: 2018-01-03T20:50:48.58835322Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -54,7 +54,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 6fa9076e81eaa5edd763bc8d216315fb044de46b
+  version: 45c0f4759b451fa8019e3fb3316bb6ae0f5607bb
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
