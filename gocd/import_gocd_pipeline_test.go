@@ -6,9 +6,9 @@ import (
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"strconv"
 	"strings"
 	"testing"
-	"strconv"
 )
 
 func testResourcePipelineImportBasic(t *testing.T) {

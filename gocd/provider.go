@@ -107,7 +107,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			nossl = b
 		}
 	}
-	
+
 	cfg = &gocd.Configuration{
 		Server:       url,
 		Username:     u,
