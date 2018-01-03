@@ -43,6 +43,7 @@ func resourcePipeline() *schema.Resource {
 			"template": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"version": {
 				Type:     schema.TypeString,
@@ -78,7 +79,7 @@ func resourcePipeline() *schema.Resource {
 						},
 						"secure": {
 							Type:     schema.TypeBool,
-							Default:  false,
+							Computed: true,
 							Optional: true,
 						},
 					},
@@ -129,23 +130,27 @@ func resourcePipeline() *schema.Resource {
 									"shallow_clone": {
 										Type:     schema.TypeBool,
 										Optional: true,
-										Default:  false,
+										Computed: true,
 									},
 									"destination": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"url": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"pipeline": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"stage": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"auto_update": {
 										Type:     schema.TypeBool,
@@ -156,11 +161,11 @@ func resourcePipeline() *schema.Resource {
 									"invert_filter": {
 										Type:     schema.TypeBool,
 										Optional: true,
-										Default:  false,
 									},
 									"filter": {
 										Type:     schema.TypeSet,
 										Optional: true,
+										Computed: true,
 										MaxItems: 1,
 										Elem:     materialFilterResource(),
 									},
