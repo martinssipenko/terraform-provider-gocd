@@ -6,6 +6,8 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"reflect"
 	"strconv"
+	"fmt"
+	"regexp"
 )
 
 // Give an abstract list of strings cast as []interface{}, convert them back to []string{}.
@@ -46,4 +48,26 @@ func supressJSONDiffs(k, old, new string, d *schema.ResourceData) bool {
 		panic(err)
 	}
 	return reflect.DeepEqual(j2, j1)
+}
+
+type RegexRules map[string]string
+
+// RegexRuleset returns a SchemaValidateFunc which tests if all the provided regex rules
+// successfully match the supplied string. Having multiple rule/reason
+func RegexRuleset(rules RegexRules) schema.SchemaValidateFunc {
+	return func(i interface{}, key string) (s []string, errors []error) {
+		value, ok := i.(string)
+		if !ok {
+			errors = append(errors, fmt.Errorf("expected type of %q (%q) to be string", key, value))
+			return
+		}
+
+		for rule, reason := range rules {
+			if !regexp.MustCompile(rule).MatchString(value) {
+				errors = append(errors, fmt.Errorf(reason, key, value))
+			}
+		}
+
+		return
+	}
 }

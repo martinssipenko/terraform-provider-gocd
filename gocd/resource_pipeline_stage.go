@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 	"regexp"
 )
 
@@ -43,7 +42,7 @@ func resourcePipelineStage() *schema.Resource {
 				Required:         true,
 				Elem:             stringArg,
 				DiffSuppressFunc: supressJSONDiffs,
-				ValidateFunc:     validation.ValidateJsonString,
+				//ValidateFunc:     validation.ValidateJsonString,
 			},
 			"manual_approval": {
 				Type:          schema.TypeBool,
@@ -60,14 +59,12 @@ func resourcePipelineStage() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"success_approval", "authorization_roles"},
 				Elem:          stringArg,
-				ValidateFunc:  validation.ValidateListUniqueStrings,
 			},
 			"authorization_roles": {
 				Type:          schema.TypeSet,
 				Optional:      true,
 				ConflictsWith: []string{"success_approval", "authorization_users"},
 				Elem:          stringArg,
-				ValidateFunc:  validation.ValidateListUniqueStrings,
 			},
 			"environment_variables": {
 				Type:     schema.TypeList,
