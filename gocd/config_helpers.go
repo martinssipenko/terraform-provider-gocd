@@ -2,12 +2,12 @@ package gocd
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"reflect"
-	"strconv"
-	"fmt"
 	"regexp"
+	"strconv"
 )
 
 // Give an abstract list of strings cast as []interface{}, convert them back to []string{}.
