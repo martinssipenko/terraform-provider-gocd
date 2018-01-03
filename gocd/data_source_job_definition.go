@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func dataSourceGocdJobTemplate() *schema.Resource {
@@ -16,9 +15,8 @@ func dataSourceGocdJobTemplate() *schema.Resource {
 				Required: true,
 			},
 			"tasks": {
-				Type:         schema.TypeList,
-				Required:     true,
-				ValidateFunc: validation.ValidateJsonString,
+				Type:     schema.TypeList,
+				Required: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -161,7 +159,7 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if to, ok := d.GetOk("timeout"); ok {
-		j.Timeout = to.(int)
+		j.Timeout = gocd.TimeoutField(to.(int))
 	}
 
 	if elasticProfile, ok := d.GetOk("elastic_profile_id"); ok {

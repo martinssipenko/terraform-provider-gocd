@@ -2,8 +2,6 @@ package gocd
 
 import (
 	"context"
-	"errors"
-
 	"github.com/drewsonne/go-gocd/gocd"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -23,6 +21,10 @@ func resourcePipeline() *schema.Resource {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
+				ValidateFunc: RegexRuleset(map[string]string{
+					`^[a-zA-Z0-9_\-]{1}`:                  "first character of %q (%q) must be alphanumeric, underscore, or dot",
+					`^[a-zA-Z0-9_\-]{1}[a-zA-Z0-9_\-.]*$`: "only alphanumeric, underscores, hyphens, or dots allowed in %q (%q)",
+				}),
 			},
 			"group": {
 				Type:     schema.TypeString,
@@ -212,8 +214,7 @@ func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
 
-	d.SetId(d.Get("name").(string))
-	d.Set("name", d.Id())
+	d.Set("name", d.Get("name").(string))
 
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -279,12 +280,7 @@ func resourcePipelineDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	var name string
-	if ptname, hasName := d.GetOk("name"); hasName {
-		name = ptname.(string)
-	} else {
-		return false, errors.New("`name` can not be empty")
-	}
+	name := d.Id()
 
 	client := meta.(*gocd.Client)
 	client.Lock()
