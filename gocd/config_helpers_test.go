@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"regexp"
 )
 
 func TestConfigHelper(t *testing.T) {
@@ -13,6 +14,56 @@ func TestConfigHelper(t *testing.T) {
 	t.Run("DecodeConfigStringList/FailInt", decodeConfigStringListFailInt)
 	t.Run("DefinitionDocFinish/Success", testDefinitionDocFinishSuccess)
 	t.Run("DefinitionDocFinish/Fail", testDefinitionDocFinishFail)
+	t.Run("RegexRuleSetValidator", testRegexRuleSetValidator)
+}
+
+func testRegexRuleSetValidator(t *testing.T) {
+	matchErr := func(errs []error, r *regexp.Regexp) bool {
+		// err must match one provided
+		for _, err := range errs {
+			if r.MatchString(err.Error()) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	for i, test := range []struct {
+		f             schema.SchemaValidateFunc
+		value         interface{}
+		expectedError *regexp.Regexp
+	}{
+		{
+			f: RegexRuleset(RegexRules{
+				`^[a-zA-Z0-9_\-]{1}`: "first character of %q (%q) must be alphanumeric, underscore, or dot",
+			}),
+			value:         "$hallo-world",
+			expectedError: regexp.MustCompile(`first character of "[^"]+" \("[^"]+"\) must be alphanumeric, underscore, or dot`),
+		},
+		{
+			f: RegexRuleset(RegexRules{
+				`^[a-zA-Z0-9_\-]{1}[a-zA-Z0-9_\-.]*$`: "only alphanumeric, underscores, hyphens, or dots allowed in %q (%q)",
+			}),
+			value:         "hallo-wo$rld",
+			expectedError: regexp.MustCompile(`only alphanumeric, underscores, hyphens, or dots allowed in "[^"]+" \("[^"]+"\)`),
+		},
+	} {
+		_, errs := test.f(test.value, "test_property")
+
+		if test.expectedError == nil && len(errs) > 0 {
+			continue
+		}
+
+		if len(errs) != 0 && test.expectedError == nil {
+			t.Fatalf("expected test case %d to produce no errors, got %v", i, errs)
+		}
+
+		if !matchErr(errs, test.expectedError) {
+			t.Fatalf("expected test case %d to produce error matching \"%s\", got %v", i, test.expectedError, errs)
+		}
+
+	}
 }
 
 func testDefinitionDocFinishFail(t *testing.T) {
