@@ -1,5 +1,5 @@
-hash: 574a6668f67160a2b835e018868ad36acc2f7ce90c32c6bbdb1b4a8ca6e71eef
-updated: 2018-01-03T20:50:48.58835322Z
+hash: 3b66c7a0db602676f117e58c56c68268822e4b7b4bfcbc24faf7d4ff28ced5ff
+updated: 2018-01-04T06:57:08.947587302Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -173,6 +173,10 @@ imports:
   - match
 - name: github.com/satori/go.uuid
   version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
+- name: github.com/sergi/go-diff
+  version: 1744e2970ca51c86172c8190fadad617561ed6e7
+  subpackages:
+  - diffmatchpatch
 - name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/ulikunitz/xz
@@ -265,10 +269,6 @@ testImports:
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
   - difflib
-- name: github.com/sergi/go-diff
-  version: 1744e2970ca51c86172c8190fadad617561ed6e7
-  subpackages:
-  - diffmatchpatch
 - name: github.com/stretchr/testify
   version: b91bfb9ebec76498946beb6af7c0230c7cc7ba6c
   subpackages:
