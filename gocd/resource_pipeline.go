@@ -2,10 +2,10 @@ package gocd
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/drewsonne/go-gocd/gocd"
+
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourcePipeline() *schema.Resource {
@@ -21,6 +21,10 @@ func resourcePipeline() *schema.Resource {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
+				ValidateFunc: RegexRuleset(map[string]string{
+					`^[a-zA-Z0-9_\-]{1}`:                  "first character of %q (%q) must be alphanumeric, underscore, or dot",
+					`^[a-zA-Z0-9_\-]{1}[a-zA-Z0-9_\-.]*$`: "only alphanumeric, underscores, hyphens, or dots allowed in %q (%q)",
+				}),
 			},
 			"group": {
 				Type:     schema.TypeString,
@@ -39,6 +43,7 @@ func resourcePipeline() *schema.Resource {
 			"template": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"version": {
 				Type:     schema.TypeString,
@@ -74,13 +79,13 @@ func resourcePipeline() *schema.Resource {
 						},
 						"secure": {
 							Type:     schema.TypeBool,
-							Default:  false,
+							Computed: true,
 							Optional: true,
 						},
 					},
 				},
 			},
-			"materials": &schema.Schema{
+			"materials": {
 				Type:     schema.TypeList,
 				MinItems: 1,
 				Required: true,
@@ -89,6 +94,16 @@ func resourcePipeline() *schema.Resource {
 						"type": {
 							Type:     schema.TypeString,
 							Optional: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"git",
+								"svn",
+								"hg",
+								"p4",
+								"tfs",
+								"dependency",
+								"package",
+								"plugin",
+							}, true),
 						},
 						"attributes": {
 							Type:     schema.TypeList,
@@ -107,56 +122,52 @@ func resourcePipeline() *schema.Resource {
 										Computed:         true,
 										DiffSuppressFunc: supressMaterialBranchDiff,
 									},
+									"submodule_folder": {
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
 									"shallow_clone": {
 										Type:     schema.TypeBool,
 										Optional: true,
-										Default:  false,
+										Computed: true,
 									},
 									"destination": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"url": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"pipeline": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"stage": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"auto_update": {
 										Type:     schema.TypeBool,
 										Optional: true,
+										Computed: true,
 										Removed:  "The `auto_update` attribute has been disabled until a way to manage updates atomically has been devised.",
 									},
 									"invert_filter": {
 										Type:     schema.TypeBool,
 										Optional: true,
-										Default:  false,
 									},
 									"filter": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
-										//Elem: &schema.Schema{
-										//	Type: schema.TypeString,
-										//},
+										Computed: true,
 										MaxItems: 1,
-										MinItems: 1,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"ignore": {
-													Type:     schema.TypeList,
-													Required: true,
-													Elem: &schema.Schema{
-														Type: schema.TypeString,
-													},
-												},
-											},
-										},
+										Elem:     materialFilterResource(),
 									},
 								},
 							},
@@ -168,47 +179,60 @@ func resourcePipeline() *schema.Resource {
 	}
 }
 
-func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error) {
-	var group string
-	var p *gocd.Pipeline
-	if ptgroup, hasGroup := d.GetOk("group"); hasGroup {
-		group = ptgroup.(string)
+func materialFilterResource() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"ignore": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+		},
 	}
+}
+
+func resourcePipelineCreate(d *schema.ResourceData, meta interface{}) (err error) {
+	var p *gocd.Pipeline
+
 	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
 	if p, err = extractPipeline(d); err != nil {
-		return err
+		return
 	}
+	// GoCD does not allow pipelines to have _no_ stages. As this provider has split stages and pipelines into separate
+	// resources, we need to add a place holder stage if there are no stages yet configured and we're not using a
+	// template.
 	if (p.Stages == nil || len(p.Stages) == 0) && p.Template == "" {
 		p.Stages = []*gocd.Stage{
 			stagePlaceHolder(),
 		}
 	}
+
+	group := d.Get("group").(string)
 	pc, _, err := client.PipelineConfigs.Create(context.Background(), group, p)
 	return readPipeline(d, pc, err)
 }
 
 func resourcePipelineRead(d *schema.ResourceData, meta interface{}) error {
-	var name string
-	if pname, hasName := d.GetOk("name"); hasName {
-		name = pname.(string)
-		d.SetId(name)
-		d.Set("name", name)
-	}
+
+	d.Set("name", d.Get("name").(string))
+
 	client := meta.(*gocd.Client)
 	client.Lock()
 	defer client.Unlock()
 
 	ctx := context.Background()
-	pc, _, err := client.PipelineConfigs.Get(ctx, name)
+	pc, _, err := client.PipelineConfigs.Get(ctx, d.Id())
 	if err := readPipeline(d, pc, err); err != nil {
 		return err
 	}
 
 	pgs, _, err := client.PipelineGroups.List(ctx, "")
-	d.Set("group", pgs.GetGroupByPipelineName(name).Name)
+	d.Set("group", pgs.GetGroupByPipelineName(d.Id()).Name)
 	return nil
 }
 
@@ -261,12 +285,7 @@ func resourcePipelineDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourcePipelineExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	var name string
-	if ptname, hasName := d.GetOk("name"); hasName {
-		name = ptname.(string)
-	} else {
-		return false, errors.New("`name` can not be empty")
-	}
+	name := d.Id()
 
 	client := meta.(*gocd.Client)
 	client.Lock()
@@ -333,63 +352,30 @@ func extractPipelineParameters(rawProperties map[string]interface{}) []*gocd.Par
 func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, error) {
 	ms := []gocd.Material{}
 	for _, rawMaterial := range rawMaterials {
-		mat := rawMaterial.(map[string]interface{})
 		m := gocd.Material{}
 
-		if mType, ok := mat["type"]; ok {
-			m.Type = mType.(string)
+		mat := rawMaterial.(map[string]interface{})
+		m.Ingest(mat)
+		if mattr1, ok1 := mat["attributes"].([]interface{}); ok1 {
+			if mattr2, ok2 := mattr1[0].(map[string]interface{}); ok2 {
+				if filterI, ok3 := mattr2["filter"]; ok3 {
+					if filterSet, ok4 := filterI.(*schema.Set); ok4 {
+						filters := filterSet.List()
+						if len(filters) > 0 {
+							if filter, ok5 := filters[0].(map[string]interface{}); ok5 {
+								if ignore, ok6 := filter["ignore"]; ok6 {
+									mattr2["filter"] = map[string]interface{}{
+										"ignore": decodeConfigStringList(ignore.([]interface{})),
+									}
+								}
+							}
+						}
+					}
+				}
+				m.IngestAttributes(mattr2)
+			}
 		}
 
-		if mAttributes, ok := mat["attributes"]; ok {
-
-			attr := gocd.MaterialAttributes{}
-
-			rawAttr := mAttributes.([]interface{})[0].(map[string]interface{})
-			for attrKey, attrValue := range rawAttr {
-				if s, ok := attrValue.(string); ok && s == "" {
-					continue
-				}
-				switch attrKey {
-				case "url":
-					attr.URL = attrValue.(string)
-				case "destination":
-					attr.Destination = attrValue.(string)
-				case "filter":
-					attr.Filter = extractPipelineMaterialFilter(attrValue)
-				case "invert_filter":
-					attr.InvertFilter = attrValue.(bool)
-				case "name":
-					attr.Name = attrValue.(string)
-				case "auto_update":
-					attr.AutoUpdate = attrValue.(bool)
-				case "branch":
-					attr.Branch = attrValue.(string)
-				case "submodule_folder":
-					attr.SubmoduleFolder = attrValue.(string)
-				case "shallow_clone":
-					attr.ShallowClone = attrValue.(bool)
-				case "pipeline":
-					attr.Pipeline = attrValue.(string)
-				case "stage":
-					attr.Stage = attrValue.(string)
-				default:
-					return nil, fmt.Errorf("Unexpected material attribute: `%s:%s`", attrKey, attrValue)
-				}
-			}
-
-			switch m.Type {
-			case "dependency":
-				if attr.Name == attr.Pipeline {
-					attr.Name = ""
-				}
-				//case "git":
-				//	if attr.Branch == "" {
-				//		attr.Branch = "master"
-				//	}
-			}
-
-			m.Attributes = attr
-		}
 		ms = append(ms, m)
 
 	}
@@ -399,38 +385,23 @@ func extractPipelineMaterials(rawMaterials []interface{}) ([]gocd.Material, erro
 func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) error {
 	materialImports := make([]interface{}, len(materials))
 	for i, m := range materials {
-		materialMap := make(map[string]interface{})
-		materialMap["type"] = m.Type
-
-		attrs := map[string]interface{}{
-			"url": m.Attributes.URL,
-			//"auto_update":   m.Attributes.AutoUpdate,
-			"branch":        m.Attributes.Branch,
-			"destination":   m.Attributes.Destination,
-			"invert_filter": m.Attributes.InvertFilter,
-			"stage":         m.Attributes.Stage,
-			"pipeline":      m.Attributes.Pipeline,
-			"shallow_clone": m.Attributes.ShallowClone,
-		}
-
-		if m.Type == "dependency" {
-			if m.Attributes.Name != m.Attributes.Pipeline {
-				attrs["name"] = m.Attributes.Name
+		attrs := m.Attributes.GenerateGeneric()
+		filterSet := schema.NewSet(
+			schema.HashResource(materialFilterResource()),
+			[]interface{}{},
+		)
+		if filters, ok1 := attrs["filter"]; ok1 {
+			if filterI, ok2 := filters.(map[string]interface{}); ok2 {
+				if len(filterI) > 0 {
+					filterSet.Add(filterI)
+				}
+				attrs["filter"] = filterSet
 			}
-		} else {
-			attrs["name"] = m.Attributes.Name
 		}
-
-		filter := make([]map[string]interface{}, 1)
-		if m.Attributes.Filter != nil {
-			filter[0] = map[string]interface{}{
-				"ignore": m.Attributes.Filter.Ignore,
-			}
-			attrs["filter"] = filter
+		materialImports[i] = map[string]interface{}{
+			"type":       m.Type,
+			"attributes": []interface{}{attrs},
 		}
-
-		materialMap["attributes"] = []map[string]interface{}{attrs}
-		materialImports[i] = materialMap
 	}
 	if err := d.Set("materials", materialImports); err != nil {
 		return err
@@ -438,18 +409,18 @@ func readPipelineMaterials(d *schema.ResourceData, materials []gocd.Material) er
 	return nil
 }
 
-func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
-	filterI := attr.([]interface{})
-	var mf *gocd.MaterialFilter
-	if len(filterI) > 0 {
-		filtersI := filterI[0].(map[string]interface{})
-		filters := filtersI["ignore"].([]interface{})
-		mf = &gocd.MaterialFilter{
-			Ignore: decodeConfigStringList(filters),
-		}
-	}
-	return mf
-}
+//func extractPipelineMaterialFilter(attr interface{}) *gocd.MaterialFilter {
+//	filterI := attr.([]interface{})
+//	var mf *gocd.MaterialFilter
+//	if len(filterI) > 0 {
+//		filtersI := filterI[0].(map[string]interface{})
+//		filters := filtersI["ignore"].([]interface{})
+//		mf = &gocd.MaterialFilter{
+//			Ignore: decodeConfigStringList(filters),
+//		}
+//	}
+//	return mf
+//}
 
 func readPipeline(d *schema.ResourceData, p *gocd.Pipeline, err error) error {
 	if err != nil {
