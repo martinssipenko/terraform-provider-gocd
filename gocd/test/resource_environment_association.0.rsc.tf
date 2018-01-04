@@ -15,7 +15,7 @@ resource "gocd_pipeline" "test-pipeline" {
         url    = "git@github.com:gocd/gocd"
         branch = "master"
 
-//        auto_update = "true"
+        //        auto_update = "true"
       }
     },
   ]

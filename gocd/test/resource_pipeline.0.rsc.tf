@@ -3,9 +3,9 @@ resource "gocd_pipeline_template" "test-pipeline" {
 }
 
 resource "gocd_pipeline" "test-pipeline" {
-  name     = "pipeline0-terraform"
-  group    = "testing"
-  template = "${gocd_pipeline_template.test-pipeline.name}"
+  name                    = "pipeline0-terraform"
+  group                   = "testing"
+  template                = "${gocd_pipeline_template.test-pipeline.name}"
   enable_pipeline_locking = true
 
   materials = [
@@ -17,6 +17,7 @@ resource "gocd_pipeline" "test-pipeline" {
         url         = "git@github.com:gocd/gocd"
         branch      = "feature/my-addition"
         destination = "gocd-dir"
+
         filter {
           ignore = [
             "one",
