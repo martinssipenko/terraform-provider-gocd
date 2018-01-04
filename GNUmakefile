@@ -1,6 +1,6 @@
 #TEST?=$$(go list ./... |grep -v 'vendor')
 TEST?=github.com/drewsonne/terraform-provider-gocd/gocd/
-GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+GOFMT_FILES?=$$(glide novendor)
 SHELL:=/bin/bash
 
 # For local testing, run `docker-compose up -d`
@@ -14,10 +14,10 @@ export GOCD_SKIP_SSL_CHECK=1
 travis: before_install script after_success deploy_on_develop
 
 before_install:
-	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/goreleaser/goreleaser
-	pip install awscli --upgrade --user
+	curl https://glide.sh/get | sh
+	glide install
 
 script: testacc
 
@@ -44,6 +44,7 @@ teardown-test-gocd:
 cleanup: teardown-test-gocd upload_logs
 
 upload_logs:
+	pip install awscli --upgrade --user
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
@@ -75,7 +76,7 @@ vet:
 	fi
 
 fmt:
-	gofmt -w $(GOFMT_FILES)
+	go fmt $(GOFMT_FILES)
 
 fmtcheck:
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
