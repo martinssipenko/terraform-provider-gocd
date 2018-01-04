@@ -166,6 +166,10 @@ func dataSourceGocdJobTemplateRead(d *schema.ResourceData, meta interface{}) err
 		j.ElasticProfileID = elasticProfile.(string)
 	}
 
+	if elasticProfile, ok := d.GetOk("elastic_profile_id"); ok {
+		j.ElasticProfileID = elasticProfile.(string)
+	}
+
 	if envVars, ok := d.Get("environment_variables").([]interface{}); ok && len(envVars) > 0 {
 		j.EnvironmentVariables = dataSourceGocdJobEnvVarsRead(envVars)
 	}
