@@ -14,12 +14,10 @@ export GOCD_SKIP_SSL_CHECK=1
 travis: before_install script after_success deploy_on_develop
 
 before_install:
-	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/goreleaser/goreleaser
 	curl https://glide.sh/get | sh
 	glide install
-	pip install awscli --upgrade --user
 
 script: testacc
 
@@ -46,6 +44,7 @@ teardown-test-gocd:
 cleanup: teardown-test-gocd upload_logs
 
 upload_logs:
+	pip install awscli --upgrade --user
 	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
 		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
 		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \

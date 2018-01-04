@@ -106,7 +106,7 @@ output "my-job" {
  - `tabs` - (Optional) The list of tabs which let you add custom tabs within the job details page. Each `tabs` block supports fields documented below.
  - `artifacts` - (Optional) The list of artifacts specifies what files the agent will publish to the server. Each `artifacts` block supports fields documented below.
  - `properties` - (Optional) The list of properties of the build from XML files or artifacts created during your build. Each `properties` block supports fields documented below.
- - `elastic_profile_id` - (Optional) The id of the elastic profile, speciRefying this attribute would run the job on an elastic agent asociated with this profile. MUST NOT be specified along with resources. Since v16.10.0.
+ - `elastic_profile_id` - (Optional) The id of the elastic profile, specifying this attribute would run the job on an elastic agent asociated with this profile. MUST NOT be specified along with resources. Since v16.10.0.
 
 The `environment_variables` block supports:
 

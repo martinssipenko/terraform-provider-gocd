@@ -2,8 +2,8 @@ package: github.com/drewsonne/terraform-provider-gocd
 homepage: https://github.com/drewsonne/terraform-provider-gocd
 license: LGPL-2.0
 owners:
-  - name: Drew J. Sonne
-    email: drew.sonne@gmail.com
+- name: Drew J. Sonne
+  email: drew.sonne@gmail.com
 import:
 - package: github.com/drewsonne/go-gocd
   version: ^0.6.13
@@ -18,10 +18,10 @@ import:
   - terraform
 - package: github.com/pkg/errors
   version: ^0.8.0
-testImport:
 - package: github.com/sergi/go-diff
   subpackages:
   - diffmatchpatch
+testImport:
 - package: github.com/stretchr/testify
   version: ^1.1.4
   subpackages:
