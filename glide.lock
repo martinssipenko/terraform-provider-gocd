@@ -1,5 +1,5 @@
-hash: e4bb500dea9970bf0d1621e50725aad47b366d360ad46fb81172c5510d0e33b8
-updated: 2017-12-11T22:47:50.121182494Z
+hash: 574a6668f67160a2b835e018868ad36acc2f7ce90c32c6bbdb1b4a8ca6e71eef
+updated: 2018-01-03T20:50:48.58835322Z
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -14,7 +14,7 @@ imports:
 - name: github.com/armon/go-radix
   version: 1fca145dffbcaa8fe914309b1ec0cfc67500fe61
 - name: github.com/aws/aws-sdk-go
-  version: 9888dc32d6e5aca1321b0276b223545271f8b1ef
+  version: 59a00e612400e688c7553db01b9b394368660a34
   subpackages:
   - aws
   - aws/awserr
@@ -50,11 +50,11 @@ imports:
 - name: github.com/blang/semver
   version: 2ee87856327ba09384cabd113bc6b5d174e9ec0f
 - name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
 - name: github.com/drewsonne/go-gocd
-  version: 9ec72e252709abfe2e42492954a421dd739e0f7c
+  version: 45c0f4759b451fa8019e3fb3316bb6ae0f5607bb
   subpackages:
   - gocd
 - name: github.com/go-ini/ini
@@ -70,7 +70,7 @@ imports:
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-cleanhttp
-  version: 06c9ea3a335b7443026f8124b22619524420291b
+  version: d5fe4b57a186c716b0e00b8c301cbd9b4182694d
 - name: github.com/hashicorp/go-getter
   version: 994f50a6f071b07cfbea9eca9618c9674091ca51
   subpackages:
@@ -128,6 +128,8 @@ imports:
   - helper/logging
   - helper/resource
   - helper/schema
+  - helper/structure
+  - helper/validation
   - moduledeps
   - plugin
   - plugin/discovery
@@ -140,7 +142,7 @@ imports:
   - tfdiags
   - version
 - name: github.com/hashicorp/yamux
-  version: f5742cb6b85602e7fa834e9d5d91a7d7fa850824
+  version: 683f49123a33db61abfb241b7ac5e4af4dc54d55
 - name: github.com/jmespath/go-jmespath
   version: dd801d4f4ce7ac746e7e7b4489d2fa600b3b096b
 - name: github.com/mattn/go-isatty
@@ -158,23 +160,21 @@ imports:
 - name: github.com/mitchellh/hashstructure
   version: 2bca23e0e452137f789efbc8610126fd8b94f73b
 - name: github.com/mitchellh/mapstructure
-  version: db1efb556f84b25a0a13a04aad883943538ad2e0
+  version: 06020f85339e21b2478f756a78e295255ffa4d6a
 - name: github.com/mitchellh/reflectwalk
   version: 63d60e9d0dbc60cf9164e6510889b0db6683d98c
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/posener/complete
-  version: dc2bc5a81accba8782bebea28628224643a8286a
+  version: 6bee943216c8cea4cc983c8596346d8945279a1f
   subpackages:
   - cmd
   - cmd/install
   - match
 - name: github.com/satori/go.uuid
-  version: 879c5887cd475cd7864858769793b2ceb0d44feb
-- name: github.com/Sirupsen/logrus
+  version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
+- name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
-  repo: git@github.com:/sirupsen/logrus
-  vcs: git
 - name: github.com/ulikunitz/xz
   version: 0c6b41e72360850ca4f98dc341fd999726ea007f
   subpackages:
@@ -182,7 +182,7 @@ imports:
   - internal/xlog
   - lzma
 - name: github.com/zclconf/go-cty
-  version: 8bf222d6d03b7b336d013978f3acbfd877da428f
+  version: 48ce95f3a00f37ac934ff90a62e377146f9428e1
   subpackages:
   - cty
   - cty/convert
@@ -192,7 +192,7 @@ imports:
   - cty/json
   - cty/set
 - name: golang.org/x/crypto
-  version: 9f005a07e0d31d45e6656d241bb5c0f2efd4bc94
+  version: 95a4943f35d008beabde8c11e5075a1b714e6419
   subpackages:
   - bcrypt
   - blowfish
@@ -205,7 +205,7 @@ imports:
   - openpgp/s2k
   - ssh/terminal
 - name: golang.org/x/net
-  version: 9dfe39835686865bff950a07b394c12a98ddc811
+  version: d866cfc389cec985d6fda2859936a575a55a3ab6
   subpackages:
   - context
   - html
@@ -217,23 +217,23 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/sys
-  version: 7ddbeae9ae08c6a06a59597f0c9edbc5ff2444ce
+  version: 83801418e1b59fb1880e363299581ee543af32ca
   subpackages:
   - unix
   - windows
 - name: golang.org/x/text
-  version: 88f656faf3f37f690df1a32515b479415e1a6769
+  version: e19ae1496984b1c655b8044a65c0300a3c878dd3
   subpackages:
   - secure/bidirule
   - transform
   - unicode/bidi
   - unicode/norm
 - name: google.golang.org/genproto
-  version: 73cb5d0be5af113b42057925bd6c93e3cd9f60fd
+  version: a8101f21cf983e773d0c1133ebc5424792003214
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: cce0e436e5c428f2094edd926779788f1024938d
+  version: 7aea499f9110a479b3777df064372f44188146aa
   subpackages:
   - balancer
   - balancer/base
@@ -253,7 +253,6 @@ imports:
   - peer
   - resolver
   - resolver/dns
-  - resolver/manual
   - resolver/passthrough
   - stats
   - status
@@ -271,6 +270,6 @@ testImports:
   subpackages:
   - diffmatchpatch
 - name: github.com/stretchr/testify
-  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  version: b91bfb9ebec76498946beb6af7c0230c7cc7ba6c
   subpackages:
   - assert

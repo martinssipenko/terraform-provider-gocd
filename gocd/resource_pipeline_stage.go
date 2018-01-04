@@ -42,6 +42,7 @@ func resourcePipelineStage() *schema.Resource {
 				Required:         true,
 				Elem:             stringArg,
 				DiffSuppressFunc: supressJSONDiffs,
+				//ValidateFunc:     validation.ValidateJsonString,
 			},
 			"manual_approval": {
 				Type:          schema.TypeBool,
