@@ -14,7 +14,6 @@ export GOCD_SKIP_SSL_CHECK=1
 travis: before_install script after_success deploy_on_develop
 
 before_install:
-	go get -t -v ./...
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/goreleaser/goreleaser
 	curl https://glide.sh/get | sh
