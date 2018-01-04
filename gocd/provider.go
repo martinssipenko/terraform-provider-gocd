@@ -84,19 +84,19 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	if rUrl, ok = d.GetOk("baseurl"); ok {
 		if url, ok = rUrl.(string); !ok || url == "" {
-		url = os.Getenv("GOCD_URL")
+			url = os.Getenv("GOCD_URL")
 		}
 	}
 
 	if rU, ok = d.GetOk("username"); ok {
 		if u, ok = rU.(string); !ok || u == "" {
-		u = os.Getenv("GOCD_USERNAME")
+			u = os.Getenv("GOCD_USERNAME")
 		}
 	}
 
 	if rP, ok = d.GetOk("password"); ok {
 		if p, ok = rP.(string); !ok || p == "" {
-		p = os.Getenv("GOCD_PASSWORD")
+			p = os.Getenv("GOCD_PASSWORD")
 		}
 	}
 
@@ -105,7 +105,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			nossl = false
 		} else {
 			nossl = b
-	}
+		}
 	}
 
 	cfg = &gocd.Configuration{
