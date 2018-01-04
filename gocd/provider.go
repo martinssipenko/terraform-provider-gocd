@@ -78,19 +78,35 @@ func init() {
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	var url, u, p string
+	var rUrl, rU, rP, rB interface{}
+	var ok, nossl, b bool
 	var cfg *gocd.Configuration
 
-	if url = d.Get("baseurl").(string); url == "" {
-		url = os.Getenv("GOCD_URL")
+	if rUrl, ok = d.GetOk("baseurl"); ok {
+		if url, ok = rUrl.(string); !ok || url == "" {
+			url = os.Getenv("GOCD_URL")
+		}
 	}
 
-	if u = d.Get("username").(string); u == "" {
-		u = os.Getenv("GOCD_USERNAME")
+	if rU, ok = d.GetOk("username"); ok {
+		if u, ok = rU.(string); !ok || u == "" {
+			u = os.Getenv("GOCD_USERNAME")
+		}
 	}
-	if p = d.Get("password").(string); p == "" {
-		p = os.Getenv("GOCD_PASSWORD")
+
+	if rP, ok = d.GetOk("password"); ok {
+		if p, ok = rP.(string); !ok || p == "" {
+			p = os.Getenv("GOCD_PASSWORD")
+		}
 	}
-	nossl := d.Get("skip_ssl_check").(bool)
+
+	if rB, ok = d.GetOk("skip_ssl_check"); ok {
+		if b, ok = rB.(bool); !ok {
+			nossl = false
+		} else {
+			nossl = b
+		}
+	}
 
 	cfg = &gocd.Configuration{
 		Server:       url,

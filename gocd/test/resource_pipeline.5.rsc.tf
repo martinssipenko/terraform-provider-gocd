@@ -121,10 +121,6 @@ data "gocd_job_definition" "deploy" {
 data "gocd_task_definition" "gocd-image-build-deploy_deploy_deploy_0" {
   type = "exec"
 
-  run_if = [
-    "passed",
-  ]
-
   command = "make"
 
   arguments = [
