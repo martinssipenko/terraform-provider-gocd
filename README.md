@@ -17,7 +17,20 @@ Terraform provider for GoCD Server
 __NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
 the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
 
+## Components
+
+ - Data
+     - [`gocd_task_definition`](#gocd_task_definition)
+     - [`gocd_job_definition`](#gocd_job_definition)
+ - Resources
+     - [`gocd_pipeline`](#gocd_pipeline)
+     - [`gocd_pipeline_template`](#gocd_pipeline_template)
+     - [`gocd_pipeline_stage`](#gocd_pipeline_stage)
+     - [`gocd_environment`](#gocd_environment)
+     - [`gocd_environment_association`](#gocd_environment_association)
+
 ## Data
+
 
  - [`gocd_task_definition`](#gocd_task_definition)
  - [`gocd_job_definition`](#gocd_job_definition)
@@ -37,6 +50,29 @@ data "gocd_task_definition" "my-task" {
 ```
 
 #### Argument Reference
+
+Task definition as defined in the [GoCD API](https://api.gocd.org/current/#the-task-object).
+
+ - `type` - (Required) The type of a task. Can be one of exec, ant, nant, rake, fetch, pluggable_task.
+ - `run_if` - (Optional) The run_if condition specifies when a task should be allowed to run. Can be one of passed, failed, any.
+
+##### Task `type = "exec"`
+ - `command` - (Required) The name of the executable. If the executable is not on PATH, you may also specify the full path.
+ - `arguments`- (Optional) The list of arguments to be passed to the executable.
+ - `working_directory` - (Optional) The directory in which the executable is to be executed.
+
+##### Task `type = "ant"`
+ - `build_file` - (Required) The path to Ant build file.
+ - `target` - (Required) The Ant target(s) to run.
+ - `working_directory` - (Optional) The directory in which the executable is to be executed.
+
+##### Task `type = "fetch"`
+ - `pipeline` - (Optional) The name of direct upstream pipeline or ancestor pipeline of one of the upstream pipelines on which the pipeline of the job depends on. .
+ - `stage` - (Required) The name of the stage to fetch artifacts from.
+ - `job`  - (Required) The name of the job to fetch artifacts from.
+ - `source` - (Required) The path of the artifact directory or file of a specific job, relative to the sandbox directory. If the directory or file does not exist, the job is failed.
+ - `is_source_a_file` - (Optional) Whether source is a file or directory.
+ - `destination` - (Optional) The path of the directory where the artifact is fetched to.
 
 ### gocd\_job\_definition
 
@@ -70,7 +106,7 @@ output "my-job" {
  - `tabs` - (Optional) The list of tabs which let you add custom tabs within the job details page. Each `tabs` block supports fields documented below.
  - `artifacts` - (Optional) The list of artifacts specifies what files the agent will publish to the server. Each `artifacts` block supports fields documented below.
  - `properties` - (Optional) The list of properties of the build from XML files or artifacts created during your build. Each `properties` block supports fields documented below.
- - `elastic_profile_id` - (Optional) The id of the elastic profile, specifying this attribute would run the job on an elastic agent asociated with this profile. MUST NOT be specified along with resources. Since v16.10.0.
+ - `elastic_profile_id` - (Optional) The id of the elastic profile, speciRefying this attribute would run the job on an elastic agent asociated with this profile. MUST NOT be specified along with resources. Since v16.10.0.
 
 The `environment_variables` block supports:
 
