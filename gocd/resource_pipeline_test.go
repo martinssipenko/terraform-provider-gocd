@@ -2,20 +2,16 @@ package gocd
 
 import (
 	r "github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"testing"
 )
 
 func testResourcePipeline(t *testing.T) {
-	//t.Run("Basic", testResourcePipelineBasic)
-	//t.Run("ImportBasic", testResourcePipelineImportBasic)
-	//t.Run("ExistsFail", testResourcePipelineExistsFail)
-	//t.Run("FullStack1", testResourcePipelineFullStack1)
-	//t.Run("FullStack2", testResourcePipelineFullStack2)
-	//t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
+	t.Run("Basic", testResourcePipelineBasic)
+	t.Run("ImportBasic", testResourcePipelineImportBasic)
+	t.Run("FullStack1", testResourcePipelineFullStack1)
+	t.Run("FullStack2", testResourcePipelineFullStack2)
+	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
 	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
 }
 
@@ -133,14 +129,4 @@ func testResourcePipelineFullStack2(t *testing.T) {
 			},
 		},
 	})
-}
-
-func testResourcePipelineExistsFail(t *testing.T) {
-	rd := (&schema.Resource{Schema: map[string]*schema.Schema{
-		"name": {Type: schema.TypeString, Required: true},
-	}}).Data(&terraform.InstanceState{})
-
-	exists, err := resourcePipelineExists(rd, nil)
-	assert.False(t, exists)
-	assert.EqualError(t, err, "`name` can not be empty")
 }
