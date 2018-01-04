@@ -2,8 +2,13 @@ locals {
   "group" = "test-pipelines"
 }
 
+resource "gocd_pipeline_template" "template-A" {
+  name = "template-A"
+}
+
 resource "gocd_pipeline" "pipe-A" {
   name      = "pipe-A"
+  template  = "${gocd_pipeline_template.template-A.name}"
   group     = "${local.group}"
   materials = [{
     type = "git"
