@@ -5,8 +5,9 @@ resource "gocd_pipeline_template" "test-pipeline" {
 resource "gocd_pipeline" "test-pipeline" {
   name     = "pipeline0-terraform"
   group    = "testing"
-  template = "${gocd_pipeline_template.test-pipeline.id}"
+  template = "${gocd_pipeline_template.test-pipeline.name}"
   enable_pipeline_locking = true
+
   materials = [
     {
       type = "git"
@@ -16,8 +17,6 @@ resource "gocd_pipeline" "test-pipeline" {
         url         = "git@github.com:gocd/gocd"
         branch      = "feature/my-addition"
         destination = "gocd-dir"
-
-        //        auto_update = true
         filter {
           ignore = [
             "one",

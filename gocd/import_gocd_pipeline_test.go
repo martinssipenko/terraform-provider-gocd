@@ -6,29 +6,32 @@ import (
 	"github.com/drewsonne/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"strconv"
 	"strings"
 	"testing"
 )
 
 func testResourcePipelineImportBasic(t *testing.T) {
 	for _, idx := range []int{2, 4, 5} { //{2,4}
-		suffix := randomString(10)
-		resourceName := fmt.Sprintf("gocd_pipeline.test-%s", suffix)
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			suffix := randomString(10)
+			resourceName := fmt.Sprintf("gocd_pipeline.test-%s", suffix)
 
-		resource.Test(t, resource.TestCase{
-			PreCheck:     func() { testAccPreCheck(t) },
-			Providers:    testGocdProviders,
-			CheckDestroy: testGocdPipelineDestroy,
-			Steps: []resource.TestStep{
-				{
-					Config: testGocdPipelineConfig(suffix, idx),
+			resource.Test(t, resource.TestCase{
+				PreCheck:     func() { testAccPreCheck(t) },
+				Providers:    testGocdProviders,
+				CheckDestroy: testGocdPipelineDestroy,
+				Steps: []resource.TestStep{
+					{
+						Config: testGocdPipelineConfig(suffix, idx),
+					},
+					{
+						ResourceName:      resourceName,
+						ImportState:       true,
+						ImportStateVerify: true,
+					},
 				},
-				{
-					ResourceName:      resourceName,
-					ImportState:       true,
-					ImportStateVerify: true,
-				},
-			},
+			})
 		})
 	}
 }
