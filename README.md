@@ -17,6 +17,8 @@ Terraform provider for GoCD Server
 __NOTE__: `terraform` does not currently provide a way to easily install 3rd party providers. Until this is implemented,
 the `tf-install-provider` utility can be used to copy the provider binary to the correct location.
 
+__NOTE__: Given the requirements by hashicorp for SLA's to be set for importing providers into the `hashicorp-provider` github organisation, and as I am but one person on this, there's little chance this will become an officially sanctioned terraform provider.
+
 ## Components
 
  - Data
