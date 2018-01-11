@@ -10,7 +10,7 @@ import:
   subpackages:
   - gocd
 - package: github.com/hashicorp/terraform
-  version: ^0.11.1
+  version: ^0.11.2
   subpackages:
   - helper/hashcode
   - helper/schema
