@@ -308,7 +308,6 @@ Get project and install dependencies using glide:
 
     $ go get github.com/drewsonne/terraform-provider-gocd
     $ cd $GOPATH/src/github.com/drewsonne/terraform-provider-gocd/
-    $ make
 
 Then you can run tests as follows:
 
