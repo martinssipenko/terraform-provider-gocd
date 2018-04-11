@@ -306,13 +306,17 @@ resource "gocd_pipeline" "build" {
 
 Get project and install dependencies using glide:
 
-  $ go get github.com/drewsonne/terraform-provider-gocd
-  $ cd $GOPATH/src/github.com/drewsonne/terraform-provider-gocd/
-  $ make
+    $ go get github.com/drewsonne/terraform-provider-gocd
+    $ cd $GOPATH/src/github.com/drewsonne/terraform-provider-gocd/
+    $ make
 
 Then you can run tests as follows:
 
-  $ make test
+    $ make test
+
+For acceptance tests, run:
+
+    $ make testacc
 
 ## Demo
 
