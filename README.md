@@ -311,10 +311,6 @@ Get project and install dependencies using glide:
 
 Then you can run tests as follows:
 
-    $ make test
-
-For acceptance tests, run:
-
     $ make testacc
 
 ## Demo
