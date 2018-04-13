@@ -1,7 +1,7 @@
 package main
 
 import (
-	gocdprovider "github.com/drewsonne/terraform-provider-gocd/gocd"
+	gocdprovider "github.com/beamly/terraform-provider-gocd/gocd"
 	"github.com/hashicorp/terraform/plugin"
 )
 

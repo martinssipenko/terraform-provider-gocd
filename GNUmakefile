@@ -1,5 +1,5 @@
 #TEST?=$$(go list ./... |grep -v 'vendor')
-TEST?=github.com/drewsonne/terraform-provider-gocd/gocd/
+TEST?=github.com/beamly/terraform-provider-gocd/gocd/
 GOFMT_FILES?=$$(glide novendor)
 SHELL:=/bin/bash
 
@@ -41,17 +41,10 @@ teardown-test-gocd:
 	rm -f godata/server/config/cruise-config.xml
 	docker-compose down
 
-cleanup: teardown-test-gocd upload_logs clean_files
+cleanup: teardown-test-gocd clean_files
 
 clean_files:
 	rm -rf godata/server
-
-upload_logs:
-	pip install awscli --upgrade --user
-	AWS_DEFAULT_REGION=$(ARTIFACTS_REGION) \
-		AWS_ACCESS_KEY_ID=$(ARTIFACTS_KEY) \
-		AWS_SECRET_ACCESS_KEY=$(ARTIFACTS_SECRET) \
-		aws s3 sync ./godata/server/ s3://$(ARTIFACTS_BUCKET)/drewsonne/terraform-provider-gocd/$(TRAVIS_BUILD_ID)/godata/
 
 report_coverage:
 	bash <(curl -s https://codecov.io/bash)

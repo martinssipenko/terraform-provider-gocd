@@ -28,9 +28,9 @@ archive:
 
 brew:
   github:
-    owner: drewsonne
+    owner: beamly
     name: homebrew-tap
-  homepage: https://github.com/drewsonne/terraform-provider-gocd
+  homepage: https://github.com/beamly/terraform-provider-gocd
   description: Terraform Provider for ThoughtWorks GoCD
   dependencies:
     - terraform

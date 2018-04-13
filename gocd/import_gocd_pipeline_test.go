@@ -3,7 +3,7 @@ package gocd
 import (
 	"context"
 	"fmt"
-	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"strconv"

@@ -53,7 +53,7 @@ imports:
   version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
-- name: github.com/drewsonne/go-gocd
+- name: github.com/beamly/go-gocd
   version: 9ff9f02728c9ec4c22fbe94d1edc81de50547c13
   subpackages:
   - gocd
