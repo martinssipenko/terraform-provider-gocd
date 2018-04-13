@@ -2,7 +2,7 @@ package gocd
 
 import (
 	"fmt"
-	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"

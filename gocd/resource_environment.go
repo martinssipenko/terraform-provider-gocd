@@ -2,7 +2,7 @@ package gocd
 
 import (
 	"context"
-	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 

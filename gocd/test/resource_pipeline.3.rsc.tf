@@ -7,7 +7,7 @@ resource "gocd_pipeline" "test-pipeline3-upstream" {
     type = "git"
 
     attributes {
-      url    = "https://github.com/drewsonne/terraform-provider-gocd.git"
+      url    = "https://github.com/beamly/terraform-provider-gocd.git"
       branch = "master"
 
       //      auto_update = true
@@ -25,7 +25,7 @@ resource "gocd_pipeline" "test-pipeline3" {
       type = "git"
 
       attributes {
-        url    = "https://github.com/drewsonne/terraform-provider-gocd.git"
+        url    = "https://github.com/beamly/terraform-provider-gocd.git"
         branch = "master"
 
         //        auto_update = true

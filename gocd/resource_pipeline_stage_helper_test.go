@@ -1,7 +1,7 @@
 package gocd
 
 import (
-	"github.com/drewsonne/go-gocd/gocd"
+	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"

@@ -33,7 +33,7 @@ func testResourcePipelineLinkedDependencies(t *testing.T) {
 
 func testResourcePipelineDisableAutoUpdate(t *testing.T) {
 	// Managing auto_update on a per material basis is not possible through the current GoCD API as of 01/10/2017.
-	// For details see, https://github.com/drewsonne/terraform-provider-gocd/issues/32
+	// For details see, https://github.com/beamly/terraform-provider-gocd/issues/32
 	errRE, err := regexp.Compile("The `auto_update` attribute has been disabled until a way to manage updates atomically has been devised")
 	if err != nil {
 		t.Error(err)

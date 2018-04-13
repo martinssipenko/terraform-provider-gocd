@@ -1,11 +1,11 @@
-package: github.com/drewsonne/terraform-provider-gocd
-homepage: https://github.com/drewsonne/terraform-provider-gocd
+package: github.com/beamly/terraform-provider-gocd
+homepage: https://github.com/beamly/terraform-provider-gocd
 license: LGPL-2.0
 owners:
 - name: Drew J. Sonne
   email: drew.sonne@gmail.com
 import:
-- package: github.com/drewsonne/go-gocd
+- package: github.com/beamly/go-gocd
   version: ^0.6.14
   subpackages:
   - gocd

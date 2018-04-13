@@ -1,16 +1,16 @@
 # terraform-provider-gocd 0.1.19
 
-[![GoDoc](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/drewsonne/terraform-provider-gocd/gocd)
-[![Build Status](https://travis-ci.org/drewsonne/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/drewsonne/terraform-provider-gocd)
-[![codecov](https://codecov.io/gh/drewsonne/terraform-provider-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/drewsonne/terraform-provider-gocd)
-[![Go Report Card](https://goreportcard.com/badge/github.com/drewsonne/terraform-provider-gocd)](https://goreportcard.com/report/github.com/drewsonne/terraform-provider-gocd)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrewsonne%2Fterraform-provider-gocd.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrewsonne%2Fterraform-provider-gocd?ref=badge_shield)
+[![GoDoc](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd?status.svg)](https://godoc.org/github.com/beamly/terraform-provider-gocd/gocd)
+[![Build Status](https://travis-ci.org/beamly/terraform-provider-gocd.svg?branch=master)](https://travis-ci.org/beamly/terraform-provider-gocd)
+[![codecov](https://codecov.io/gh/beamly/terraform-provider-gocd/branch/master/graph/badge.svg)](https://codecov.io/gh/beamly/terraform-provider-gocd)
+[![Go Report Card](https://goreportcard.com/badge/github.com/beamly/terraform-provider-gocd)](https://goreportcard.com/report/github.com/beamly/terraform-provider-gocd)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd?ref=badge_shield)
 
 Terraform provider for GoCD Server
 
 ## Installation
 
-    $ brew tap drewsonne/tap
+    $ brew tap beamly/tap
     $ brew install terraform-provider-gocd
     $ tf-install-provider gocd
 
@@ -165,7 +165,7 @@ resource "gocd_pipeline" "build" {
       type = "git"
       attributes {
         name = "terraform-provider-gocd"
-        url = "https://github.com/drewsonne/terraform-provider-gocd.git"
+        url = "https://github.com/beamly/terraform-provider-gocd.git"
       }
     }
   ]
@@ -306,8 +306,8 @@ resource "gocd_pipeline" "build" {
 
 Get project and install dependencies using glide:
 
-    $ go get github.com/drewsonne/terraform-provider-gocd
-    $ cd $GOPATH/src/github.com/drewsonne/terraform-provider-gocd/
+    $ go get github.com/beamly/terraform-provider-gocd
+    $ cd $GOPATH/src/github.com/beamly/terraform-provider-gocd/
 
 Then you can run tests as follows:
 
@@ -335,4 +335,4 @@ When you're finished, run:
     $ make teardown-test-gocd
 
 ## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrewsonne%2Fterraform-provider-gocd.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrewsonne%2Fterraform-provider-gocd?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbeamly%2Fterraform-provider-gocd?ref=badge_large)
