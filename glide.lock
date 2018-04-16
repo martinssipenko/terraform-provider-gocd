@@ -1,5 +1,5 @@
-hash: 187b9e39f103773cf0416d2bbf8122b5d966c592b7b5a0650ec867b7e89f2110
-updated: 2018-01-18T09:36:07.208683Z
+hash: 52f6643704d171e075e3b7c71bfa533c3dc6603e6f62ffbcf819cb92ac3d6865
+updated: 2018-04-16T19:37:30.727704556+01:00
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -41,6 +41,10 @@ imports:
   - private/protocol/xml/xmlutil
   - service/s3
   - service/sts
+- name: github.com/beamly/go-gocd
+  version: 22c4d041ca9ce74960c6a10e8ab63bf7d05e87a3
+  subpackages:
+  - gocd
 - name: github.com/bgentry/go-netrc
   version: 9fd32a8b3d3d3f9d43c341bfe098430e07609480
   subpackages:
@@ -53,10 +57,6 @@ imports:
   version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
-- name: github.com/beamly/go-gocd
-  version: 9ff9f02728c9ec4c22fbe94d1edc81de50547c13
-  subpackages:
-  - gocd
 - name: github.com/go-ini/ini
   version: 32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a
 - name: github.com/golang/protobuf
@@ -114,7 +114,7 @@ imports:
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/terraform
-  version: a6008b8a48a749c7c167453b9cf55ffd572b9a5d
+  version: 41e50bd32a8825a84535e353c3674af8ce799161
   subpackages:
   - config
   - config/configschema
@@ -130,6 +130,7 @@ imports:
   - helper/schema
   - helper/structure
   - helper/validation
+  - httpclient
   - moduledeps
   - plugin
   - plugin/discovery
@@ -172,14 +173,12 @@ imports:
   - cmd
   - cmd/install
   - match
-- name: github.com/satori/go.uuid
-  version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
 - name: github.com/sergi/go-diff
   version: 1744e2970ca51c86172c8190fadad617561ed6e7
   subpackages:
   - diffmatchpatch
 - name: github.com/sirupsen/logrus
-  version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
+  version: 778f2e774c725116edbc3d039dc0dfc1cc62aae8
 - name: github.com/ulikunitz/xz
   version: 0c6b41e72360850ca4f98dc341fd999726ea007f
   subpackages:
@@ -271,6 +270,6 @@ testImports:
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: b91bfb9ebec76498946beb6af7c0230c7cc7ba6c
+  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
   subpackages:
   - assert
