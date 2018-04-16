@@ -8,4 +8,5 @@ func TestResource(t *testing.T) {
 	t.Run("Stage", testResourceStage)
 	t.Run("Environment", testEnvironment)
 	t.Run("EnvironmentAssociation", testEnvironmentAssociation)
+	t.Run("ConfigurationRepository", testConfigurationRepository)
 }
