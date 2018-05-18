@@ -1,7 +1,5 @@
 #!/usr/bin/env bash -e
 
-set -x
-
 ROOT_DIR=$(pwd)/
 COVERAGE_PATH=${ROOT_DIR}/coverage.txt
 
