@@ -1,10 +1,10 @@
 package gocd
 
 import (
+	"fmt"
+	"github.com/hashicorp/terraform/helper/acctest"
 	r "github.com/hashicorp/terraform/helper/resource"
 	"testing"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"fmt"
 )
 
 func testEnvironment(t *testing.T) {
@@ -21,7 +21,7 @@ func testResourceEnvironment_basic(t *testing.T) {
 		CheckDestroy: testGocdEnvironmentDestroy,
 		Steps: []r.TestStep{
 			{
-				Config: testAccResource_basic(rInt),
+				Config:  testAccResource_basic(rInt),
 				Destroy: false,
 				Check: r.ComposeTestCheckFunc(
 					r.TestCheckResourceAttr(
