@@ -11,6 +11,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	"github.com/beamly/go-gocd/gocd"
 )
 
 var (
@@ -44,6 +45,27 @@ func TestProvider(t *testing.T) {
 
 func testProviderImpl(t *testing.T) {
 	var _ terraform.ResourceProvider = Provider()
+}
+
+func testGetClient() *gocd.Client {
+	//GOCD_URL=http://127.0.0.1:8153/go/;GOCD_SKIP_SSL_CHECK=1;TF_ACC=1
+
+	var url, u, p string
+	var nossl bool
+
+	url = os.Getenv("GOCD_URL")
+	u = os.Getenv("GOCD_USERNAME")
+	p = os.Getenv("GOCD_PASSWORD")
+	nossl = os.Getenv("GOCD_SKIP_SSL_CHECK") == "1"
+
+	cfg := &gocd.Configuration{
+		Server:       url,
+		Username:     u,
+		Password:     p,
+		SkipSslCheck: nossl,
+	}
+
+	return cfg.Client()
 }
 
 func testAccPreCheck(t *testing.T) {

@@ -4,6 +4,8 @@ import (
 	r "github.com/hashicorp/terraform/helper/resource"
 	"regexp"
 	"testing"
+	"context"
+	"github.com/stretchr/testify/assert"
 )
 
 func testResourcePipeline(t *testing.T) {
@@ -13,6 +15,28 @@ func testResourcePipeline(t *testing.T) {
 	t.Run("FullStack2", testResourcePipelineFullStack2)
 	t.Run("DisableAutoUpdate", testResourcePipelineDisableAutoUpdate)
 	t.Run("LinkedDependencies", testResourcePipelineLinkedDependencies)
+	t.Run("HandleMissingPipelines", testResourcePipelineMissing)
+}
+
+func testResourcePipelineMissing(t *testing.T) {
+	r.Test(t, r.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testGocdProviders,
+		CheckDestroy: testGocdPipelineDestroy,
+		Steps: []r.TestStep{
+			{
+				Config: testFile("resource_pipeline.0.rsc.tf"),
+			},
+			{
+				PreConfig: func() {
+					c := testGetClient()
+					_, _, err := c.PipelineConfigs.Delete(context.Background(), "pipeline0-terraform")
+					assert.NoError(t, err)
+				},
+				Config: testFile("resource_pipeline.4.rsc.tf"),
+			},
+		},
+	})
 }
 
 func testResourcePipelineLinkedDependencies(t *testing.T) {
