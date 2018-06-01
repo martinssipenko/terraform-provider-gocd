@@ -10,7 +10,7 @@ import:
   subpackages:
   - gocd
 - package: github.com/hashicorp/terraform
-  version: ^0.11.2
+  version: ^0.11.7
   subpackages:
   - helper/hashcode
   - helper/schema
@@ -19,6 +19,7 @@ import:
 - package: github.com/pkg/errors
   version: ^0.8.0
 - package: github.com/sergi/go-diff
+  version: ^1.0.0
   subpackages:
   - diffmatchpatch
 testImport:
