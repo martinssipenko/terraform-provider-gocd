@@ -1,9 +1,8 @@
-#TEST?=$$(go list ./... |grep -v 'vendor')
 TEST?=github.com/beamly/terraform-provider-gocd/gocd/
 GOFMT_FILES?=$$(glide novendor)
 SHELL:=/bin/bash
 
-# For local testing, run `docker-compose up -d`
+# For local testing, run `make testacc`
 SERVER ?=http://127.0.0.1:8153/go/
 TESTARGS ?= -race -coverprofile=profile.out -covermode=atomic
 

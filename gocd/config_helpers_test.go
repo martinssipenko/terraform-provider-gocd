@@ -15,6 +15,8 @@ func TestConfigHelper(t *testing.T) {
 	t.Run("DefinitionDocFinish/Success", testDefinitionDocFinishSuccess)
 	t.Run("DefinitionDocFinish/Fail", testDefinitionDocFinishFail)
 	t.Run("RegexRuleSetValidator", testRegexRuleSetValidator)
+	t.Run("SupressJsonDiff", testSupressJSONDiffs)
+	t.Run("SupressJsonDiffPanic", testSupressJSONDiffsPanic)
 }
 
 func testRegexRuleSetValidator(t *testing.T) {
@@ -122,4 +124,81 @@ func decodeConfigStringListSuccessMulti(t *testing.T) {
 	assert.Len(t, strs, 2)
 	assert.Equal(t, strs[0], "one")
 	assert.Equal(t, strs[1], "two")
+}
+
+func testSupressJSONDiffsPanic(t *testing.T) {
+	type args struct {
+		old string
+		new string
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "EmptyNewOld",
+			args: args{
+				new: "",
+				old: "",
+			},
+		},
+		{
+			name: "BadOld",
+			args: args{
+				old: "{ items: [ { id: 1, name: 'test1' }, { id: 2, name: 'test2' } ] }",
+				new: "{\"hallo\": \"world\"}",
+			},
+		},
+		{
+			name: "BadNew",
+			args: args{
+				old: "{\"hallo\": \"world\"}",
+				new: "{ items: [ { id: 1, name: 'test1' }, { id: 2, name: 'test2' } ] }",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Panics(t, func() { supressJSONDiffs("", tt.args.old, tt.args.new, nil) })
+		})
+	}
+}
+
+func testSupressJSONDiffs(t *testing.T) {
+	type args struct {
+		old string
+		new string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "EmptyOld",
+			args: args{old: "", new: "mock"},
+			want: false,
+		},
+		{
+			name: "EmptyNew",
+			args: args{old: "mock", new: ""},
+			want: false,
+		},
+		{
+			name: "Equal",
+			args: args{old: "{\"hallo\": \"world\"}", new: "{\"hallo\": \"world\"}"},
+			want: true,
+		},
+		{
+			name: "Unequal",
+			args: args{old: "{\"hallo\": \"world\"}", new: "{\"hallo\": \"foobar\"}"},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := supressJSONDiffs("", tt.args.old, tt.args.new, nil)
+			assert.Equal(t, got, tt.want)
+		})
+	}
 }
