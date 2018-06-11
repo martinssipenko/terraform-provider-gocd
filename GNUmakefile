@@ -89,7 +89,7 @@ test-compile:
 
 provision-test-gocd:
 	cp godata/default.gocd.config.xml godata/server/config/cruise-config.xml
-	docker-compose build --build-arg UID=$(shell id -u) gocd-server
+	docker-compose build --build-arg UID=$(shell id -u) --build-arg GOCD_VERSION=${GOCD_VERSION} gocd-server
 	docker-compose up -d
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status test-compile

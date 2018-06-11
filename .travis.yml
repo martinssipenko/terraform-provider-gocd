@@ -1,9 +1,10 @@
 language: go
 go:
   - 1.9.x
-#  - release
-#  - tip
-
+  - 1.10.x
+env:
+  - GOCD_VERSION=v17.10.0
+  - GOCD_VERSION=v18.8.0
 
 services:
   - docker
