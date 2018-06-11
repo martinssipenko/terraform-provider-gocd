@@ -263,7 +263,7 @@ resource "gocd_pipeline_stage" "build" {
 
 #### Import
 
-Pipeline Stages can be imported using a type identifier (`template`,or `pipeline`), the pipeline or template name, and the stage name, e.g.
+Pipeline Stages can be imported using a type identifier (`template` or `pipeline`), the pipeline or template name, and the stage name, e.g.
 
     $ terraform import gocd_pipeline_stage.pipeline-stage pipeline/pipeline-name/pipeline-stage
     $ ...
@@ -271,7 +271,7 @@ Pipeline Stages can be imported using a type identifier (`template`,or `pipeline
 
 ### gocd\_environment
 
-Provides support for creating environmnets in GoCD.
+Provides support for creating environments in GoCD.
 
 #### Example Usage
 
