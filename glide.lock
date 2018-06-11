@@ -1,5 +1,5 @@
-hash: e107abc943f09fcc67a2db274cb6c947eb89f5eef0199f987fed037c9fc2d7cf
-updated: 2018-06-11T11:02:46.770942+01:00
+hash: 86911cf3cb8634a923b686003356702edd089b57a3fe4fd6db5b6630604c739b
+updated: 2018-06-11T11:14:28.438992+01:00
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -153,7 +153,7 @@ imports:
   - tfdiags
   - version
 - name: github.com/hashicorp/yamux
-  version: a031bd43a737efe86eddece0022fff5ea0bc6abe
+  version: 3520598351bb3500a49ae9563f5539666ae0a27c
 - name: github.com/jmespath/go-jmespath
   version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
 - name: github.com/mattn/go-colorable
