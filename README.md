@@ -201,6 +201,12 @@ Type `materials` block supports:
 
  - `version` - The current version of the resource configuration in GoCD.
 
+#### Import
+
+Pipelines can be imported using the pipeline name, e.g.
+
+    $ terraform import gocd_pipeline.pipeline pipeline-name
+
 ### gocd\_pipeline\_template
 
 Provides support for creating pipeline templates in GoCD.
@@ -220,6 +226,12 @@ resource "gocd_pipeline_template" "terraform-builder" {
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
+
+#### Import
+
+Pipeline Templates can be imported using the pipeline template name, e.g.
+
+    $ terraform import gocd_pipeline_template.pipeline-template pipeline-template-name
 
 ### gocd\_pipeline\_stage
 
@@ -249,6 +261,14 @@ resource "gocd_pipeline_stage" "build" {
 }
 ```
 
+#### Import
+
+Pipeline Stages can be imported using a type identifier (`template`,or `pipeline`), the pipeline or template name, and the stage name, e.g.
+
+    $ terraform import gocd_pipeline_stage.pipeline-stage pipeline/pipeline-name/pipeline-stage
+    $ ...
+    $ terraform import gocd_pipeline_stage.template-stage template/template-name/template-stage
+
 ### gocd\_environment
 
 Provides support for creating environmnets in GoCD.
@@ -268,6 +288,12 @@ resource "gocd_environment" "testing" {
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
+
+#### Import
+
+Environments can be imported using the environment name, e.g.
+
+    $ terraform import gocd_environment.environment-name environment-name
 
 ### gocd\_environment\_association
 
@@ -302,6 +328,14 @@ resource "gocd_pipeline" "build" {
 #### Attributes Reference
 
  - `version` - The current version of the resource configuration in GoCD.
+
+#### Import
+
+Environment Associations can be imported using the environment name, a type identifier, and type value, e.g.
+
+    $ terraform import gocd_environment_association.association-name environment-name/p/pipeline-name
+
+__NOTE__: Currently only pipeline (`p`) type identifiers are supported.
 
 ## Development Setup
 
