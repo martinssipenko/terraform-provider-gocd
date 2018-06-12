@@ -343,6 +343,7 @@ Get project and install dependencies using glide:
 
     $ go get github.com/beamly/terraform-provider-gocd
     $ cd $GOPATH/src/github.com/beamly/terraform-provider-gocd/
+    $ make before_install
 
 Then you can run tests as follows:
 
