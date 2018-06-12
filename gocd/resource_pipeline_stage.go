@@ -146,12 +146,12 @@ func resourcePipelineStageExists(d *schema.ResourceData, meta interface{}) (bool
 	client.Lock()
 	defer client.Unlock()
 
-	if stage, err := retrieveStage(pType, name, pipeline, client); err == nil {
+	if stage, err := retrieveStage(pType, name, pipeline, client); (err == nil) && (stage != nil) {
 		d.SetId(fmt.Sprintf("%s/%s/%s", pType, pipeline, stage.Name))
-		return stage != nil, nil
-	} else {
-		return false, err
+		return true, nil
 	}
+
+	return false, err
 }
 
 func resourcePipelineStageCreate(d *schema.ResourceData, meta interface{}) (err error) {
