@@ -113,7 +113,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			nossl = b
 		}
 	}
-	log.Printf("[DEBUG] Using GoCD config 'skip_ssl_check': %t", url)
+	log.Printf("[DEBUG] Using GoCD config 'skip_ssl_check': %t", nossl)
 
 	cfg = &gocd.Configuration{
 		Server:       url,
