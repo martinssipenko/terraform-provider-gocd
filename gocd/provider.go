@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"log"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -89,18 +90,21 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			url = os.Getenv("GOCD_URL")
 		}
 	}
+	log.Printf("[DEBUG] Using GoCD config 'baseurl': %s", url)
 
 	if rU, ok = d.GetOk("username"); ok {
 		if u, ok = rU.(string); !ok || u == "" {
 			u = os.Getenv("GOCD_USERNAME")
 		}
 	}
+	log.Printf("[DEBUG] Using GoCD config 'username': %s", u)
 
 	if rP, ok = d.GetOk("password"); ok {
 		if p, ok = rP.(string); !ok || p == "" {
 			p = os.Getenv("GOCD_PASSWORD")
 		}
 	}
+	log.Printf("[DEBUG] Using GoCD config 'password': %s", rP)
 
 	if rB, ok = d.GetOk("skip_ssl_check"); ok {
 		if b, ok = rB.(bool); !ok {
@@ -109,6 +113,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			nossl = b
 		}
 	}
+	log.Printf("[DEBUG] Using GoCD config 'skip_ssl_check': %t", url)
 
 	cfg = &gocd.Configuration{
 		Server:       url,
@@ -120,6 +125,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	hClient := &http.Client{}
 
 	if strings.HasPrefix(cfg.Server, "https") {
+		log.Printf("[DEBUG] GoCD is using https.")
 		hClient.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.SkipSslCheck},
 		}
