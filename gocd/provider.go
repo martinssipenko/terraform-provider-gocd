@@ -7,11 +7,11 @@ import (
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
-	"log"
 )
 
 func Provider() terraform.ResourceProvider {
