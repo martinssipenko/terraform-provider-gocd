@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/beamly/go-gocd/gocd"
 	"github.com/hashicorp/terraform/helper/logging"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strings"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -115,8 +117,14 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		SkipSslCheck: nossl,
 	}
 
-	hClient := &http.Client{
-		Transport: http.DefaultTransport,
+	hClient := &http.Client{}
+
+	if strings.HasPrefix(cfg.Server, "https") {
+		hClient.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: cfg.SkipSslCheck},
+		}
+	} else {
+		hClient.Transport = http.DefaultTransport
 	}
 
 	// Add API logging
