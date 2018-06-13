@@ -20,6 +20,11 @@ matrix:
 #    - go: tip
   fast_finish: true
 
+env:
+  matrix:
+    - GOCD_URL=http://127.0.0.1:8153/go/
+    - GOCD_URL=https://127.0.0.1:8154/go/ GOCD_SKIP_SSL_CHECK=1
+
 
 cache:
   pip: true
