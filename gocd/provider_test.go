@@ -52,10 +52,6 @@ func testAccPreCheck(t *testing.T) {
 		t.Fatal("GOCD_URL must be set for acceptance tests.")
 	}
 
-	if s := os.Getenv("GOCD_SKIP_SSL_CHECK"); s == "" {
-		t.Fatal("GOCD_SKIP_SSL_CHECK must be set for acceptance tests.")
-	}
-
 	err := testGocdProvider.Configure(terraform.NewResourceConfig(nil))
 	if err != nil {
 		t.Fatal(err)
